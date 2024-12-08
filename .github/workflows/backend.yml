@@ -27,6 +27,9 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
+      - name: Install required workloads
+        run: dotnet workload restore backend/NewsApp/NewsApp.sln
+
       - name: Build solution
         run: dotnet build backend/NewsApp/NewsApp.sln -c Release
 
