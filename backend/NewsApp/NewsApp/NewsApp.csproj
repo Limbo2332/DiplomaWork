@@ -15,10 +15,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\NewsApp.Api\NewsApp.Api.csproj" />
-      <ProjectReference Include="..\NewsApp.BLL.UnitTests\NewsApp.BLL.UnitTests.csproj" />
-      <ProjectReference Include="..\NewsApp.BLL\NewsApp.BLL.csproj" />
-      <ProjectReference Include="..\NewsApp.DAL\NewsApp.DAL.csproj" />
-      <ProjectReference Include="..\NewsApp.Utils\NewsApp.Utils.csproj" />
     </ItemGroup>
 
 </Project>
