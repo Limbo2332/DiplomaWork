@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsAspireHost>true</IsAspireHost>
+        <UserSecretsId>bdddef9d-09e8-4a41-b38a-225b26fe709c</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Aspire.Hosting.AppHost" Version="8.2.2"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\NewsApp.Api\NewsApp.Api.csproj" />
+      <ProjectReference Include="..\NewsApp.BLL.UnitTests\NewsApp.BLL.UnitTests.csproj" />
+      <ProjectReference Include="..\NewsApp.BLL\NewsApp.BLL.csproj" />
+      <ProjectReference Include="..\NewsApp.DAL\NewsApp.DAL.csproj" />
+      <ProjectReference Include="..\NewsApp.Utils\NewsApp.Utils.csproj" />
+    </ItemGroup>
+
+</Project>
