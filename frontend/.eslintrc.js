@@ -26,6 +26,7 @@ module.exports = {
   },
   plugins: ['react', 'react-hooks'],
   rules: {
+    '@typescript-eslint/no-unused-vars': 'off',
     'indent': ['error', 2, { 'SwitchCase': 1 }],
     'quotes': ['error', 'single'],
     'semi': ['error', 'always'],

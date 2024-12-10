@@ -1,2 +1,6 @@
 ﻿@import "../../../node_modules/bootstrap/dist/css/bootstrap.min.css";
 @import 'colors';
+
+#root {
+  transition: background-color 0.5s ease, color 0.5s ease;
+}

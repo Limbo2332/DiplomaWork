@@ -1,5 +1,5 @@
-﻿import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from "react";
-import { Loading } from "../Common/Loading/Loading.tsx";
+﻿import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
+import { Loading } from '../Common/Loading/Loading.tsx';
 
 export interface LoadingContextResultProps {
   showLoading: () => void;
@@ -40,7 +40,7 @@ export const useLoading = () => {
   const context = useContext(LoadingContext);
 
   if (!context) {
-    throw new Error("useLoading must be inside LoadingContext");
+    throw new Error('useLoading must be inside LoadingContext');
   }
 
   return context;
