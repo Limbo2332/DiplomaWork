@@ -1,12 +1,17 @@
 import { Loading } from './components/Common/Loading/Loading.tsx';
 import { ChooseToFavorite } from './components/Common/Bookmark/Bookmark.tsx';
+import Search from './components/Common/Search/Search.tsx';
+import SignIn from './Pages/Auth/SignIn/SignIn.tsx';
 
 export const App = () => {
   return (
-    <div>
-      <h1 className="text-black">Hello, world!</h1>
+    <main className="main">
       <Loading />
       <ChooseToFavorite checked={true} />
-    </div>
+      <div style={{ width: '200px' }}>
+        <Search placeholder="Search" doSearch={() => null} />
+      </div>
+      <SignIn />
+    </main>
   );
 };
