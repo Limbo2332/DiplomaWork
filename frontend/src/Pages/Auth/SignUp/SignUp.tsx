@@ -18,6 +18,7 @@ const SignUp = () => {
     validatePassword,
     validateRepeatPassword,
     validateFullName,
+    isLoading,
   } = useSignUp();
 
   return (
@@ -72,7 +73,8 @@ const SignUp = () => {
               <NavLink to="/auth/login" className="forgot d-block">Уже зареєстровані?</NavLink>
             </div>
             <div className="submit text-center">
-              <Button className="mt-3 fw-bold" type="submit" color="success" size="lg">Реєстрація</Button>
+              <Button className="mt-3 fw-bold" type="submit" color="success" size="lg"
+                loading={isLoading}>Реєстрація</Button>
             </div>
           </form>
         </div>

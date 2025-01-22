@@ -1,6 +1,7 @@
 ﻿import { useForm } from 'react-hook-form';
 import { useMemo, useState } from 'react';
-import useAuth from '../Auth.logic.ts';
+import useAuthValidation from '../Auth.logic.ts';
+import { useAuth } from '../../../Contexts/authContext.tsx';
 
 type SignInInputs = {
   email: string;
@@ -14,16 +15,22 @@ const useSignIn = () => {
     defaultValues: {},
   });
 
-  const { validateEmail, validatePassword } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { validateEmail, validatePassword } = useAuthValidation();
+  const { loginUser } = useAuth();
 
   const [openResetPasswordModel, setOpenResetPasswordModel] = useState(false);
 
-  const onSubmit = (data: SignInInputs) => {
-    console.log(data);
+  const onSubmit = async (data: SignInInputs) => {
+    setIsLoading(true);
 
-    // TODO: onsubmit sign-in form
+    await loginUser(data.email, data.password);
+
+    setIsLoading(false);
   };
 
+  // TODO: rework validationErrors from backend
   const validationErrors: string[] = useMemo(() => {
     return Array.from(new Set([errors.email?.message, errors.password?.message].filter(
       (message): message is string => !!message,
@@ -56,6 +63,7 @@ const useSignIn = () => {
     validatePasswordField,
     openResetPasswordModel,
     setOpenResetPasswordModel,
+    isLoading,
   };
 };
 

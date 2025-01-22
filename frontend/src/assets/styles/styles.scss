@@ -1,5 +1,6 @@
 ﻿@import "../../../node_modules/bootstrap/dist/css/bootstrap.min.css";
 @import 'colors';
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap');
 
 #root {
   transition: background-color 0.5s ease, color 0.5s ease;
@@ -14,6 +15,8 @@ html, body {
 .main {
   padding: 0 0 100px 0;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 
   &-container {
     height: 100%;
@@ -27,7 +30,12 @@ html, body {
   }
 }
 
-
+.text-truncate {
+  display: block !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap !important;
+}
 
 
 

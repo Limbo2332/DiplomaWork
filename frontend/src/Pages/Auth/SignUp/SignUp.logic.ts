@@ -1,6 +1,7 @@
 ﻿import { useForm } from 'react-hook-form';
-import { useMemo } from 'react';
-import useAuth from '../Auth.logic.ts';
+import { useMemo, useState } from 'react';
+import useAuthValidation from '../Auth.logic.ts';
+import { useAuth } from '../../../Contexts/authContext.tsx';
 
 type SignUpInputs = {
   email: string;
@@ -16,12 +17,17 @@ const useSignUp = () => {
     defaultValues: {},
   });
 
-  const { validateEmail, validatePassword, validateFullName } = useAuth();
+  const { validateEmail, validatePassword, validateFullName } = useAuthValidation();
+  const { registerUser } = useAuth();
 
-  const onSubmit = (data: SignUpInputs) => {
-    console.log(data);
+  const [isLoading, setIsLoading] = useState(false);
 
-    // TODO: onsubmit sign-up form
+  const onSubmit = async (data: SignUpInputs) => {
+    setIsLoading(true);
+
+    await registerUser(data.email, data.fullName, data.password);
+
+    setIsLoading(false);
   };
 
   const validationErrors: string[] = useMemo(() => {
@@ -48,6 +54,7 @@ const useSignUp = () => {
     validatePassword,
     validateFullName,
     validateRepeatPassword,
+    isLoading,
   };
 };
 

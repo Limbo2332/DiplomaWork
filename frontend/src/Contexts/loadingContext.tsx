@@ -1,5 +1,5 @@
 ﻿import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
-import { Loading } from '../Common/Loading/Loading.tsx';
+import { Loading } from '../components/Common/Loading/Loading.tsx';
 
 export interface LoadingContextResultProps {
   showLoading: () => void;

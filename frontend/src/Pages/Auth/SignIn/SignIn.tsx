@@ -19,6 +19,7 @@ const SignIn = () => {
     validatePasswordField,
     openResetPasswordModel,
     setOpenResetPasswordModel,
+    isLoading,
   } = useSignIn();
 
   return (
@@ -62,7 +63,8 @@ const SignIn = () => {
                 <NavLink to="/auth/register" className="forgot d-block">Немає акаунту?</NavLink>
               </div>
               <div className="submit text-center">
-                <Button className="mt-3 fw-bold" type="submit" color="success" size="lg">Логін</Button>
+                <Button className="mt-3 fw-bold" type="submit" color="success" size="lg"
+                  loading={isLoading}>Логін</Button>
               </div>
             </form>
           </div>

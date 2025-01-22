@@ -1,6 +1,6 @@
 ﻿import { emailRegex, fullNameRegex, passwordRegex } from '../../Validation/Regexes.ts';
 
-const useAuth = () => {
+const useAuthValidation = () => {
   const validateEmail = (email?: string) => {
     if (!email) {
       return 'Пошта обов\'язкова для заповнення.';
@@ -40,4 +40,4 @@ const useAuth = () => {
   return { validateEmail, validatePassword, validateFullName };
 };
 
-export default useAuth;
+export default useAuthValidation;

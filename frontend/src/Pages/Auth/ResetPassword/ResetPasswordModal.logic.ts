@@ -1,24 +1,48 @@
 ﻿import { useForm } from 'react-hook-form';
-import { useMemo } from 'react';
-import useAuth from '../Auth.logic.ts';
+import { useMemo, useState } from 'react';
+import useAuthValidation from '../Auth.logic.ts';
+import useAuthService from '../../../Services/authService.ts';
+import { useNotification } from '../../../Contexts/notificationContext.tsx';
+import { useAuth } from '../../../Contexts/authContext.tsx';
 
 type ResetPasswordInputs = {
   email: string;
 }
 
-const useResetPasswordModal = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<ResetPasswordInputs>({
+export interface ResetPasswordModalProps {
+  closeModal: () => void;
+}
+
+const useResetPasswordModal = ({
+  closeModal,
+}: ResetPasswordModalProps) => {
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<ResetPasswordInputs>({
     mode: 'onBlur',
     reValidateMode: 'onBlur',
     defaultValues: {},
   });
 
-  const { validateEmail } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const onSubmit = (data: ResetPasswordInputs) => {
-    console.log(data);
+  const { validateEmail } = useAuthValidation();
+  const { token } = useAuth();
+  const { resetPassword } = useAuthService({ token });
+  const { showSuccessNotification, showErrorNotification } = useNotification();
 
-    // TODO: onsubmit reset password form
+  const onSubmit = async (data: ResetPasswordInputs) => {
+    setIsLoading(true);
+
+    const result = await resetPassword(data);
+
+    if (result.isOk) {
+      showSuccessNotification('Електронний лист для скидання пароля успішно надіслано!');
+    } else {
+      showErrorNotification('Щось пішло не так. Спробуйте пізніше.');
+    }
+
+    setIsLoading(false);
+    reset();
+    closeModal();
   };
 
   const validationErrors: string[] = useMemo(() => {
@@ -33,6 +57,7 @@ const useResetPasswordModal = () => {
     onSubmit,
     validationErrors,
     validateEmail,
+    isLoading,
   };
 };
 

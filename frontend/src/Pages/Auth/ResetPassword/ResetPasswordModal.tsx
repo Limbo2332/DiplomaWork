@@ -18,7 +18,8 @@ const ResetPasswordModal = ({
     onSubmit,
     validationErrors,
     validateEmail,
-  } = useResetPasswordModal();
+    isLoading,
+  } = useResetPasswordModal({ closeModal });
 
   return (
     <Modal open={open}>
@@ -50,7 +51,8 @@ const ResetPasswordModal = ({
               }
             </div>
             <div className="submit text-center">
-              <Button className="mt-3 fw-bold" type="submit" color="success" size="lg">Відновити пароль</Button>
+              <Button className="mt-3 fw-bold" type="submit" color="success" size="lg" loading={isLoading}>Відновити
+                пароль</Button>
             </div>
           </form>
         </div>

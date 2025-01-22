@@ -17,7 +17,7 @@ const Search = ({
     endDecorator={
       <div>
         <Divider orientation="vertical" />
-        <IconButton action={doSearch} size="md">
+        <IconButton onClick={doSearch} size="md">
           <FontAwesomeIcon icon={faSearch} />
         </IconButton>
       </div>
