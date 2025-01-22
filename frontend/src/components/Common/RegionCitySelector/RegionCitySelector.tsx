@@ -13,6 +13,8 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useRegionCitySelector } from './RegionCitySelector.logic.ts';
+import ClearIcon from '@mui/icons-material/Clear';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 export interface RegionData {
   letter: string;
@@ -26,12 +28,12 @@ export interface Region {
 
 interface RegionCitySelectorProps {
   regions: Region[];
-  open?: boolean; // Ініціалізація відкритого стану
+  open?: boolean;
 }
 
 const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
   regions,
-  open = false, // Значення за замовчуванням
+  open = false,
 }) => {
   const {
     containerRef,
@@ -45,13 +47,45 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
     selected,
     handleCitySelect,
     handleRegionSelect,
+    clearSelection,
+    setIsOpen,
   } = useRegionCitySelector({
     open,
     regions,
   });
 
   if (!isOpen) {
-    return null;
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          border: '1px solid #ccc',
+          borderRadius: '4px',
+          padding: '8px 12px',
+          minWidth: 300,
+          maxWidth: 400,
+          height: 50,
+          mx: 'auto',
+          backgroundColor: '#fff',
+          cursor: 'pointer',
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+          onClick={() => setIsOpen(true)}>
+          <LocationOnIcon color="primary" />
+          <Typography variant="body1">
+            {selected || 'Виберіть регіон або місто'}
+          </Typography>
+        </Box>
+        {selected && (
+          <IconButton size="small" onClick={clearSelection}>
+            <ClearIcon />
+          </IconButton>
+        )}
+      </Box>
+    );
   }
 
   return (
@@ -62,7 +96,7 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
         maxWidth: 400,
         mx: 'auto',
         position: 'relative',
-        zIndex: 10, // Щоб компонент був поверх інших елементів
+        zIndex: 10,
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -92,8 +126,8 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
         elevation={1}
         sx={{
           p: 1,
-          maxHeight: 300, // Обмеження висоти
-          overflowY: 'auto', // Скрол при перевищенні висоти
+          maxHeight: 300,
+          overflowY: 'auto',
         }}
       >
         <Grid container spacing={1}>

@@ -67,6 +67,10 @@ export const useRegionCitySelector = ({
       )
     : [];
 
+  const clearSelection = () => {
+    setSelected(null);
+  };
+
   return {
     containerRef,
     currentRegion,
@@ -80,5 +84,7 @@ export const useRegionCitySelector = ({
     filteredRegions,
     filteredCities,
     selected,
+    clearSelection,
+    setIsOpen,
   };
 };

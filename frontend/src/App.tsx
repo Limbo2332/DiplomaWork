@@ -5,7 +5,9 @@ export const App = () => {
   return (
     <main className="main">
       <Menu />
-      <SearchAndLocation />
+      <div className="container">
+        <SearchAndLocation />
+      </div>
     </main>
   );
 };

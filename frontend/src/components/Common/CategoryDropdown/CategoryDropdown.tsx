@@ -30,6 +30,7 @@ const CategoryDropdown = () => {
           textTransform: 'none',
           display: 'flex',
           alignItems: 'center',
+          minWidth: '200px',
         }}
       >
         Категорія
