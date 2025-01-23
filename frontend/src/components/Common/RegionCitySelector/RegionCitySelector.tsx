@@ -71,9 +71,57 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
           backgroundColor: '#fff',
           cursor: 'pointer',
         }}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
+          <LocationOnIcon color="primary" />
+          <Typography variant="body1" sx={{ flex: 1 }}>
+            {selected || 'Виберіть регіон або місто'}
+          </Typography>
+        </Box>
+        {selected && (
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              clearSelection();
+              setIsOpen(false);
+            }}
+          >
+            <ClearIcon />
+          </IconButton>
+        )}
+      </Box>
+
+    );
+  }
+
+  return (
+    <Box
+      ref={containerRef}
+      sx={{
+        position: 'relative',
+        minWidth: 300,
+        maxWidth: 800,
+        mx: 'auto',
+      }}
+    >
+      {/* Заголовок для вибору */}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          border: '1px solid #ccc',
+          borderRadius: '4px',
+          padding: '8px 12px',
+          height: 50,
+          backgroundColor: '#fff',
+          cursor: 'pointer',
+        }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-          onClick={() => setIsOpen(true)}>
+          onClick={() => setIsOpen(!isOpen)}>
           <LocationOnIcon color="primary" />
           <Typography variant="body1">
             {selected || 'Виберіть регіон або місто'}
@@ -85,67 +133,64 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
           </IconButton>
         )}
       </Box>
-    );
-  }
-
-  return (
-    <Box
-      ref={containerRef}
-      sx={{
-        p: 2,
-        maxWidth: 400,
-        mx: 'auto',
-        position: 'relative',
-        zIndex: 10,
-      }}
-    >
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-        {currentRegion && (
-          <IconButton
-            onClick={handleBack}
+      {/* Випадаючий список */}
+      {isOpen && (
+        <Paper
+          elevation={3}
+          sx={{
+            position: 'absolute',
+            top: '100%',
+            right: 0,
+            zIndex: 10,
+            mt: 1,
+            p: 2,
+            maxHeight: 300,
+            overflowY: 'auto',
+            backgroundColor: '#fff',
+            width: 700,
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+            {currentRegion && (
+              <IconButton
+                onClick={handleBack}
+                size="small"
+                sx={{ mr: 1, color: 'primary.main' }}
+              >
+                <ArrowBackIcon fontSize="small" />
+              </IconButton>
+            )}
+            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+              {currentRegion || 'Шукати оголошення по всій країні'}
+            </Typography>
+          </Box>
+          <TextField
+            fullWidth
+            placeholder="Введіть перші літери..."
+            value={search}
+            onChange={handleSearchChange}
             size="small"
-            sx={{ mr: 1, color: 'primary.main' }}
-          >
-            <ArrowBackIcon fontSize="small" />
-          </IconButton>
-        )}
-        <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-          {currentRegion || 'Шукати оголошення по всій країні'}
-        </Typography>
-      </Box>
-      <TextField
-        fullWidth
-        placeholder="Введіть перші літери..."
-        value={search}
-        onChange={handleSearchChange}
-        size="small"
-        variant="outlined"
-        sx={{ mb: 1 }}
-      />
-      <Paper
-        elevation={1}
-        sx={{
-          p: 1,
-          maxHeight: 300,
-          overflowY: 'auto',
-        }}
-      >
-        <Grid container spacing={1}>
-          {!currentRegion &&
-            filteredRegions.map((region) => (
-              <Grid item xs={12} key={region.name}>
-                <Box>
-                  <Typography
-                    variant="subtitle2"
-                    sx={{
-                      fontWeight: 600,
-                      fontSize: '0.9rem',
-                      color: 'text.secondary',
-                      mt: 1,
-                    }}
-                  >
-                    {region.name[0]}
-                  </Typography>
+            variant="outlined"
+          />
+          <Grid container spacing={2} sx={{
+            marginTop: '10px',
+          }}>
+            {/* Регіони */}
+            {!currentRegion &&
+              filteredRegions.map((region) => (
+                <Grid item xs={6} md={4} key={region.name}>
+                  <div className="d-flex justify-content-center align-items-center">
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        fontWeight: 600,
+                        fontSize: '0.9rem',
+                        color: 'text.secondary',
+                      }}
+                    >
+                      {region.name[0]}
+                    </Typography>
+                  </div>
                   <List dense>
                     <ListItemButton
                       onClick={() => handleRegionSelect(region.name)}
@@ -157,47 +202,43 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
                       />
                     </ListItemButton>
                   </List>
-                </Box>
-              </Grid>
-            ))}
-          {currentRegion &&
-            filteredCities?.map((cityGroup) => (
-              <Grid item xs={12} key={cityGroup.letter}>
-                <Box>
+                </Grid>
+              ))}
+            {/* Міста */}
+            {currentRegion &&
+              filteredCities?.map((cityGroup) => (
+                <Grid item xs={6} md={4} key={cityGroup.letter}>
                   <Typography
                     variant="subtitle2"
                     sx={{
                       fontWeight: 600,
                       fontSize: '0.9rem',
                       color: 'text.secondary',
-                      mt: 1,
                     }}
                   >
                     {cityGroup.letter}
                   </Typography>
                   <List dense>
-                    {cityGroup.names
-                      .filter((city) => city.toLowerCase().includes(search))
-                      .map((city) => (
-                        <ListItem disablePadding key={city}>
-                          <ListItemButton
-                            selected={selected === city}
-                            onClick={() => handleCitySelect(city)}
-                            sx={{ py: 0.5 }}
-                          >
-                            <ListItemText
-                              primary={city}
-                              primaryTypographyProps={{ fontSize: '0.9rem' }}
-                            />
-                          </ListItemButton>
-                        </ListItem>
-                      ))}
+                    {cityGroup.names.map((city) => (
+                      <ListItem disablePadding key={city}>
+                        <ListItemButton
+                          selected={selected === city}
+                          onClick={() => handleCitySelect(city)}
+                          sx={{ py: 0.5 }}
+                        >
+                          <ListItemText
+                            primary={city}
+                            primaryTypographyProps={{ fontSize: '0.9rem' }}
+                          />
+                        </ListItemButton>
+                      </ListItem>
+                    ))}
                   </List>
-                </Box>
-              </Grid>
-            ))}
-        </Grid>
-      </Paper>
+                </Grid>
+              ))}
+          </Grid>
+        </Paper>
+      )}
     </Box>
   );
 };

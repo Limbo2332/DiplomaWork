@@ -69,6 +69,7 @@ export const useRegionCitySelector = ({
 
   const clearSelection = () => {
     setSelected(null);
+    setCurrentRegion(null);
   };
 
   return {
