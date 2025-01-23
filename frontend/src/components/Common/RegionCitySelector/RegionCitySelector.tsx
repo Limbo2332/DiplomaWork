@@ -4,7 +4,6 @@ import {
   Grid,
   IconButton,
   List,
-  ListItem,
   ListItemButton,
   ListItemText,
   Paper,
@@ -29,23 +28,39 @@ interface RegionCitySelectorProps {
 const groupRegionsByLetter = (regions: Region[]) => {
   return regions.reduce((acc, region) => {
     const firstLetter = region.name[0].toUpperCase();
+
     if (!acc[firstLetter]) {
       acc[firstLetter] = [];
     }
-    acc[firstLetter].push(region.name);
+
+    const isFirstAdded = acc[firstLetter].length === 0;
+
+    acc[firstLetter].push({
+      name: region.name,
+      isFirstAdded,
+    });
+
     return acc;
-  }, {} as Record<string, string[]>);
+  }, {} as Record<string, { name: string; isFirstAdded: boolean }[]>);
 };
 
 const groupCitiesByLetter = (cities: string[]) => {
   return cities.reduce((acc, city) => {
     const firstLetter = city[0].toUpperCase();
+
     if (!acc[firstLetter]) {
       acc[firstLetter] = [];
     }
-    acc[firstLetter].push(city);
+
+    const isFirstAdded = acc[firstLetter].length === 0;
+
+    acc[firstLetter].push({
+      name: city,
+      isFirstAdded,
+    });
+
     return acc;
-  }, {} as Record<string, string[]>);
+  }, {} as Record<string, { name: string; isFirstAdded: boolean }[]>);
 };
 
 
@@ -194,36 +209,42 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
             variant="outlined"
           />
 
-          <Grid container spacing={2} sx={{ marginTop: '5px' }}>
+          <Grid container sx={{ marginTop: '5px' }}>
             {!currentRegion &&
-              Object.entries(groupedRegions).map(([letter, regionNames]) => (
+              Object.entries(groupedRegions).map(([letter, regions]) => (
                 <Grid item xs={6} md={4} key={letter}>
-                  <div className="d-flex justify-content-center align-items-center">
-                    <Typography
-                      variant="subtitle2"
-                      sx={{
-                        fontWeight: 600,
-                        fontSize: '0.8rem',
-                        color: 'text.secondary',
-                      }}
-                    >
-                      {letter}
-                    </Typography>
-                  </div>
-
-                  <List dense>
-                    {regionNames.map((regionName) => (
-                      <ListItemButton
-                        onClick={() => handleRegionSelect(regionName)}
-                        sx={{ py: 0.5 }}
-                        key={regionName}
-                      >
-                        <ListItemText
-                          primary={regionName}
-                          primaryTypographyProps={{ fontSize: '0.8rem' }}
-                          className="d-flex justify-content-center align-items-center"
-                        />
-                      </ListItemButton>
+                  <List dense sx={{
+                    paddingTop: '4px',
+                    paddingBottom: 0,
+                  }}>
+                    {regions.map((region) => (
+                      <div key={region.name} className="d-flex justify-content-center align-items-center">
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: '0.8rem',
+                            color: 'text.secondary',
+                            minWidth: 10,
+                          }}
+                        >
+                          {region.isFirstAdded ? letter : ' '}
+                        </Typography>
+                        <ListItemButton
+                          onClick={() => handleRegionSelect(region.name)}
+                          sx={{
+                            py: 0.5, '&:hover': {
+                              backgroundColor: 'transparent',
+                              color: 'inherit',
+                            },
+                          }}
+                        >
+                          <ListItemText
+                            primary={region.name}
+                            primaryTypographyProps={{ fontSize: '0.8rem' }}
+                          />
+                        </ListItemButton>
+                      </div>
                     ))}
                   </List>
                 </Grid>
@@ -232,33 +253,36 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
             {currentRegion &&
               Object.entries(groupedCities).map(([letter, cityNames]) => (
                 <Grid item xs={6} md={4} key={letter}>
-                  <div className="d-flex justify-content-center align-items-center">
-                    <Typography
-                      variant="subtitle2"
-                      sx={{
-                        fontWeight: 600,
-                        fontSize: '0.8rem',
-                        color: 'text.secondary',
-                      }}
-                    >
-                      {letter}
-                    </Typography>
-                  </div>
                   <List dense>
                     {cityNames.map((city) => (
-                      <ListItem key={city} disablePadding>
+                      <div key={city.name} className="d-flex justify-content-center align-items-center">
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: '0.8rem',
+                            color: 'text.secondary',
+                            minWidth: 10,
+                          }}
+                        >
+                          {city.isFirstAdded ? letter : ' '}
+                        </Typography>
                         <ListItemButton
-                          selected={selected === city}
-                          onClick={() => handleCitySelect(city)}
-                          sx={{ py: 0.5 }}
+                          selected={selected === city.name}
+                          onClick={() => handleCitySelect(city.name)}
+                          sx={{
+                            py: 0.5, '&:hover': {
+                              backgroundColor: 'transparent',
+                              color: 'inherit',
+                            },
+                          }}
                         >
                           <ListItemText
-                            primary={city}
+                            primary={city.name}
                             primaryTypographyProps={{ fontSize: '0.8rem' }}
-                            className="d-flex justify-content-center align-items-center"
                           />
                         </ListItemButton>
-                      </ListItem>
+                      </div>
                     ))}
                   </List>
                 </Grid>
