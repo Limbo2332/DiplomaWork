@@ -6,6 +6,23 @@ interface UseRegionCitySelectorProps {
   regions: Region[];
 }
 
+const ukrainianAlphabet = [
+  'а', 'б', 'в', 'г', 'ґ', 'д', 'е', 'є', 'ж', 'з', 'и', 'і', 'ї', 'й', 'к', 'л', 'м',
+  'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ь', 'ю', 'я',
+];
+
+// Функція для сортування за українським алфавітом
+const sortByUkrainianAlphabet = (arr: string[]) => {
+  return arr.sort((a, b) => {
+    const firstLetterA = a[0].toLowerCase();
+    const firstLetterB = b[0].toLowerCase();
+    const indexA = ukrainianAlphabet.indexOf(firstLetterA);
+    const indexB = ukrainianAlphabet.indexOf(firstLetterB);
+
+    return indexA - indexB;
+  });
+};
+
 export const useRegionCitySelector = ({
   open,
   regions,
@@ -53,18 +70,23 @@ export const useRegionCitySelector = ({
     }
   };
 
-  const filteredRegions = regions.filter((region) =>
-    region.name.toLowerCase().includes(search),
-  );
+  const filteredRegions = regions
+    .filter((region) => region.name.toLowerCase().includes(search))
+    .sort((a, b) => {
+      const firstLetterA = a.name[0].toLowerCase();
+      const firstLetterB = b.name[0].toLowerCase();
+      const indexA = ukrainianAlphabet.indexOf(firstLetterA);
+      const indexB = ukrainianAlphabet.indexOf(firstLetterB);
+
+      return indexA - indexB;
+    });
 
   const filteredCities = currentRegion
-    ? regions
-      .find((region) => region.name === currentRegion)?.cities
-      .filter((cityGroup) =>
-        cityGroup.names.some((city) =>
-          city.toLowerCase().includes(search),
-        ),
-      )
+    ? sortByUkrainianAlphabet(
+      regions
+        .find((region) => region.name === currentRegion)
+        ?.cities.filter((city) => city.toLowerCase().includes(search)) || [],
+    )
     : [];
 
   const clearSelection = () => {

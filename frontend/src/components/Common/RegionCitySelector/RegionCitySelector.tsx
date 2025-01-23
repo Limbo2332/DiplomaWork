@@ -16,20 +16,38 @@ import { useRegionCitySelector } from './RegionCitySelector.logic.ts';
 import ClearIcon from '@mui/icons-material/Clear';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
-export interface RegionData {
-  letter: string;
-  names: string[];
-}
-
 export interface Region {
   name: string;
-  cities: RegionData[];
+  cities: string[];
 }
 
 interface RegionCitySelectorProps {
   regions: Region[];
   open?: boolean;
 }
+
+const groupRegionsByLetter = (regions: Region[]) => {
+  return regions.reduce((acc, region) => {
+    const firstLetter = region.name[0].toUpperCase();
+    if (!acc[firstLetter]) {
+      acc[firstLetter] = [];
+    }
+    acc[firstLetter].push(region.name);
+    return acc;
+  }, {} as Record<string, string[]>);
+};
+
+const groupCitiesByLetter = (cities: string[]) => {
+  return cities.reduce((acc, city) => {
+    const firstLetter = city[0].toUpperCase();
+    if (!acc[firstLetter]) {
+      acc[firstLetter] = [];
+    }
+    acc[firstLetter].push(city);
+    return acc;
+  }, {} as Record<string, string[]>);
+};
+
 
 const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
   regions,
@@ -53,6 +71,9 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
     open,
     regions,
   });
+
+  const groupedRegions = groupRegionsByLetter(filteredRegions);
+  const groupedCities = groupCitiesByLetter(filteredCities ?? []);
 
   if (!isOpen) {
     return (
@@ -92,7 +113,6 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
           </IconButton>
         )}
       </Box>
-
     );
   }
 
@@ -106,7 +126,6 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
         mx: 'auto',
       }}
     >
-      {/* Заголовок для вибору */}
       <Box
         sx={{
           display: 'flex',
@@ -120,8 +139,10 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
           cursor: 'pointer',
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-          onClick={() => setIsOpen(!isOpen)}>
+        <Box
+          sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+          onClick={() => setIsOpen(!isOpen)}
+        >
           <LocationOnIcon color="primary" />
           <Typography variant="body1">
             {selected || 'Виберіть регіон або місто'}
@@ -133,7 +154,7 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
           </IconButton>
         )}
       </Box>
-      {/* Випадаючий список */}
+
       {isOpen && (
         <Paper
           elevation={3}
@@ -172,55 +193,60 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
             size="small"
             variant="outlined"
           />
-          <Grid container spacing={2} sx={{
-            marginTop: '10px',
-          }}>
-            {/* Регіони */}
+
+          <Grid container spacing={2} sx={{ marginTop: '5px' }}>
             {!currentRegion &&
-              filteredRegions.map((region) => (
-                <Grid item xs={6} md={4} key={region.name}>
+              Object.entries(groupedRegions).map(([letter, regionNames]) => (
+                <Grid item xs={6} md={4} key={letter}>
                   <div className="d-flex justify-content-center align-items-center">
                     <Typography
                       variant="subtitle2"
                       sx={{
                         fontWeight: 600,
-                        fontSize: '0.9rem',
+                        fontSize: '0.75rem',
                         color: 'text.secondary',
                       }}
                     >
-                      {region.name[0]}
+                      {letter}
                     </Typography>
                   </div>
+
                   <List dense>
-                    <ListItemButton
-                      onClick={() => handleRegionSelect(region.name)}
-                      sx={{ py: 0.5 }}
-                    >
-                      <ListItemText
-                        primary={region.name}
-                        primaryTypographyProps={{ fontSize: '0.9rem' }}
-                      />
-                    </ListItemButton>
+                    {regionNames.map((regionName) => (
+                      <ListItemButton
+                        onClick={() => handleRegionSelect(regionName)}
+                        sx={{ py: 0.5 }}
+                        key={regionName}
+                      >
+                        <ListItemText
+                          primary={regionName}
+                          primaryTypographyProps={{ fontSize: '0.75rem' }}
+                          className="d-flex justify-content-center align-items-center"
+                        />
+                      </ListItemButton>
+                    ))}
                   </List>
                 </Grid>
               ))}
-            {/* Міста */}
+
             {currentRegion &&
-              filteredCities?.map((cityGroup) => (
-                <Grid item xs={6} md={4} key={cityGroup.letter}>
-                  <Typography
-                    variant="subtitle2"
-                    sx={{
-                      fontWeight: 600,
-                      fontSize: '0.9rem',
-                      color: 'text.secondary',
-                    }}
-                  >
-                    {cityGroup.letter}
-                  </Typography>
+              Object.entries(groupedCities).map(([letter, cityNames]) => (
+                <Grid item xs={6} md={4} key={letter}>
+                  <div className="d-flex justify-content-center align-items-center">
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        fontWeight: 600,
+                        fontSize: '0.75rem',
+                        color: 'text.secondary',
+                      }}
+                    >
+                      {letter}
+                    </Typography>
+                  </div>
                   <List dense>
-                    {cityGroup.names.map((city) => (
-                      <ListItem disablePadding key={city}>
+                    {cityNames.map((city) => (
+                      <ListItem key={city} disablePadding>
                         <ListItemButton
                           selected={selected === city}
                           onClick={() => handleCitySelect(city)}
@@ -228,7 +254,8 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
                         >
                           <ListItemText
                             primary={city}
-                            primaryTypographyProps={{ fontSize: '0.9rem' }}
+                            primaryTypographyProps={{ fontSize: '0.75rem' }}
+                            className="d-flex justify-content-center align-items-center"
                           />
                         </ListItemButton>
                       </ListItem>

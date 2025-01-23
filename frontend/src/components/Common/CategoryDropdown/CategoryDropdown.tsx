@@ -52,6 +52,7 @@ const CategoryDropdown = () => {
             style: {
               maxHeight: ITEM_HEIGHT * 4.5,
               maxWidth: '400px',
+              marginTop: '10px',
             },
           },
         }}
