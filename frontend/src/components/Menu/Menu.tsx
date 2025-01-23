@@ -25,12 +25,16 @@ const Menu = () => {
                 <img src={defaultImage} alt="Profile Picture" />
               </div>
               {/*TODO: add link*/}
-              <NavLink className="menu-link profile-link" to="/">Мій профіль</NavLink>
+              <NavLink className="menu-link profile-link" to="/" style={{
+                fontSize: '1.1rem',
+              }}>Мій профіль</NavLink>
             </Button>
           </div>
           <div className="link-container d-flex align-items-center gap-2">
             <Button variant="plain" size="lg" className="h-60px menu-link"
-              onClick={logout}
+              onClick={logout} style={{
+                fontSize: '1.1rem',
+              }}
             >Вийти з акаунту</Button>
           </div>
         </div>

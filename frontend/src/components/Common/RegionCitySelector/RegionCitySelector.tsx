@@ -203,7 +203,7 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
                       variant="subtitle2"
                       sx={{
                         fontWeight: 600,
-                        fontSize: '0.75rem',
+                        fontSize: '0.8rem',
                         color: 'text.secondary',
                       }}
                     >
@@ -220,7 +220,7 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
                       >
                         <ListItemText
                           primary={regionName}
-                          primaryTypographyProps={{ fontSize: '0.75rem' }}
+                          primaryTypographyProps={{ fontSize: '0.8rem' }}
                           className="d-flex justify-content-center align-items-center"
                         />
                       </ListItemButton>
@@ -237,7 +237,7 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
                       variant="subtitle2"
                       sx={{
                         fontWeight: 600,
-                        fontSize: '0.75rem',
+                        fontSize: '0.8rem',
                         color: 'text.secondary',
                       }}
                     >
@@ -254,7 +254,7 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
                         >
                           <ListItemText
                             primary={city}
-                            primaryTypographyProps={{ fontSize: '0.75rem' }}
+                            primaryTypographyProps={{ fontSize: '0.8rem' }}
                             className="d-flex justify-content-center align-items-center"
                           />
                         </ListItemButton>

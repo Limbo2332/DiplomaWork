@@ -24,6 +24,7 @@ const Search = ({
     }
     placeholder={placeholder}
     type="search"
+    className="h-50px"
   />
 );
 
