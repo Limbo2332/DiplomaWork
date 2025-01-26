@@ -1,0 +1,54 @@
+﻿@import '../../../assets/styles/colors';
+
+.business-card {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  height: 260px;
+  border: 2px solid $blue-main;
+  border-radius: 10px;
+  padding: 20px 0 20px 10px;
+  width: 100%;
+
+  &-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, auto);
+    gap: 10px;
+  }
+
+  &-image {
+    height: 220px;
+    width: 220px;
+    margin-right: 10px;
+  }
+
+  &-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  &-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    &-icon {
+      color: $blue-hover
+    }
+  }
+
+  &-price {
+    background-color: $blue-main;
+    padding: 8px;
+    font-weight: 500;
+    font-size: 1.4rem;
+    margin-bottom: 0;
+    border-radius: 10px;
+    margin-right: 8px;
+  }
+}

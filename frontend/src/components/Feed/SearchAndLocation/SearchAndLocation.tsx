@@ -31,7 +31,7 @@ const SearchAndLocation = () => {
       </Box>
 
       {/* Селектор регіонів */}
-      <RegionCitySelector regions={regions} open />
+      <RegionCitySelector regions={regions} />
     </Box>
   );
 };

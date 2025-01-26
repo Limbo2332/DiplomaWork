@@ -32,7 +32,6 @@ const CategoryDropdown = () => {
           alignItems: 'center',
           minWidth: '200px',
         }}
-        variant="outlined"
         className="h-50px"
       >
         Категорія
