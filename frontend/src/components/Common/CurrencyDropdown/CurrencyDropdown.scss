@@ -1,0 +1,21 @@
+﻿@import '../../../assets/styles/colors';
+
+.MuiMenu-list {
+  padding: 0 !important;
+}
+
+.img-usd {
+  font-size: 24px !important;
+}
+
+.img-eur {
+  font-size: 20px !important;
+}
+
+.MuiMenuItem-root {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px;
+}

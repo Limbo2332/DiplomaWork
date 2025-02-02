@@ -1,24 +1,20 @@
 import Menu from './components/Menu/Menu.tsx';
 import SearchAndLocation from './components/Feed/SearchAndLocation/SearchAndLocation.tsx';
-import Card from './components/Common/Card/Card.tsx';
+import InfiniteScrollCards from './components/Feed/InfiniteScrollCards/InfiniteScrollCards.tsx';
+import Filters from './components/Feed/Filters/Filters.tsx';
 
 export const App = () => {
+  const handleRangeChange = () => {
+    console.log('Selected range:');
+  };
+
   return (
     <main className="main">
       <Menu />
       <div className="container">
         <SearchAndLocation />
-        <div className="d-flex flex-column gap-4 mt-3">
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-        </div>
-
+        <Filters />
+        <InfiniteScrollCards />
       </div>
     </main>
   );
