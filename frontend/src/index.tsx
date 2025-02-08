@@ -11,6 +11,7 @@ import { NotificationContextProvider } from './Contexts/notificationContext.tsx'
 import { AuthContextProvider } from './Contexts/authContext.tsx';
 import ErrorBoundary from './Errors/ErrorBoundary.tsx';
 import PageNotFound from './Pages/PageNotFound/PageNotFound.tsx';
+import Business from './components/Business/Business.tsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
@@ -23,6 +24,7 @@ root.render(
             <AuthContextProvider>
               <Routes>
                 <Route path="/" element={<App />} />
+                <Route path="/business/:id" element={<Business />} />
                 <Route path="/auth/login" element={<SignIn />} />
                 <Route path="/auth/register" element={<SignUp />} />
                 <Route path="*" element={<PageNotFound text="Сторінка не знайдена" />} />

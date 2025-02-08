@@ -6,7 +6,7 @@ import CurrencyRangeFilter from '../../Common/CurrencyRangeFilter/CurrencyRangeF
 import SingleCheckboxFilter from '../../Common/CheckboxFilter/CheckboxFilter.tsx';
 
 const Filters = () => {
-  const [filtersExpanded, setFiltersExpanded] = useState(true);
+  const [filtersExpanded, setFiltersExpanded] = useState(false);
 
   const handleResetFilters = () => {
     // Логіка для скидання фільтрів

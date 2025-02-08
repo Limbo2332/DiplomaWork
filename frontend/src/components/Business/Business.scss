@@ -1,0 +1,47 @@
+﻿@import '../../assets/styles/colors';
+
+.business-image {
+  height: 400px;
+}
+
+.business-card-price {
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+}
+
+.author-profile {
+  width: 100%;
+  padding: 12px;
+}
+
+.dashed-border {
+  border: 2px dashed #bcbbbb;
+}
+
+.author-image {
+  height: 120px;
+  width: 120px;
+}
+
+.social-medias {
+  display: flex;
+  gap: 8px;
+}
+
+.social-media {
+  cursor: pointer;
+  color: $blue-hover;
+}
+
+.buttonHidden {
+  opacity: 1;
+}
+
+.col-8 {
+  width: 63% !important;
+}
+
+.col-4 {
+  width: 37% !important;
+}

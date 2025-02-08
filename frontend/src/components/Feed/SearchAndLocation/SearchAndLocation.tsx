@@ -19,7 +19,7 @@ const SearchAndLocation = () => {
         borderRadius: 1,
         padding: '8px 16px',
         gap: 2,
-        marginTop: '36px',
+        marginTop: '12px',
       }}
     >
       {/* Dropdown меню */}
