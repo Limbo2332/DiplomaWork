@@ -23,6 +23,11 @@ export interface Region {
 interface RegionCitySelectorProps {
   regions: Region[];
   open?: boolean;
+  minWidth?: string;
+  maxWidth?: string;
+  height?: string;
+  border?: string;
+  backgroundColor?: string;
 }
 
 const groupRegionsByLetter = (regions: Region[]) => {
@@ -66,6 +71,11 @@ const groupCitiesByLetter = (cities: string[]) => {
 
 const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
   regions,
+  minWidth = '300px',
+  maxWidth = '400px',
+  height = '50px',
+  border = '1px solid #ccc',
+  backgroundColor = '#fff',
   open = false,
 }) => {
   const {
@@ -97,14 +107,14 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          border: '1px solid #ccc',
+          border: border,
           borderRadius: '4px',
           padding: '8px 12px',
-          minWidth: 300,
-          maxWidth: 400,
-          height: 50,
+          minWidth: minWidth,
+          maxWidth: maxWidth,
+          height: height,
           mx: 'auto',
-          backgroundColor: '#fff',
+          backgroundColor: backgroundColor,
           cursor: 'pointer',
         }}
         onClick={() => setIsOpen(!isOpen)}
@@ -137,8 +147,8 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
       sx={{
         position: 'relative',
         minWidth: 300,
-        maxWidth: 800,
-        mx: 'auto',
+        maxWidth: !maxWidth ? 800 : '100%',
+        mx: '0',
       }}
     >
       <Box
@@ -146,11 +156,13 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          border: '1px solid #ccc',
+          border: border,
           borderRadius: '4px',
           padding: '8px 12px',
-          height: 50,
-          backgroundColor: '#fff',
+          minWidth: minWidth,
+          maxWidth: maxWidth,
+          height: height,
+          backgroundColor: backgroundColor,
           cursor: 'pointer',
         }}
       >

@@ -70,3 +70,9 @@ input::-webkit-inner-spin-button {
   border-radius: 10px;
   margin-right: 8px;
 }
+
+.business-image {
+  height: 400px;
+  object-fit: contain;
+  max-width: 700px;
+}

@@ -1,6 +1,6 @@
 ﻿import { Divider, Typography } from '@mui/material';
-import Menu from '../Menu/Menu.tsx';
-import StarButton from '../Common/Bookmark/StarButton.tsx';
+import Menu from '../../components/Menu/Menu.tsx';
+import StarButton from '../../components/Common/Bookmark/StarButton.tsx';
 import {
   AcUnit,
   AddCircle,
@@ -32,7 +32,7 @@ import businessImage from '../../assets/images/default-image.png';
 import './Business.scss';
 import Carousel from 'react-material-ui-carousel';
 import { NavLink } from 'react-router';
-import HtmlRenderer from '../Common/HtmlRenderer/HtmlRenderer.tsx';
+import HtmlRenderer from '../../components/Common/HtmlRenderer/HtmlRenderer.tsx';
 
 const Business = () => {
   const htmlContent = '<p>Hello, world!</p>';
