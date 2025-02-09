@@ -1,13 +1,10 @@
-﻿import './Loading.scss';
+﻿import { CircularProgress } from '@mui/material';
+import React from 'react';
 
 export const Loading = () => {
   return (
-    <section className="dots-container">
-      <div className="dot"></div>
-      <div className="dot"></div>
-      <div className="dot"></div>
-      <div className="dot"></div>
-      <div className="dot"></div>
-    </section>
+    <div className="d-flex justify-content-center align-items-center h-100vh">
+      <CircularProgress />
+    </div>
   );
 };
