@@ -5,12 +5,27 @@ import './Card.scss';
 import defaultImage from '../../../assets/images/default-image.png';
 import { AccessTime, Apartment, Badge, MonetizationOn, PriceChange, Receipt } from '@mui/icons-material';
 import StarButton from '../Bookmark/StarButton.tsx';
+import { useNavigate } from 'react-router';
 
 const Card = () => {
+  const navigate = useNavigate();
+
+  const isAdmin = true;
+
+  const onCardClick = () => {
+    if (isAdmin) {
+      navigate('/createoreditbusiness/1');
+      return;
+    }
+
+    navigate('/business/1');
+  };
+
   return (
     <div className="d-flex justify-content-center">
       <div className="business-card">
-        <img className="business-card-image" src={defaultImage} alt="Фото оголошення" />
+        <img className="business-card-image" src={defaultImage} alt="Фото оголошення"
+          onClick={onCardClick} />
         <div className="business-card-rows">
           <div className="business-card-row">
             <Typography variant="h4">Назва готового бізнесу</Typography>

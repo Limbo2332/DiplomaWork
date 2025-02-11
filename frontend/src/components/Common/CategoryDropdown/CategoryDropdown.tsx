@@ -5,7 +5,11 @@ import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
 const ITEM_HEIGHT = 48;
 
-const CategoryDropdown = () => {
+interface CategoryDropdownProps {
+  multiSelect?: boolean; // Prop to determine if multi-select is enabled
+}
+
+const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ multiSelect = false }) => {
   const {
     options,
     open,
@@ -15,6 +19,16 @@ const CategoryDropdown = () => {
     handleToggle,
     anchorEl,
   } = useCategoryDropdown();
+
+  const handleSelection = (option: string) => {
+    if (multiSelect) {
+      handleToggle(option);
+    } else {
+      // Single selection logic
+      handleToggle(option, true);
+      closeDropdown();
+    }
+  };
 
   return (
     <div>
@@ -61,16 +75,18 @@ const CategoryDropdown = () => {
         {options.map((option) => (
           <MenuItem
             key={option}
-            onClick={() => handleToggle(option)}
+            onClick={() => handleSelection(option)}
             sx={{
               display: 'flex',
               alignItems: 'center',
             }}
           >
-            <Checkbox
-              checked={selectedOptions.includes(option)}
-              sx={{ marginRight: 1 }}
-            />
+            {multiSelect && (
+              <Checkbox
+                checked={selectedOptions.includes(option)}
+                sx={{ marginRight: 1 }}
+              />
+            )}
             <ListItemText primary={option} className="text-truncate" title={option} />
           </MenuItem>
         ))}
@@ -78,6 +94,5 @@ const CategoryDropdown = () => {
     </div>
   );
 };
-
 
 export default CategoryDropdown;

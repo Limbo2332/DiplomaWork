@@ -28,6 +28,7 @@ interface RegionCitySelectorProps {
   height?: string;
   border?: string;
   backgroundColor?: string;
+  disabled?: boolean; // Add the disabled prop
 }
 
 const groupRegionsByLetter = (regions: Region[]) => {
@@ -68,7 +69,6 @@ const groupCitiesByLetter = (cities: string[]) => {
   }, {} as Record<string, { name: string; isFirstAdded: boolean }[]>);
 };
 
-
 const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
   regions,
   minWidth = '300px',
@@ -77,6 +77,7 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
   border = '1px solid #ccc',
   backgroundColor = '#fff',
   open = false,
+  disabled = false, // Default to false
 }) => {
   const {
     containerRef,
@@ -115,9 +116,10 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
           height: height,
           mx: 'auto',
           backgroundColor: backgroundColor,
-          cursor: 'pointer',
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          opacity: disabled ? 0.6 : 1,
         }}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
           <LocationOnIcon color="primary" />
@@ -125,7 +127,7 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
             {selected || 'Виберіть регіон або місто'}
           </Typography>
         </Box>
-        {selected && (
+        {selected && !disabled && (
           <IconButton
             size="small"
             onClick={(e) => {
@@ -163,19 +165,20 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
           maxWidth: maxWidth,
           height: height,
           backgroundColor: backgroundColor,
-          cursor: 'pointer',
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          opacity: disabled ? 0.6 : 1,
         }}
       >
         <Box
           sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => !disabled && setIsOpen(!isOpen)}
         >
           <LocationOnIcon color="primary" />
           <Typography variant="body1">
             {selected || 'Виберіть регіон або місто'}
           </Typography>
         </Box>
-        {selected && (
+        {selected && !disabled && (
           <IconButton size="small" onClick={clearSelection}>
             <ClearIcon />
           </IconButton>
@@ -204,6 +207,7 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
                 onClick={handleBack}
                 size="small"
                 sx={{ mr: 1, color: 'primary.main' }}
+                disabled={disabled}
               >
                 <ArrowBackIcon fontSize="small" />
               </IconButton>
@@ -219,6 +223,7 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
             onChange={handleSearchChange}
             size="small"
             variant="outlined"
+            disabled={disabled}
           />
 
           <Grid container sx={{ marginTop: '5px' }}>
@@ -243,13 +248,14 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
                           {region.isFirstAdded ? letter : ' '}
                         </Typography>
                         <ListItemButton
-                          onClick={() => handleRegionSelect(region.name)}
+                          onClick={() => !disabled && handleRegionSelect(region.name)}
                           sx={{
                             py: 0.5, '&:hover': {
                               backgroundColor: 'transparent',
                               color: 'inherit',
                             },
                           }}
+                          disabled={disabled}
                         >
                           <ListItemText
                             primary={region.name}
@@ -281,13 +287,14 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
                         </Typography>
                         <ListItemButton
                           selected={selected === city.name}
-                          onClick={() => handleCitySelect(city.name)}
+                          onClick={() => !disabled && handleCitySelect(city.name)}
                           sx={{
                             py: 0.5, '&:hover': {
                               backgroundColor: 'transparent',
                               color: 'inherit',
                             },
                           }}
+                          disabled={disabled}
                         >
                           <ListItemText
                             primary={city.name}

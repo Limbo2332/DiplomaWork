@@ -26,6 +26,7 @@ import {
   Receipt,
   SupervisorAccount,
   Telegram,
+  Timer,
   Twitter,
 } from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
@@ -38,6 +39,7 @@ import uah from '../../assets/images/hryvnia.svg';
 import Menu from '../../components/Menu/Menu.tsx';
 import RegionCitySelector from '../../components/Common/RegionCitySelector/RegionCitySelector.tsx';
 import { regions } from '../../Data/Regions.ts';
+import CategoryDropdown from '../../components/Common/CategoryDropdown/CategoryDropdown.tsx';
 
 interface BusinessState {
   name: string;
@@ -114,6 +116,7 @@ const CreateEditBusiness: React.FC = () => {
       authorInstagram: '',
       authorFacebook: '',
       authorTwitter: '',
+      authorSite: '',
       description: '',
       images: [],
     },
@@ -121,6 +124,7 @@ const CreateEditBusiness: React.FC = () => {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const images = watch('images');
+  const isAdmin = false;
 
   const onDrop = (acceptedFiles: File[]) => {
     const currentImages = getValues('images');
@@ -136,6 +140,16 @@ const CreateEditBusiness: React.FC = () => {
 
   const onSubmit = (data: BusinessState) => {
     console.log('Business data:', data);
+  };
+
+  const handleApprove = () => {
+    // Logic for approving the card
+    console.log('Card approved');
+  };
+
+  const handleReject = () => {
+    // Logic for rejecting the card
+    console.log('Card rejected');
   };
 
   return (
@@ -160,6 +174,7 @@ const CreateEditBusiness: React.FC = () => {
                       margin="normal"
                       error={!!fieldState.error}
                       sx={fieldState.error ? { marginBottom: 0 } : {}}
+                      disabled={isAdmin}
                     />
                     <FormHelperText error sx={{ mx: 0 }}>
                       {fieldState.error?.message}
@@ -176,6 +191,7 @@ const CreateEditBusiness: React.FC = () => {
                 border="1px solid rgba(0, 0, 0, 0.23)"
                 backgroundColor="inherit"
                 regions={regions}
+                disabled={isAdmin}
               />
             </div>
             <div className="col-8">
@@ -213,6 +229,7 @@ const CreateEditBusiness: React.FC = () => {
                           </InputAdornment>
                         ),
                       }}
+                      disabled={isAdmin}
                     />
                     <FormHelperText error sx={{ mx: 0 }}>
                       {fieldState.error?.message}
@@ -252,6 +269,7 @@ const CreateEditBusiness: React.FC = () => {
                           </InputAdornment>
                         ),
                       }}
+                      disabled={isAdmin}
                     />
                     <FormHelperText error sx={{ mx: 0 }}>
                       {fieldState.error?.message}
@@ -283,6 +301,7 @@ const CreateEditBusiness: React.FC = () => {
                           </InputAdornment>
                         ),
                       }}
+                      disabled={isAdmin}
                     />
                     <FormHelperText error sx={{ mx: 0 }}>
                       {fieldState.error?.message}
@@ -317,6 +336,7 @@ const CreateEditBusiness: React.FC = () => {
                           </InputAdornment>
                         ),
                       }}
+                      disabled={isAdmin}
                     />
                     <FormHelperText error sx={{ mx: 0 }}>
                       {fieldState.error?.message}
@@ -351,6 +371,7 @@ const CreateEditBusiness: React.FC = () => {
                           </InputAdornment>
                         ),
                       }}
+                      disabled={isAdmin}
                     />
                     <FormHelperText error sx={{ mx: 0 }}>
                       {fieldState.error?.message}
@@ -386,6 +407,7 @@ const CreateEditBusiness: React.FC = () => {
                           </InputAdornment>
                         ),
                       }}
+                      disabled={isAdmin}
                     />
                     <FormHelperText error sx={{ mx: 0 }}>
                       {fieldState.error?.message}
@@ -420,6 +442,7 @@ const CreateEditBusiness: React.FC = () => {
                           </InputAdornment>
                         ),
                       }}
+                      disabled={isAdmin}
                     />
                     <FormHelperText error sx={{ mx: 0 }}>
                       {fieldState.error?.message}
@@ -454,6 +477,7 @@ const CreateEditBusiness: React.FC = () => {
                           </InputAdornment>
                         ),
                       }}
+                      disabled={isAdmin}
                     />
                     <FormHelperText error sx={{ mx: 0 }}>
                       {fieldState.error?.message}
@@ -462,13 +486,39 @@ const CreateEditBusiness: React.FC = () => {
                 )}
               />
             </div>
+            {isAdmin && (
+              <div className="col-8">
+                <Controller
+                  name="paybackPeriod"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      className="custom-input"
+                      label="Час окупності бізнесу"
+                      variant="outlined"
+                      margin="normal"
+                      disabled
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Timer className="blue-hover-color" style={{ marginRight: '10px' }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+              </div>
+            )}
             <div className="col-8">
               <Controller
                 name="equipment"
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={<Checkbox {...field} />}
+                    control={<Checkbox {...field} disabled={isAdmin} />}
                     label="Обладнання"
                   />
                 )}
@@ -480,7 +530,7 @@ const CreateEditBusiness: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={<Checkbox {...field} />}
+                    control={<Checkbox {...field} disabled={isAdmin} />}
                     label="Укриття"
                   />
                 )}
@@ -492,7 +542,7 @@ const CreateEditBusiness: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={<Checkbox {...field} />}
+                    control={<Checkbox {...field} disabled={isAdmin} />}
                     label="Генератор чи EcoFlow"
                   />
                 )}
@@ -504,7 +554,7 @@ const CreateEditBusiness: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={<Checkbox {...field} />}
+                    control={<Checkbox {...field} disabled={isAdmin} />}
                     label="Можливий торг"
                   />
                 )}
@@ -516,7 +566,7 @@ const CreateEditBusiness: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={<Checkbox {...field} />}
+                    control={<Checkbox {...field} disabled={isAdmin} />}
                     label="Підтримка колишнього власника"
                   />
                 )}
@@ -528,7 +578,7 @@ const CreateEditBusiness: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={<Checkbox {...field} />}
+                    control={<Checkbox {...field} disabled={isAdmin} />}
                     label="ФОП"
                   />
                 )}
@@ -540,7 +590,7 @@ const CreateEditBusiness: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={<Checkbox {...field} />}
+                    control={<Checkbox {...field} disabled={isAdmin} />}
                     label="Конкуренти в межах району"
                   />
                 )}
@@ -552,7 +602,7 @@ const CreateEditBusiness: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={<Checkbox {...field} />}
+                    control={<Checkbox {...field} disabled={isAdmin} />}
                     label="Сезонність"
                   />
                 )}
@@ -566,7 +616,7 @@ const CreateEditBusiness: React.FC = () => {
                   render={({ field }) => (
                     <FormControl fullWidth variant="outlined" margin="normal">
                       <InputLabel>Сезон</InputLabel>
-                      <Select {...field} label="Сезон">
+                      <Select {...field} label="Сезон" disabled={isAdmin}>
                         <MenuItem value="spring">Весна</MenuItem>
                         <MenuItem value="summer">Літо</MenuItem>
                         <MenuItem value="autumn">Осінь</MenuItem>
@@ -583,7 +633,7 @@ const CreateEditBusiness: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={<Checkbox {...field} />}
+                    control={<Checkbox {...field} disabled={isAdmin} />}
                     label="Сервіси доставки"
                   />
                 )}
@@ -608,6 +658,7 @@ const CreateEditBusiness: React.FC = () => {
                         </InputAdornment>
                       ),
                     }}
+                    disabled={isAdmin}
                   />
                 )}
               />
@@ -631,6 +682,7 @@ const CreateEditBusiness: React.FC = () => {
                         </InputAdornment>
                       ),
                     }}
+                    disabled={isAdmin}
                   />
                 )}
               />
@@ -654,6 +706,7 @@ const CreateEditBusiness: React.FC = () => {
                         </InputAdornment>
                       ),
                     }}
+                    disabled={isAdmin}
                   />
                 )}
               />
@@ -677,6 +730,7 @@ const CreateEditBusiness: React.FC = () => {
                         </InputAdornment>
                       ),
                     }}
+                    disabled={isAdmin}
                   />
                 )}
               />
@@ -700,6 +754,7 @@ const CreateEditBusiness: React.FC = () => {
                         </InputAdornment>
                       ),
                     }}
+                    disabled={isAdmin}
                   />
                 )}
               />
@@ -708,10 +763,12 @@ const CreateEditBusiness: React.FC = () => {
               <Controller
                 name="description"
                 control={control}
+                disabled={isAdmin}
                 rules={{ required: 'Опис є обов\'язковим' }}
                 render={({ field, fieldState }) => (
                   <ReactQuill
                     {...field}
+                    readOnly={isAdmin}
                     style={
                       fieldState.error?.message ?
                         { border: '1px solid #d32f2f' }
@@ -735,9 +792,10 @@ const CreateEditBusiness: React.FC = () => {
                       id="raised-button-file"
                       multiple
                       type="file"
+                      disabled={isAdmin}
                     />
                     <label htmlFor="raised-button-file">
-                      <Button variant="contained" component="span">
+                      <Button variant="contained" component="span" hidden={isAdmin}>
                         Завантажити зображення
                       </Button>
                     </label>
@@ -760,10 +818,26 @@ const CreateEditBusiness: React.FC = () => {
                 </Carousel>
               </div>
             )}
+            {isAdmin && (
+              <div className="col-8 mt-3 d-flex justify-content-center">
+                <CategoryDropdown />
+              </div>
+            )}
             <div className="col-8 mt-3 text-center mb-4">
-              <Button type="submit" variant="contained" color="primary">
-                Зберегти
-              </Button>
+              {isAdmin ? (
+                <>
+                  <Button variant="contained" color="primary" onClick={handleApprove} style={{ marginRight: '10px' }}>
+                    Опублікувати
+                  </Button>
+                  <Button variant="contained" color="error" onClick={handleReject}>
+                    Відмовити
+                  </Button>
+                </>
+              ) : (
+                <Button type="submit" variant="contained" color="primary">
+                  Зберегти
+                </Button>
+              )}
             </div>
           </div>
         </form>

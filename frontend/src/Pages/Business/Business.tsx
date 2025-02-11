@@ -142,7 +142,8 @@ const Business = () => {
               </div>
               <div className="d-flex align-items-center gap-2 px-3 pt-2">
                 <Timer className="blue-hover-color" />
-                <Typography variant="subtitle1">Час окупності бізнесу: <b>120 місяців</b></Typography>
+                <Typography variant="subtitle1">
+                  Час окупності бізнесу: <b>120 місяців</b></Typography>
               </div>
               <div className="d-flex align-items-center gap-2 px-3 pt-2">
                 <HomeRepairService className="blue-hover-color" />
