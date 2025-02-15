@@ -15,6 +15,7 @@ import Business from './Pages/Business/Business.tsx';
 import CreateEditBusiness from './Pages/CreateOrEditBusinessPage/CreateOrEditBusinessPage.tsx';
 import AuthorProfile from './Pages/AuthorProfile/AuthorProfile.tsx';
 import EditAuthorProfile from './Pages/EditAuthorProfile/EditAuthorProfile.tsx';
+import ManageBusinesses from './Pages/ManageBusinesses/ManageBusinesses.tsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
@@ -29,6 +30,7 @@ root.render(
                 <Route path="/" element={<App />} />
                 <Route path="/business/:id" element={<Business />} />
                 <Route path="/createoreditbusiness/:id" element={<CreateEditBusiness />} />
+                <Route path="/manage-businesses" element={<ManageBusinesses />} />
                 <Route path="/authors/:id" element={<AuthorProfile />} />
                 <Route path="/editauthor/:id" element={<EditAuthorProfile />} />
                 <Route path="/auth/login" element={<SignIn />} />
