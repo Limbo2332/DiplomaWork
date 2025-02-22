@@ -242,6 +242,38 @@ namespace ReadyBusinesses.DLL.Migrations
                     b.ToTable("ProfileAvatars");
                 });
 
+            modelBuilder.Entity("ReadyBusinesses.Common.Entities.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("ReadyBusinesses.Common.Entities.SocialMedia", b =>
                 {
                     b.Property<Guid>("Id")
@@ -279,12 +311,27 @@ namespace ReadyBusinesses.DLL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ProfileAvatarId")
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ProfileAvatarId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Salt")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -292,7 +339,8 @@ namespace ReadyBusinesses.DLL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ProfileAvatarId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[ProfileAvatarId] IS NOT NULL");
 
                     b.ToTable("Users");
                 });
@@ -376,13 +424,23 @@ namespace ReadyBusinesses.DLL.Migrations
                     b.Navigation("SocialMedia");
                 });
 
+            modelBuilder.Entity("ReadyBusinesses.Common.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("ReadyBusinesses.Common.Entities.User", "User")
+                        .WithOne()
+                        .HasForeignKey("ReadyBusinesses.Common.Entities.RefreshToken", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ReadyBusinesses.Common.Entities.User", b =>
                 {
                     b.HasOne("ReadyBusinesses.Common.Entities.ProfileAvatar", "ProfileAvatar")
                         .WithOne()
                         .HasForeignKey("ReadyBusinesses.Common.Entities.User", "ProfileAvatarId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("ProfileAvatar");
                 });

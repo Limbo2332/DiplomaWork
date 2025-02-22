@@ -40,6 +40,7 @@ import Menu from '../../components/Menu/Menu.tsx';
 import RegionCitySelector from '../../components/Common/RegionCitySelector/RegionCitySelector.tsx';
 import { regions } from '../../Data/Regions.ts';
 import CategoryDropdown from '../../components/Common/CategoryDropdown/CategoryDropdown.tsx';
+import { useAuth } from '../../Contexts/authContext.tsx';
 
 interface BusinessState {
   name: string;
@@ -124,7 +125,7 @@ const CreateEditBusiness: React.FC = () => {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const images = watch('images');
-  const isAdmin = false;
+  const { isAdmin } = useAuth();
 
   const onDrop = (acceptedFiles: File[]) => {
     const currentImages = getValues('images');

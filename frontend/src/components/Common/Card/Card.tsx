@@ -6,11 +6,11 @@ import defaultImage from '../../../assets/images/default-image.png';
 import { AccessTime, Apartment, Badge, MonetizationOn, PriceChange, Receipt } from '@mui/icons-material';
 import StarButton from '../Bookmark/StarButton.tsx';
 import { useNavigate } from 'react-router';
+import { useAuth } from '../../../Contexts/authContext.tsx';
 
 const Card = () => {
   const navigate = useNavigate();
-
-  const isAdmin = true;
+  const { isAdmin } = useAuth();
 
   const onCardClick = () => {
     if (isAdmin) {

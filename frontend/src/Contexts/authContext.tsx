@@ -1,25 +1,17 @@
-﻿import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from 'react';
+﻿import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useNotification } from './notificationContext.tsx';
-import useAuthService from '../Services/authService.ts';
-import axios from 'axios';
+import { useNotification } from './notificationContext';
+import useAuthService from '../Services/authService';
+import { UserLoginDto } from '../Types/User/userLoginDto';
+import { UserRegisterDto } from '../Types/User/userRegisterDto';
+import { clearTokens, getTokens, setTokens } from '../Utils/tokenUtils';
 
 export interface AuthContextResultProps {
   isAuthenticated: boolean;
-  currentUser: string | null; // TODO: replace with real entity
-  token: string | null;
   registerUser: (email: string, fullName: string, password: string) => Promise<void>;
   loginUser: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
+  isAdmin: boolean;
 }
 
 export const AuthContext = createContext<AuthContextResultProps | null>(null);
@@ -29,48 +21,47 @@ export interface AuthContextProps {
 }
 
 export const AuthContextProvider = ({ children }: AuthContextProps) => {
-  const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<string | null>(null); // TODO: replace with real entity
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [refreshTokenValue, setRefreshTokenValue] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const navigate = useNavigate();
   const { showSuccessNotification, showErrorNotification } = useNotification();
-  const {
-    login,
-    register,
-  } = useAuthService();
+  const { login, register, removeRefreshToken } = useAuthService();
+
+  const logout = useCallback(async () => {
+    if (refreshTokenValue) {
+      await removeRefreshToken(refreshTokenValue);
+    }
+    
+    clearTokens();
+
+    setAccessToken(null);
+    setRefreshTokenValue(null);
+
+    navigate('/auth/login');
+  }, [navigate, refreshTokenValue, removeRefreshToken]);
 
   useEffect(() => {
-    const user = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
+    const { accessToken, refreshToken } = getTokens();
 
-    if (user && token) {
-      setUser(JSON.parse(user));
-      setToken(token);
+    if (accessToken) {
+      setAccessToken(accessToken);
+    }
+
+    if (refreshToken) {
+      setRefreshTokenValue(refreshToken);
     }
   }, []);
 
-  useLayoutEffect(() => {
-    const authInterceptor = axios.interceptors.request.use((config) => {
-      config.headers.Authorization =
-        token
-          ? `Bearer ${token}`
-          : config.headers.Authorization;
-
-      return config;
-    });
-
-    return () => {
-      axios.interceptors.request.eject(authInterceptor);
-    };
-  }, [token]);
+  useEffect(() => {
+    if (accessToken && refreshTokenValue) {
+      setTokens(accessToken, refreshTokenValue);
+    }
+  }, [refreshTokenValue, accessToken]);
 
   const registerUser = useCallback(async (email: string, fullName: string, password: string) => {
-    const data = {
-      email,
-      fullName,
-      password,
-    };
-
+    const data: UserRegisterDto = { email, fullName, password };
     const result = await register(data);
 
     if (!result?.isOk && result?.errorMessage) {
@@ -78,23 +69,16 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
     }
 
     if (result.data) {
-      // localStorage.setItem('token', res?.data.token);
-      // localStorage.setItem('user', res?.data.user);
-      //
-      // setToken(res?.data.token);
-      // setUser(res?.data.user);
-
+      setTokens(result.data.token.accessToken, result.data.token.refreshToken);
+      setAccessToken(result.data.token.accessToken);
+      setRefreshTokenValue(result.data.token.refreshToken);
       navigate('/');
       showSuccessNotification('Ви успішно зареєструвались!');
     }
   }, [register, navigate, showSuccessNotification, showErrorNotification]);
 
   const loginUser = useCallback(async (email: string, password: string) => {
-    const data = {
-      email,
-      password,
-    };
-
+    const data: UserLoginDto = { email, password };
     const result = await login(data);
 
     if (!result?.isOk && result?.errorMessage) {
@@ -102,40 +86,24 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
     }
 
     if (result.data) {
-      // localStorage.setItem('token', res?.data.token);
-      // localStorage.setItem('user', res?.data.user);
-      //
-      // setToken(res?.data.token);
-      // setUser(res?.data.user);
-
+      setTokens(result.data.token.accessToken, result.data.token.refreshToken);
+      setAccessToken(result.data.token.accessToken);
+      setRefreshTokenValue(result.data.token.refreshToken);
       navigate('/');
       showSuccessNotification('Ви успішно ввійшли в систему!');
+      setIsAdmin(result.data.user.isAdmin);
     }
-
   }, [login, navigate, showSuccessNotification, showErrorNotification]);
 
-  const isAuthenticated = useMemo(() => {
-    return !!user;
-  }, [user]);
-
-  const logout = useCallback(() => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-
-    setUser(null);
-    setToken(null);
-
-    navigate('/auth/login');
-  }, [navigate]);
+  const isAuthenticated = useMemo(() => !!accessToken, [accessToken]);
 
   const providerValue: AuthContextResultProps = useMemo(() => ({
     isAuthenticated,
     loginUser,
     registerUser,
     logout,
-    currentUser: user,
-    token,
-  }), [isAuthenticated, loginUser, registerUser, logout, user, token]);
+    isAdmin,
+  }), [isAuthenticated, loginUser, registerUser, logout, isAdmin]);
 
   return (
     <AuthContext.Provider value={providerValue}>

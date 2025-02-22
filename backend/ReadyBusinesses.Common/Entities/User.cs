@@ -9,10 +9,18 @@ public class User : BaseEntity
     public string FullName { get; set; } = string.Empty;
 
     public string Description { get; set; } = string.Empty;
+    
+    public string Email { get; set; } = string.Empty;
+    
+    public string Password { get; set; } = string.Empty;
+    
+    public string Salt { get; set; } = string.Empty;
+    
+    public bool IsAdmin { get; set; }
 
-    public Guid ProfileAvatarId { get; set; }
+    public Guid? ProfileAvatarId { get; set; }
 
-    public ProfileAvatar ProfileAvatar { get; set; } = null!;
+    public ProfileAvatar? ProfileAvatar { get; set; } = null!;
     
     public ICollection<Post> Posts { get; set; } = new List<Post>();
 }
