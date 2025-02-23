@@ -2,7 +2,7 @@
 
 namespace ReadyBusinesses.Common.Entities;
 
-public class ProfileAvatar : BaseEntity
+public class Picture : BaseEntity
 {
     public Guid Id { get; set; }   
     

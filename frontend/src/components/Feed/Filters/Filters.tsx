@@ -1,16 +1,28 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useCallback, useState } from 'react';
 import { Box, Button, Collapse, Grid, IconButton, Typography } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import RangeFilter from '../../Common/RangeFilter/RangeFilter.tsx';
 import CurrencyRangeFilter from '../../Common/CurrencyRangeFilter/CurrencyRangeFilter.tsx';
 import SingleCheckboxFilter from '../../Common/CheckboxFilter/CheckboxFilter.tsx';
+import HryvniaRangeFilter from '../../Common/HryvnyaRangeFilter/HryvnyaRangeFilter.tsx';
+import { FilterDto } from '../../../Types/Businesses/filterDto.ts';
+import { defaultFilterDtoValues } from '../../../Pages/MainFeed/MainFeed.tsx';
+import { Currency } from '../../Common/CurrencyDropdown/CurrencyDropdown.tsx';
 
-const Filters = () => {
+interface FiltersProps {
+  filter: FilterDto;
+  setFilter: (filterDto: FilterDto) => void;
+}
+
+const Filters = ({
+  filter,
+  setFilter,
+}: FiltersProps) => {
   const [filtersExpanded, setFiltersExpanded] = useState(false);
 
-  const handleResetFilters = () => {
-    // Логіка для скидання фільтрів
-  };
+  const handleResetFilters = useCallback(() => {
+    setFilter(defaultFilterDtoValues);
+  }, [setFilter]);
 
   return (
     <Box sx={{
@@ -37,40 +49,94 @@ const Filters = () => {
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6} md={3.6}>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <CurrencyRangeFilter label="Ціна" min={1} max={15000} step={100} onSubmit={() => null} />
+                <CurrencyRangeFilter label="Ціна"
+                  min={filter.priceStart}
+                  max={filter.priceEnd}
+                  step={1000}
+                  onSubmit={(minValue, maxValue) => setFilter({
+                    ...filter,
+                    priceStart: minValue,
+                    priceEnd: maxValue,
+                  })}
+                  onCurrencyChange={(currency: Currency) => {
+                    setFilter({
+                      ...filter,
+                      priceCurrency: currency,
+                    });
+                  }}
+                />
                 <RangeFilter
                   label="Площа приміщення"
-                  min={5}
-                  max={1000}
+                  min={filter.flatSquareStart}
+                  max={filter.flatSquareEnd}
                   step={5}
-                  onSubmit={() => null}
+                  onSubmit={(minValue, maxValue) => setFilter({
+                    ...filter,
+                    flatSquareStart: minValue,
+                    flatSquareEnd: maxValue,
+                  })}
                   elementPreview={<span className="mx-1">м<sup>2</sup></span>}
                   element={<Typography variant="body2" color="textSecondary"
                     className="d-flex align-items-center">м<sup>2</sup></Typography>}
                 />
                 <RangeFilter
                   label="Кількість працівників"
-                  min={1}
-                  max={1000}
+                  min={filter.amountOfWorkersStart}
+                  max={filter.amountOfWorkersEnd}
                   step={1}
-                  onSubmit={() => null}
+                  onSubmit={(minValue, maxValue) => setFilter({
+                    ...filter,
+                    amountOfWorkersStart: minValue,
+                    amountOfWorkersEnd: maxValue,
+                  })}
                 />
               </Box>
             </Grid>
 
             <Grid item xs={12} sm={6} md={5}>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <CurrencyRangeFilter label="Середній чек" min={1} max={15000} step={100} onSubmit={() => null} />
-                <CurrencyRangeFilter label="Середній виторг на місяць" min={1} max={200000} step={100}
-                  onSubmit={() => null} />
-                <CurrencyRangeFilter label="Середній чистий прибуток на місяць" min={1} max={200000} step={100}
-                  onSubmit={() => null} />
+                <HryvniaRangeFilter label="Середній чек"
+                  min={filter.averageChequeStart}
+                  max={filter.averageChequeEnd}
+                  step={100}
+                  onSubmit={(minValue, maxValue) => setFilter({
+                    ...filter,
+                    averageChequeStart: minValue,
+                    averageChequeEnd: maxValue,
+                  })}
+                />
+
+                <HryvniaRangeFilter label="Середній виторг на місяць"
+                  min={filter.averageIncomeStart}
+                  max={filter.averageIncomeEnd}
+                  step={100}
+                  onSubmit={(minValue, maxValue) => setFilter({
+                    ...filter,
+                    averageIncomeStart: minValue,
+                    averageIncomeEnd: maxValue,
+                  })}
+                />
+
+                <HryvniaRangeFilter label="Середній чистий прибуток на місяць"
+                  min={filter.averageProfitStart}
+                  max={filter.averageProfitEnd}
+                  step={100}
+                  onSubmit={(minValue, maxValue) => setFilter({
+                    ...filter,
+                    averageProfitStart: minValue,
+                    averageProfitEnd: maxValue,
+                  })}
+                />
                 <RangeFilter
                   label="Час окупності бізнесу"
-                  min={1}
-                  max={600}
+                  min={filter.timeToPaybackStart}
+                  max={filter.timeToPaybackEnd}
                   step={1}
-                  onSubmit={() => null}
+                  onSubmit={(minValue, maxValue) => setFilter({
+                    ...filter,
+                    timeToPaybackStart: minValue,
+                    timeToPaybackEnd: maxValue,
+                  })}
                   elementPreview={<span className="mx-1">місяців</span>}
                   element={<Typography variant="body2" color="textSecondary"
                     className="d-flex align-items-center">місяців</Typography>}
@@ -80,14 +146,71 @@ const Filters = () => {
 
             <Grid item xs={12} sm={6} md={3}>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <SingleCheckboxFilter label="З обладнанням" onChange={() => null} />
-                <SingleCheckboxFilter label="З генератором чи EcoFlow" onChange={() => null} />
-                <SingleCheckboxFilter label="Торг" onChange={() => null} />
-                <SingleCheckboxFilter label="Підтримка від власника" onChange={() => null} />
-                <SingleCheckboxFilter label="ФОП" onChange={() => null} />
-                <SingleCheckboxFilter label="Інтеграція з сервісами доставки" onChange={() => null} />
-                <SingleCheckboxFilter label="Лише збережені" onChange={() => null} />
-                <SingleCheckboxFilter label="Сховати переглянуті" onChange={() => null} />
+                <SingleCheckboxFilter label="З обладнанням"
+                  checked={filter.hasEquipment}
+                  onChange={(changedValue) => setFilter({
+                    ...filter,
+                    hasEquipment: changedValue,
+                  })}
+                />
+
+                <SingleCheckboxFilter label="З генератором чи EcoFlow"
+                  checked={filter.hasGeneratorOrEcoFlow}
+                  onChange={(changedValue) => setFilter({
+                    ...filter,
+                    hasGeneratorOrEcoFlow: changedValue,
+                  })}
+                />
+
+                <SingleCheckboxFilter
+                  label="Торг"
+                  checked={filter.hasBargain}
+                  onChange={(changedValue) => setFilter({
+                    ...filter,
+                    hasBargain: changedValue,
+                  })}
+                />
+
+                <SingleCheckboxFilter
+                  label="Підтримка від власника"
+                  checked={filter.hasSupportFromOwner}
+                  onChange={(changedValue) => setFilter({
+                    ...filter,
+                    hasSupportFromOwner: changedValue,
+                  })}
+                />
+
+                <SingleCheckboxFilter label="ФОП"
+                  checked={filter.hasPhop}
+                  onChange={(changedValue) => setFilter({
+                    ...filter,
+                    hasPhop: changedValue,
+                  })}
+                />
+
+                <SingleCheckboxFilter label="Інтеграція з сервісами доставки"
+                  checked={filter.hasIntegrationWithDeliveryServices}
+                  onChange={(changedValue) => setFilter({
+                    ...filter,
+                    hasIntegrationWithDeliveryServices: changedValue,
+                  })}
+                />
+
+                <SingleCheckboxFilter label="Лише збережені"
+                  checked={filter.onlySaved}
+                  onChange={(changedValue) => setFilter({
+                    ...filter,
+                    onlySaved: changedValue,
+                  })}
+                />
+
+                <SingleCheckboxFilter label="Сховати переглянуті"
+                  checked={filter.hideViewed}
+                  onChange={(changedValue) => setFilter({
+                    ...filter,
+                    hideViewed: changedValue,
+                  })}
+                />
               </Box>
             </Grid>
           </Grid>

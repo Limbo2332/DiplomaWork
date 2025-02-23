@@ -3,7 +3,7 @@ import React from 'react';
 
 export const Loading = () => {
   return (
-    <div className="d-flex justify-content-center align-items-center h-100vh">
+    <div className="d-flex justify-content-center align-items-center">
       <CircularProgress />
     </div>
   );

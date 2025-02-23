@@ -139,7 +139,7 @@ public class UserService : IUserService
             using var memoryStream = new MemoryStream();
             await profileDto.ProfileImage.CopyToAsync(memoryStream);
 
-            var profileImage = new ProfileAvatar
+            var profileImage = new Picture
             {
                 Id = Guid.NewGuid(),
                 Data = memoryStream.ToArray(),

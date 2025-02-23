@@ -1,14 +1,21 @@
 ﻿using ReadyBusinesses.Common.Entities.Abstract;
+using ReadyBusinesses.Common.Enums;
 
 namespace ReadyBusinesses.Common.Entities;
 
 public class Post : BaseEntity
 {
     public Guid Id { get; set; }
+
+    public string Name { get; set; } = string.Empty;
     
-    public decimal Price { get; set; }
+    public decimal PriceInUah { get; set; }
+    
+    public Currency Currency { get; set; }
     
     public string Location { get; set; } = string.Empty;
+    
+    public string Category { get; set; } = string.Empty;
     
     public double RoomArea { get; set; }
 
@@ -20,9 +27,7 @@ public class Post : BaseEntity
 
     public decimal AverageProfitPerMonth { get; set; }
 
-    public string EquipmentInfo { get; set; } = string.Empty;
-
-    public bool HasShelter { get; set; }
+    public bool HasEquipment { get; set; }
 
     public bool HasGeneratorOrEcoFlow { get; set; }
 
@@ -36,6 +41,10 @@ public class Post : BaseEntity
     public bool HasCompetitorsInDistrict { get; set; }
 
     public bool IsSeasonal { get; set; }
+    
+    public Season? Season { get; set; }
+    
+    public bool HasPhop { get; set; }
 
     public string Description { get; set; } = string.Empty;
 
@@ -44,4 +53,8 @@ public class Post : BaseEntity
     public Guid CreatedBy { get; set; }
     
     public User CreatedByUser { get; set; } = new();
+
+    public ICollection<Employer> Employers { get; set; } = [];
+
+    public ICollection<PostPicture> Pictures { get; set; } = [];
 }

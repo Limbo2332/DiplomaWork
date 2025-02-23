@@ -4,6 +4,8 @@ import { Region } from './RegionCitySelector.tsx';
 interface UseRegionCitySelectorProps {
   open: boolean;
   regions: Region[];
+  selectedRegion?: string;
+  onHandleRegionSelect: (region: string) => void;
 }
 
 const ukrainianAlphabet = [
@@ -11,7 +13,6 @@ const ukrainianAlphabet = [
   'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ь', 'ю', 'я',
 ];
 
-// Функція для сортування за українським алфавітом
 const sortByUkrainianAlphabet = (arr: string[]) => {
   return arr.sort((a, b) => {
     const firstLetterA = a[0].toLowerCase();
@@ -26,12 +27,18 @@ const sortByUkrainianAlphabet = (arr: string[]) => {
 export const useRegionCitySelector = ({
   open,
   regions,
+  selectedRegion,
+  onHandleRegionSelect,
 }: UseRegionCitySelectorProps) => {
-  const [isOpen, setIsOpen] = useState(open); // Локальний стан відкриття
+  const [isOpen, setIsOpen] = useState(open);
   const [currentRegion, setCurrentRegion] = useState<string | null>(null);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string | null>(selectedRegion ?? null);
   const [search, setSearch] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setSelected(selectedRegion ?? null);
+  }, [selectedRegion]);
 
   useEffect(() => {
     if (isOpen) {
@@ -56,7 +63,8 @@ export const useRegionCitySelector = ({
 
   const handleCitySelect = (cityName: string) => {
     setSelected(cityName);
-    setIsOpen(false); // Закриваємо компонент після вибору міста
+    setIsOpen(false);
+    onHandleRegionSelect(cityName);
   };
 
   const handleBack = () => {

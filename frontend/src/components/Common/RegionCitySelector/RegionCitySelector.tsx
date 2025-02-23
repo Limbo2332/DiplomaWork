@@ -28,7 +28,9 @@ interface RegionCitySelectorProps {
   height?: string;
   border?: string;
   backgroundColor?: string;
-  disabled?: boolean; // Add the disabled prop
+  disabled?: boolean;
+  selectedRegion?: string;
+  onHandleRegionSelect: (region: string) => void;
 }
 
 const groupRegionsByLetter = (regions: Region[]) => {
@@ -77,7 +79,9 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
   border = '1px solid #ccc',
   backgroundColor = '#fff',
   open = false,
-  disabled = false, // Default to false
+  disabled = false,
+  selectedRegion,
+  onHandleRegionSelect,
 }) => {
   const {
     containerRef,
@@ -96,6 +100,8 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
   } = useRegionCitySelector({
     open,
     regions,
+    selectedRegion,
+    onHandleRegionSelect,
   });
 
   const groupedRegions = groupRegionsByLetter(filteredRegions);

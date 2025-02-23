@@ -20,7 +20,9 @@ public class User : BaseEntity
 
     public Guid? ProfileAvatarId { get; set; }
 
-    public ProfileAvatar? ProfileAvatar { get; set; } = null!;
-    
-    public ICollection<Post> Posts { get; set; } = new List<Post>();
+    public Picture? ProfileAvatar { get; set; }
+
+    public ICollection<Post> Posts { get; set; } = [];
+
+    public ICollection<SavedPosts> SavedPosts { get; set; } = [];
 }

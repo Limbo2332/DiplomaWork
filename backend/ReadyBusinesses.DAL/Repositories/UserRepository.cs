@@ -80,11 +80,11 @@ public class UserRepository : IUserRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateUserAvatarProfileAsync(User currentUser, ProfileAvatar profileAvatar)
+    public async Task UpdateUserAvatarProfileAsync(User currentUser, Picture picture)
     {
-        await _dbContext.ProfileAvatars.AddAsync(profileAvatar);
+        await _dbContext.Pictures.AddAsync(picture);
         
-        currentUser.ProfileAvatarId = profileAvatar.Id;
+        currentUser.ProfileAvatarId = picture.Id;
         await _dbContext.SaveChangesAsync();
     }
 }

@@ -11,7 +11,7 @@ export interface RangeFilterDropdown {
   step: number;
   elementPreview?: ReactNode;
   element?: ReactNode;
-  onSubmit: () => void;
+  onSubmit: (minValue: number, maxValue: number) => void;
 }
 
 const RangeFilterDropdown = ({
@@ -168,7 +168,7 @@ const RangeFilterDropdown = ({
             color="primary"
             onClick={() => {
               handleClose();
-              onSubmit();
+              onSubmit(range[0], range[1]);
             }}
             sx={{
               alignSelf: 'center',

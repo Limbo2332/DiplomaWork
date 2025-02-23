@@ -11,7 +11,8 @@ export interface CurrencyRangeFilterDropdown {
   min: number;
   max: number;
   step: number;
-  onSubmit: () => void;
+  onSubmit: (minValue: number, maxValue: number) => void;
+  onCurrencyChange: (currency: Currency) => void;
 }
 
 const getCurrencyIcon = (currency: Currency) => {
@@ -43,6 +44,7 @@ const CurrencyRangeFilter = ({
   max = 100,
   step = 1,
   onSubmit,
+  onCurrencyChange,
 }: CurrencyRangeFilterDropdown) => {
   const {
     currency,
@@ -75,12 +77,16 @@ const CurrencyRangeFilter = ({
       <CurrencyDropdown
         anchorEl={currencyMenu}
         onClose={() => setCurrencyMenu(null)}
-        handleCurrencyChange={(currency) => setCurrency(currency)}
+        handleCurrencyChange={(currency) => {
+          setCurrency(currency);
+          onCurrencyChange(currency);
+        }}
       />
     </>;
 
   return (
-    <RangeFilter label={label}
+    <RangeFilter
+      label={label}
       min={min}
       max={max}
       step={step}

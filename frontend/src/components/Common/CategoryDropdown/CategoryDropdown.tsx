@@ -2,14 +2,21 @@
 import { useCategoryDropdown } from './CategoryDropdown.logic.ts';
 import { Button } from '@mui/joy';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
+import { FC } from 'react';
 
 const ITEM_HEIGHT = 48;
 
 interface CategoryDropdownProps {
-  multiSelect?: boolean; // Prop to determine if multi-select is enabled
+  multiSelect?: boolean;
+  initialSelectedOptions: string[];
+  onOptionsSelected: (options: string[]) => void;
 }
 
-const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ multiSelect = false }) => {
+const CategoryDropdown: FC<CategoryDropdownProps> = ({
+  multiSelect = false,
+  initialSelectedOptions,
+  onOptionsSelected,
+}) => {
   const {
     options,
     open,
@@ -18,14 +25,17 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ multiSelect = false
     selectedOptions,
     handleToggle,
     anchorEl,
-  } = useCategoryDropdown();
+    isLoading,
+  } = useCategoryDropdown({
+    initialSelectedOptions,
+    onOptionsSelected,
+  });
 
   const handleSelection = (option: string) => {
     if (multiSelect) {
       handleToggle(option);
     } else {
-      // Single selection logic
-      handleToggle(option, true);
+      handleToggle(option);
       closeDropdown();
     }
   };
@@ -47,6 +57,7 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ multiSelect = false
           minWidth: '200px',
         }}
         className="h-50px"
+        loading={isLoading}
       >
         Категорія
         {open ? (

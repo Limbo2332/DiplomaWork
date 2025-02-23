@@ -5,14 +5,14 @@ namespace ReadyBusinesses.Common.MapperExtensions;
 
 public static class ProfileAvatarToBlobImageDto
 {
-    public static BlobImageDto Map(ProfileAvatar profileAvatar)
+    public static BlobImageDto Map(Picture picture)
     {
         return new BlobImageDto
         {
-            Id = profileAvatar.Id,
-            ContentType = profileAvatar.ContentType,
-            Data = profileAvatar.Data,
-            Name = profileAvatar.Name,
+            Id = picture.Id,
+            ContentType = picture.ContentType,
+            Data = picture.Data,
+            Name = picture.Name,
         };
     }
 }

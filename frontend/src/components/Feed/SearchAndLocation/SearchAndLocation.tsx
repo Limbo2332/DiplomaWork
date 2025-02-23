@@ -1,14 +1,26 @@
-﻿import React from 'react';
+﻿import React, { useCallback } from 'react';
 import { Box } from '@mui/material';
 import CategoryDropdown from '../../Common/CategoryDropdown/CategoryDropdown';
 import Search from '../../Common/Search/Search.tsx';
 import RegionCitySelector from '../../Common/RegionCitySelector/RegionCitySelector.tsx';
 import { regions } from '../../../Data/Regions.ts';
+import { FilterDto } from '../../../Types/Businesses/filterDto.ts';
 
-const SearchAndLocation = () => {
-  const doSearch = () => {
-    console.log('Searching...');
-  };
+interface SearchAndLocationProps {
+  filter: FilterDto;
+  setFilter: (filterDto: FilterDto) => void;
+}
+
+const SearchAndLocation = ({
+  filter,
+  setFilter,
+}: SearchAndLocationProps) => {
+  const doSearch = useCallback((value?: string) => {
+    setFilter({
+      ...filter,
+      search: value,
+    });
+  }, [filter, setFilter]);
 
   return (
     <Box
@@ -22,16 +34,25 @@ const SearchAndLocation = () => {
         marginTop: '12px',
       }}
     >
-      {/* Dropdown меню */}
-      <CategoryDropdown />
+      <CategoryDropdown multiSelect
+        initialSelectedOptions={filter.categories}
+        onOptionsSelected={(options) => setFilter({
+          ...filter,
+          categories: options,
+        })}
+      />
 
-      {/* Поле пошуку */}
       <Box sx={{ flexGrow: 1, mx: 2 }}>
-        <Search placeholder="Пошук оголошень..." doSearch={doSearch} />
+        <Search placeholder="Пошук оголошень..." doSearch={doSearch} initialValue={filter.search} />
       </Box>
 
-      {/* Селектор регіонів */}
-      <RegionCitySelector regions={regions} />
+      <RegionCitySelector regions={regions}
+        selectedRegion={filter.location}
+        onHandleRegionSelect={(region) => setFilter({
+          ...filter,
+          location: region,
+        })}
+      />
     </Box>
   );
 };

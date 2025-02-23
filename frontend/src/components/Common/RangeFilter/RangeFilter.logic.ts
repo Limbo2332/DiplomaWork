@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 
 export interface UseRangeFilterLogicProps {
   min: number;
@@ -11,6 +11,10 @@ const useRangeFilterLogic = ({
 }: UseRangeFilterLogicProps) => {
   const [range, setRange] = useState([min, max]);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
+
+  useEffect(() => {
+    setRange([min, max]);
+  }, [min, max]);
 
   const handleOpen = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setAnchorEl(event.currentTarget);

@@ -1,34 +1,41 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
+import useCategoriesService from '../../../Services/categoriesService.ts';
 
-export const useCategoryDropdown = () => {
-  const [options, setOptions] = useState<string[]>([
-    'Сільське господарство',
-    'Компанія',
-    'Сільське господарство',
-    'Компанія',
-    'Сільське господарство',
-    'Компанія',
-    'Сільське господарство',
-    'Компанія',
-    'Сільське господарство',
-    'Компанія',
-    'Сільське господарство',
-    'Компанія',
-    'Сільське господарство',
-    'Компанія',
-    'Сільське господарство',
-    'Компанія',
-    'Сільське господарство',
-    'Компанія',
-    'Сільське господарство',
-    'Компанія',
-    'Сільське господарство Сільське господарство Сільське господарство',
-    'Компанія',
-  ]);
+interface UseCategoryDropdownProps {
+  initialSelectedOptions: string[];
+  onOptionsSelected: (options: string[]) => void;
+}
+
+export const useCategoryDropdown = ({
+  initialSelectedOptions,
+  onOptionsSelected,
+}: UseCategoryDropdownProps) => {
+  const { getCategories } = useCategoriesService();
+  const [isLoading, setIsLoading] = useState(false);
+  const [options, setOptions] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setIsLoading(true);
+      const result = await getCategories();
+
+      if (result.data) {
+        setOptions(result.data);
+      }
+
+      setIsLoading(false);
+    };
+
+    fetchCategories();
+  }, []);
 
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(initialSelectedOptions);
+
+  useEffect(() => {
+    setSelectedOptions(initialSelectedOptions);
+  }, [initialSelectedOptions]);
 
   const openDropdown = (event: React.MouseEvent<HTMLElement>) => {
     setOpen(true);
@@ -43,12 +50,19 @@ export const useCategoryDropdown = () => {
   const selectCategory = (option: string) => {
     setOpen(false);
     setAnchorEl(null);
+
+    setSelectedOptions([option]);
+    onOptionsSelected([option]);
   };
 
   const handleToggle = (option: string) => {
-    setSelectedOptions((prev) =>
-      prev.includes(option) ? prev.filter((o) => o !== option) : [...prev, option],
-    );
+    const optionsToSet = selectedOptions.includes(option)
+      ? selectedOptions.filter((o) => o !== option)
+      : [...selectedOptions, option];
+
+    onOptionsSelected(optionsToSet);
+
+    setSelectedOptions(optionsToSet);
   };
 
   return {
@@ -60,5 +74,6 @@ export const useCategoryDropdown = () => {
     anchorEl,
     selectedOptions,
     handleToggle,
+    isLoading,
   };
 };

@@ -38,6 +38,9 @@ namespace ReadyBusinesses.DLL.Migrations
                     b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("PostId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<decimal>("Salary")
                         .HasPrecision(18, 4)
                         .HasColumnType("decimal(18,4)");
@@ -49,20 +52,38 @@ namespace ReadyBusinesses.DLL.Migrations
 
                     b.HasIndex("PostId");
 
+                    b.HasIndex("PostId1");
+
                     b.ToTable("Employers");
                 });
 
-            modelBuilder.Entity("ReadyBusinesses.Common.Entities.Phop", b =>
+            modelBuilder.Entity("ReadyBusinesses.Common.Entities.Picture", b =>
                 {
-                    b.Property<int>("GroupNumber")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GroupNumber"));
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("GroupNumber");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.ToTable("Phops");
+                    b.Property<byte[]>("Data")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Pictures");
                 });
 
             modelBuilder.Entity("ReadyBusinesses.Common.Entities.Post", b =>
@@ -83,17 +104,20 @@ namespace ReadyBusinesses.DLL.Migrations
                         .HasPrecision(18, 4)
                         .HasColumnType("decimal(18,4)");
 
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Currency")
+                        .HasColumnType("int");
 
-                    b.Property<string>("EquipmentInfo")
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -106,13 +130,16 @@ namespace ReadyBusinesses.DLL.Migrations
                     b.Property<bool>("HasCredits")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("HasEquipment")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("HasGeneratorOrEcoFlow")
                         .HasColumnType("bit");
 
                     b.Property<bool>("HasIntegrationWithDeliveryServices")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("HasShelter")
+                    b.Property<bool>("HasPhop")
                         .HasColumnType("bit");
 
                     b.Property<bool>("HasSupportFromPreviousOwner")
@@ -125,7 +152,11 @@ namespace ReadyBusinesses.DLL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Price")
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("PriceInUah")
                         .HasPrecision(18, 4)
                         .HasColumnType("decimal(18,4)");
 
@@ -136,6 +167,9 @@ namespace ReadyBusinesses.DLL.Migrations
                     b.Property<decimal?>("RoomRent")
                         .HasPrecision(18, 4)
                         .HasColumnType("decimal(18,4)");
+
+                    b.Property<int?>("Season")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -183,19 +217,19 @@ namespace ReadyBusinesses.DLL.Migrations
                     b.ToTable("PostsInfos");
                 });
 
-            modelBuilder.Entity("ReadyBusinesses.Common.Entities.PostPhop", b =>
+            modelBuilder.Entity("ReadyBusinesses.Common.Entities.PostPicture", b =>
                 {
                     b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("PhopNumber")
-                        .HasColumnType("int");
+                    b.Property<Guid>("PictureId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("PostId", "PhopNumber");
+                    b.HasKey("PostId", "PictureId");
 
-                    b.HasIndex("PhopNumber");
+                    b.HasIndex("PictureId");
 
-                    b.ToTable("PostsPhops");
+                    b.ToTable("PostPictures");
                 });
 
             modelBuilder.Entity("ReadyBusinesses.Common.Entities.PostSocialMedia", b =>
@@ -211,35 +245,6 @@ namespace ReadyBusinesses.DLL.Migrations
                     b.HasIndex("SocialMediaId");
 
                     b.ToTable("PostsSocialMedias");
-                });
-
-            modelBuilder.Entity("ReadyBusinesses.Common.Entities.ProfileAvatar", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<byte[]>("Data")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProfileAvatars");
                 });
 
             modelBuilder.Entity("ReadyBusinesses.Common.Entities.RefreshToken", b =>
@@ -272,6 +277,21 @@ namespace ReadyBusinesses.DLL.Migrations
                         .IsUnique();
 
                     b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("ReadyBusinesses.Common.Entities.SavedPosts", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId", "PostId");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("SavedPosts");
                 });
 
             modelBuilder.Entity("ReadyBusinesses.Common.Entities.SocialMedia", b =>
@@ -368,6 +388,10 @@ namespace ReadyBusinesses.DLL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ReadyBusinesses.Common.Entities.Post", null)
+                        .WithMany("Employers")
+                        .HasForeignKey("PostId1");
+
                     b.Navigation("Post");
                 });
 
@@ -401,21 +425,21 @@ namespace ReadyBusinesses.DLL.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ReadyBusinesses.Common.Entities.PostPhop", b =>
+            modelBuilder.Entity("ReadyBusinesses.Common.Entities.PostPicture", b =>
                 {
-                    b.HasOne("ReadyBusinesses.Common.Entities.Phop", "Phop")
+                    b.HasOne("ReadyBusinesses.Common.Entities.Picture", "Picture")
                         .WithMany()
-                        .HasForeignKey("PhopNumber")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("PictureId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("ReadyBusinesses.Common.Entities.Post", "Post")
-                        .WithMany()
+                        .WithMany("Pictures")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Phop");
+                    b.Navigation("Picture");
 
                     b.Navigation("Post");
                 });
@@ -450,9 +474,28 @@ namespace ReadyBusinesses.DLL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ReadyBusinesses.Common.Entities.SavedPosts", b =>
+                {
+                    b.HasOne("ReadyBusinesses.Common.Entities.Post", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("ReadyBusinesses.Common.Entities.User", "User")
+                        .WithMany("SavedPosts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ReadyBusinesses.Common.Entities.User", b =>
                 {
-                    b.HasOne("ReadyBusinesses.Common.Entities.ProfileAvatar", "ProfileAvatar")
+                    b.HasOne("ReadyBusinesses.Common.Entities.Picture", "ProfileAvatar")
                         .WithOne()
                         .HasForeignKey("ReadyBusinesses.Common.Entities.User", "ProfileAvatarId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -479,9 +522,18 @@ namespace ReadyBusinesses.DLL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ReadyBusinesses.Common.Entities.Post", b =>
+                {
+                    b.Navigation("Employers");
+
+                    b.Navigation("Pictures");
+                });
+
             modelBuilder.Entity("ReadyBusinesses.Common.Entities.User", b =>
                 {
                     b.Navigation("Posts");
+
+                    b.Navigation("SavedPosts");
                 });
 #pragma warning restore 612, 618
         }

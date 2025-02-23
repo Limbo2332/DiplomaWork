@@ -75,6 +75,7 @@ namespace ReadyBusinesses.Api.Extensions
         {
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IBusinessesRepository, BusinessesRepository>();
         }
 
         public static void RegisterCustomServices(this IServiceCollection services)
@@ -82,6 +83,7 @@ namespace ReadyBusinesses.Api.Extensions
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IBusinessesService, BusinessesService>();
         }
     }
 }

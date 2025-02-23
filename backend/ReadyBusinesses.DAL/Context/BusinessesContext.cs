@@ -7,7 +7,7 @@ namespace ReadyBusinesses.DLL.Context;
 
 public class BusinessesContext(DbContextOptions<BusinessesContext> options) : DbContext(options)
 {
-    public DbSet<ProfileAvatar> ProfileAvatars => Set<ProfileAvatar>();
+    public DbSet<Picture> Pictures => Set<Picture>();
     
     public DbSet<User> Users => Set<User>();
     
@@ -21,13 +21,13 @@ public class BusinessesContext(DbContextOptions<BusinessesContext> options) : Db
     
     public DbSet<SocialMedia> SocialMedias => Set<SocialMedia>();
     
-    public DbSet<PostPhop> PostsPhops => Set<PostPhop>();
-    
-    public DbSet<Phop> Phops => Set<Phop>();
-    
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     
     public DbSet<UserSocialMedia> UserSocialMedias => Set<UserSocialMedia>();
+    
+    public DbSet<SavedPosts> SavedPosts => Set<SavedPosts>();
+    
+    public DbSet<PostPicture> PostPictures => Set<PostPicture>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
