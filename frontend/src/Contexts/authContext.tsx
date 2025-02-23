@@ -5,6 +5,7 @@ import useAuthService from '../Services/authService';
 import { UserLoginDto } from '../Types/User/userLoginDto';
 import { UserRegisterDto } from '../Types/User/userRegisterDto';
 import { clearTokens, getTokens, setTokens } from '../Utils/tokenUtils';
+import { UserDto } from '../Types/User/userDto.ts';
 
 export interface AuthContextResultProps {
   isAuthenticated: boolean;
@@ -12,6 +13,7 @@ export interface AuthContextResultProps {
   loginUser: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   isAdmin: boolean;
+  currentUser: UserDto | null;
 }
 
 export const AuthContext = createContext<AuthContextResultProps | null>(null);
@@ -24,6 +26,7 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshTokenValue, setRefreshTokenValue] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [currentUser, setCurrentUser] = useState<UserDto | null>(null);
 
   const navigate = useNavigate();
   const { showSuccessNotification, showErrorNotification } = useNotification();
@@ -33,11 +36,12 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
     if (refreshTokenValue) {
       await removeRefreshToken(refreshTokenValue);
     }
-    
+
     clearTokens();
 
     setAccessToken(null);
     setRefreshTokenValue(null);
+    setCurrentUser(null);
 
     navigate('/auth/login');
   }, [navigate, refreshTokenValue, removeRefreshToken]);
@@ -72,6 +76,8 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
       setTokens(result.data.token.accessToken, result.data.token.refreshToken);
       setAccessToken(result.data.token.accessToken);
       setRefreshTokenValue(result.data.token.refreshToken);
+      setCurrentUser(result.data.user);
+
       navigate('/');
       showSuccessNotification('Ви успішно зареєструвались!');
     }
@@ -89,9 +95,11 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
       setTokens(result.data.token.accessToken, result.data.token.refreshToken);
       setAccessToken(result.data.token.accessToken);
       setRefreshTokenValue(result.data.token.refreshToken);
+      setIsAdmin(result.data.user.isAdmin);
+      setCurrentUser(result.data.user);
+
       navigate('/');
       showSuccessNotification('Ви успішно ввійшли в систему!');
-      setIsAdmin(result.data.user.isAdmin);
     }
   }, [login, navigate, showSuccessNotification, showErrorNotification]);
 
@@ -103,7 +111,8 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
     registerUser,
     logout,
     isAdmin,
-  }), [isAuthenticated, loginUser, registerUser, logout, isAdmin]);
+    currentUser,
+  }), [isAuthenticated, loginUser, registerUser, logout, isAdmin, currentUser]);
 
   return (
     <AuthContext.Provider value={providerValue}>

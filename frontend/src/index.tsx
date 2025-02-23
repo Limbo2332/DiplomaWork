@@ -32,7 +32,7 @@ root.render(
                 <Route path="/createoreditbusiness/:id" element={<CreateEditBusiness />} />
                 <Route path="/manage-businesses" element={<ManageBusinesses />} />
                 <Route path="/authors/:id" element={<AuthorProfile />} />
-                <Route path="/editauthor/:id" element={<EditAuthorProfile />} />
+                <Route path="/editauthor" element={<EditAuthorProfile />} />
                 <Route path="/auth/login" element={<SignIn />} />
                 <Route path="/auth/register" element={<SignUp />} />
                 <Route path="*" element={<PageNotFound text="Сторінка не знайдена" />} />

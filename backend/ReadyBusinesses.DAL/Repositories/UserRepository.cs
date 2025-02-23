@@ -35,4 +35,56 @@ public class UserRepository : IUserRepository
         _dbContext.Users.Update(user);
         await _dbContext.SaveChangesAsync();
     }
+
+    public Task<User> GetUserWithProfileAsync(Guid userId)
+    {
+        return _dbContext.Users
+            .Include(u => u.ProfileAvatar)
+            .SingleAsync(u => u.Id == userId);
+    }
+
+    public async Task<IEnumerable<SocialMedia>> GetSocialMediaAsync(Guid userId)
+    {
+        return await _dbContext.UserSocialMedias
+            .Where(u => u.UserId == userId)
+            .Select(us => us.SocialMedia)
+            .ToListAsync();
+    }
+
+    public async Task AddSocialMediasAsync(IEnumerable<SocialMedia> socialMedias, User user)
+    {
+        var userSocialMedias = socialMedias
+            .Select(sm => new UserSocialMedia
+            {
+                UserId = user.Id,
+                User = user,
+                SocialMedia = sm,
+                SocialMediaId = sm.Id
+            });
+        
+        await _dbContext.UserSocialMedias
+            .AddRangeAsync(userSocialMedias);
+        
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task UpdateUserDescriptionAsync(Guid userId, string description)
+    {
+        var user = await _dbContext.Users.FindAsync(userId);
+
+        if (user is not null)
+        {
+            user.Description = description;
+        }
+        
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task UpdateUserAvatarProfileAsync(User currentUser, ProfileAvatar profileAvatar)
+    {
+        await _dbContext.ProfileAvatars.AddAsync(profileAvatar);
+        
+        currentUser.ProfileAvatarId = profileAvatar.Id;
+        await _dbContext.SaveChangesAsync();
+    }
 }

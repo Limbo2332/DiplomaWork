@@ -81,6 +81,7 @@ namespace ReadyBusinesses.Api.Extensions
         {
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IUserService, UserService>();
         }
     }
 }

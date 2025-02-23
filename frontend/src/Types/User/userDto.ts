@@ -1,9 +1,7 @@
-﻿import { BlobImageDto } from '../BlobImage/blobImageDto';
-
-export type UserDto = {
+﻿export type UserDto = {
   id: string;
   email: string;
   fullName: string;
-  profileImage: BlobImageDto | null;
+  profileImagePath: string | null;
   isAdmin: boolean;
 }

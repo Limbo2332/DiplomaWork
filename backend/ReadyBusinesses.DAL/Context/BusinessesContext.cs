@@ -26,6 +26,8 @@ public class BusinessesContext(DbContextOptions<BusinessesContext> options) : Db
     public DbSet<Phop> Phops => Set<Phop>();
     
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    
+    public DbSet<UserSocialMedia> UserSocialMedias => Set<UserSocialMedia>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

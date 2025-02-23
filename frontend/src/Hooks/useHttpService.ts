@@ -66,6 +66,16 @@ const useHttpService = ({ baseUrl }: UseHttpServiceProps) => {
     return client.current.post<T>(url, data, config).then(onSuccess).catch(onError<T>);
   }, [onError, onSuccess]);
 
+  const postFormData = useCallback(async <T, Data>(url: string, data: Data, signal?: AbortSignal): Promise<Result<T>> => {
+    const config: AxiosRequestConfig = {
+      method: 'POST', signal, headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    };
+    
+    return client.current.post<T>(url, data, config).then(onSuccess).catch(onError<T>);
+  }, [onError, onSuccess]);
+
   const put = async <T, Data>(url: string, data: Data, signal?: AbortSignal): Promise<Result<T>> => {
     const config: AxiosRequestConfig = { method: 'PUT', signal };
     return client.current.put<T>(url, data, config).then(onSuccess).catch(onError<T>);
@@ -115,7 +125,7 @@ const useHttpService = ({ baseUrl }: UseHttpServiceProps) => {
     });
   }, [refreshToken, removeRefreshToken, showErrorNotification, getTokens]);
 
-  return { get, post, put, del, getFile, postFile, removeRefreshToken };
+  return { get, post, postFormData, put, del, getFile, postFile, removeRefreshToken };
 };
 
 export default useHttpService;

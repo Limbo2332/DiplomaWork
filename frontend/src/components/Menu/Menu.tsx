@@ -23,7 +23,7 @@ const Menu = () => {
               <div className="profile-container">
                 <img src={defaultImage} alt="Profile Picture" />
               </div>
-              <NavLink className="menu-link profile-link" to="/editauthor/0" style={{ fontSize: '1.1rem' }}>
+              <NavLink className="menu-link profile-link" to="/editauthor" style={{ fontSize: '1.1rem' }}>
                 Мій профіль
               </NavLink>
             </Button>

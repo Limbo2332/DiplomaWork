@@ -49,9 +49,6 @@ const axiosInterceptor = ({
 }: AxiosInterceptorProps) => {
   axiosClient.current.interceptors.request.use(
     async (config: InternalAxiosRequestConfig) => {
-      console.log(config);
-      console.log(accessToken);
-
       if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
       }

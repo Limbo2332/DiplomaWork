@@ -32,11 +32,11 @@
 }
 
 .author-avatar {
-  width: 100px;
-  height: 100px;
+  width: 100% !important;
+  height: auto;
   cursor: pointer;
   transition: transform 0.3s;
-  border: 2px solid #fff; /* Add a border to handle image edges */
+  border: 2px solid #fff;
   border-radius: 50% !important;
 }
 
@@ -57,4 +57,24 @@
 .social-media-icon {
   margin-right: 10px;
   color: #007bff;
+}
+
+.avatar-description-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+}
+
+.avatar-container {
+  display: flex;
+  justify-content: center;
+}
+
+.description-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
 }

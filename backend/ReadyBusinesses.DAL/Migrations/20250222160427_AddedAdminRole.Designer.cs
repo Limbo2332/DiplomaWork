@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ReadyBusinesses.DLL.Context;
 
@@ -11,9 +12,11 @@ using ReadyBusinesses.DLL.Context;
 namespace ReadyBusinesses.DLL.Migrations
 {
     [DbContext(typeof(BusinessesContext))]
-    partial class BusinessesContextModelSnapshot : ModelSnapshot
+    [Migration("20250222160427_AddedAdminRole")]
+    partial class AddedAdminRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -345,21 +348,6 @@ namespace ReadyBusinesses.DLL.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ReadyBusinesses.Common.Entities.UserSocialMedia", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("SocialMediaId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("UserId", "SocialMediaId");
-
-                    b.HasIndex("SocialMediaId");
-
-                    b.ToTable("UserSocialMedias");
-                });
-
             modelBuilder.Entity("ReadyBusinesses.Common.Entities.Employer", b =>
                 {
                     b.HasOne("ReadyBusinesses.Common.Entities.Post", "Post")
@@ -458,25 +446,6 @@ namespace ReadyBusinesses.DLL.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("ProfileAvatar");
-                });
-
-            modelBuilder.Entity("ReadyBusinesses.Common.Entities.UserSocialMedia", b =>
-                {
-                    b.HasOne("ReadyBusinesses.Common.Entities.SocialMedia", "SocialMedia")
-                        .WithMany()
-                        .HasForeignKey("SocialMediaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ReadyBusinesses.Common.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SocialMedia");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ReadyBusinesses.Common.Entities.User", b =>

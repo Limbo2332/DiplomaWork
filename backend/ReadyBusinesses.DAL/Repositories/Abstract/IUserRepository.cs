@@ -11,4 +11,14 @@ public interface IUserRepository
     Task AddAsync(User user);
     
     Task UpdateAsync(User user);
+    
+    Task<User> GetUserWithProfileAsync(Guid userId);
+    
+    Task<IEnumerable<SocialMedia>> GetSocialMediaAsync(Guid userId);
+    
+    Task AddSocialMediasAsync(IEnumerable<SocialMedia> socialMedias, User user);
+
+    Task UpdateUserDescriptionAsync(Guid userId, string description);
+    
+    Task UpdateUserAvatarProfileAsync(User currentUser, ProfileAvatar profileAvatar);
 }
