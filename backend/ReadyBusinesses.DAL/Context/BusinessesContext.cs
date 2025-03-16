@@ -11,8 +11,6 @@ public class BusinessesContext(DbContextOptions<BusinessesContext> options) : Db
     
     public DbSet<User> Users => Set<User>();
     
-    public DbSet<Employer> Employers => Set<Employer>();
-    
     public DbSet<PostInfo> PostsInfos => Set<PostInfo>();
     
     public DbSet<Post> Posts => Set<Post>();

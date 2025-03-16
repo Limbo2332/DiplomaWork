@@ -8,3 +8,10 @@ public class MainFeedBusinessesRequestDto
     
     public required FilterDto Filter { get; set; }
 }
+
+public class AdminFeedBusinessesRequestDto
+{
+    public int PageCount { get; set; }
+    
+    public int Offset { get; set; }
+}

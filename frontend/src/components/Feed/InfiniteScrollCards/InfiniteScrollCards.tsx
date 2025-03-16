@@ -18,6 +18,7 @@ const InfiniteScrollCards = ({
   const [hasMore, setHasMore] = useState(true);
 
   const loadMore = useCallback(async (pageNumber: number) => {
+    pageNumber -= 1;
     const result = await getCards(pageNumber * defaultPageSize, defaultPageSize);
 
     if (pageNumber === 0) {

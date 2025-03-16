@@ -8,6 +8,7 @@ import useUserService from '../../Services/userService.ts';
 
 import defaultProfileImage from '../../assets/images/default-image.png';
 import { SetProfileDto } from '../../Types/Profile/setProfileDto.ts';
+import { useNotification } from '../../Contexts/notificationContext.tsx';
 
 interface AuthorProfileProps {
   profileImageUrl?: string;
@@ -29,6 +30,7 @@ const EditAuthorProfile: React.FC = () => {
     },
   });
   const { getProfileInfo, setProfileInfo } = useUserService();
+  const { showSuccessNotification } = useNotification();
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [profileImage, setProfileImage] = useState<File | null>(null);
@@ -109,6 +111,7 @@ const EditAuthorProfile: React.FC = () => {
     await setProfileInfo(formData);
 
     setIsLoading(false);
+    showSuccessNotification('Інформація успішно збережена!');
   };
 
   const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {

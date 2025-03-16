@@ -1,0 +1,47 @@
+﻿import { Currency } from '../../components/Common/CurrencyDropdown/CurrencyDropdown.tsx';
+import { ImagePathDto } from '../BlobImage/imagePathDto.ts';
+
+export type BusinessDto = {
+  isSaved: boolean;
+  name: string;
+  location: string;
+  category: string;
+  updatedAt: Date;
+  price: number;
+  priceCurrency: Currency;
+  images: ImagePathDto[];
+  description: string;
+  telegram: string | null;
+  instagram: string | null;
+  facebook: string | null;
+  twitter: string | null;
+  site: string | null;
+  authorId: string;
+  authorName: string;
+  authorImagePreview: string | null;
+  authorRegistrationDate: Date;
+  authorPhoneNumber: string;
+  authorTelegram: string | null;
+  authorInstagram: string | null;
+  authorFacebook: string | null;
+  authorTwitter: string | null;
+  authorSite: string | null;
+  area: string;
+  rentPrice: number;
+  employees: number;
+  salaryExpenses: number;
+  averageCheck: number;
+  averageMonthlyRevenue: number;
+  averageMonthlyProfit: number;
+  timeToPayBack: number;
+  hasEquipment: boolean;
+  hasShelter: boolean;
+  hasGenerator: boolean;
+  isNegotiable: boolean;
+  hasPreviousOwnerSupport: boolean;
+  hasFop: boolean;
+  hasCompetitors: boolean;
+  isSeasonal: boolean;
+  season: string | null;
+  hasDeliveryServices: boolean;
+}

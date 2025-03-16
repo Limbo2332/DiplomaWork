@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReadyBusinesses.BLL.Services.Abstract;
+using ReadyBusinesses.Common.Dto.Businesses;
 using ReadyBusinesses.Common.Dto.Businesses.Requests;
 using ReadyBusinesses.Common.Dto.Businesses.Responses;
 
@@ -21,5 +22,33 @@ public class BusinessesController : ControllerBase
     public async Task<ActionResult<MainFeedBusinessesResponseDto>> GetBusinesses([FromBody] MainFeedBusinessesRequestDto request)
     {
         return Ok(await _businessesService.GetBusinessesAsync(request));
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<BusinessDto>> GetBusiness([FromRoute] Guid id)
+    {
+        return Ok(await _businessesService.GetBusinessAsync(id));
+    }
+
+    [HttpPost("adminFeed")]
+    public async Task<ActionResult<MainFeedBusinessesResponseDto>> GetUnapprovedBusinesses([FromBody] AdminFeedBusinessesRequestDto request)
+    {
+        return Ok(await _businessesService.GetUnapprovedBusinessesAsync(request));
+    }
+
+    [HttpPost("create")]
+    public async Task<IActionResult> CreateBusiness([FromForm] CreateBusinessRequestDto request)
+    {
+        await _businessesService.CreateBusinessAsync(request);
+
+        return Ok();
+    }
+
+    [HttpPost("favorites")]
+    public async Task<IActionResult> AddToFavorites([FromBody] AddToFavoritesRequest request)
+    {
+        await _businessesService.AddToFavoritesAsync(request);
+
+        return Ok();
     }
 }

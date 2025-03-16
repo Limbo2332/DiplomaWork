@@ -7,7 +7,7 @@ namespace ReadyBusinesses.Common.MapperExtensions;
 
 public static class PostToBusinessPreviewDto
 {
-    public static PreviewBusinessDto Map(Post post)
+    public static PreviewBusinessDto Map(Post post, Guid currentUserId)
     {
         return new PreviewBusinessDto
         {
@@ -23,8 +23,8 @@ public static class PostToBusinessPreviewDto
             CreationDate = post.CreatedAt,
             FlatSquare = post.RoomArea,
             HasBargain = post.HasBargaining,
-            IsSaved = post.CreatedByUser.SavedPosts.Select(s => s.UserId).Contains(post.CreatedBy),
-            AmountOfWorkers = post.Employers.Count,
+            IsSaved = post.CreatedByUser.SavedPosts.Any(p => p.PostId == post.Id && p.UserId == currentUserId),
+            AmountOfWorkers = post.EmployersCount,
             TermToPayBack = Math.Round(post.PriceInUah / post.AverageProfitPerMonth)
         };
     }

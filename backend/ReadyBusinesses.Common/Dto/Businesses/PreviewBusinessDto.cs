@@ -14,7 +14,7 @@ public class PreviewBusinessDto
     
     public Currency PriceCurrency { get; set; }
     
-    public required string Category { get; set; }
+    public string? Category { get; set; }
     
     public decimal TermToPayBack { get; set; }
     

@@ -5,3 +5,8 @@ export type MainFeedBusinessesRequestDto = {
   offset: number;
   filter: FilterDto;
 }
+
+export type AdminFeedBusinessesRequestDto = {
+  pageCount: number;
+  offset: number;
+}

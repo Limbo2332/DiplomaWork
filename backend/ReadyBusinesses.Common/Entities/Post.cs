@@ -15,7 +15,7 @@ public class Post : BaseEntity
     
     public string Location { get; set; } = string.Empty;
     
-    public string Category { get; set; } = string.Empty;
+    public string? Category { get; set; } = string.Empty;
     
     public double RoomArea { get; set; }
 
@@ -30,15 +30,15 @@ public class Post : BaseEntity
     public bool HasEquipment { get; set; }
 
     public bool HasGeneratorOrEcoFlow { get; set; }
+    
+    public bool HasShelter { get; set; }
 
     // Торг
     public bool HasBargaining { get; set; }
 
     public bool HasSupportFromPreviousOwner { get; set; }
-
-    public bool HasCredits { get; set; }
-
-    public bool HasCompetitorsInDistrict { get; set; }
+    
+    public bool HasCompetitors { get; set; }
 
     public bool IsSeasonal { get; set; }
     
@@ -50,11 +50,17 @@ public class Post : BaseEntity
 
     public bool HasIntegrationWithDeliveryServices { get; set; }
     
+    public int EmployersCount { get; set; }
+    
+    public decimal EmployersSalaryPerMonth { get; set; }
+    
+    public BusinessStatus BusinessStatus { get; set; }
+    
     public Guid CreatedBy { get; set; }
     
     public User CreatedByUser { get; set; } = new();
 
-    public ICollection<Employer> Employers { get; set; } = [];
-
     public ICollection<PostPicture> Pictures { get; set; } = [];
+    
+    public ICollection<PostSocialMedia> SocialMedias { get; set; } = [];
 }

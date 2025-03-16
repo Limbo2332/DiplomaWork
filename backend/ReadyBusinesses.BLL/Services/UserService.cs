@@ -3,6 +3,7 @@ using ReadyBusinesses.Common.Dto.User;
 using ReadyBusinesses.Common.Entities;
 using ReadyBusinesses.Common.Enums;
 using ReadyBusinesses.Common.Logic.Abstract;
+using ReadyBusinesses.Common.MapperExtensions;
 using ReadyBusinesses.DLL.Repositories.Abstract;
 
 namespace ReadyBusinesses.BLL.Services;
@@ -40,7 +41,7 @@ public class UserService : IUserService
             TelegramLink = socialMedias.FirstOrDefault(s => s.Type == SocialMediaType.Telegram)?.Link,
             PersonalSiteLink = socialMedias.FirstOrDefault(s => s.Type == SocialMediaType.Site)?.Link,
             ProfileImagePath = userWithProfile.ProfileAvatar is not null
-                ? $"data:{userWithProfile.ProfileAvatar.ContentType};base64,{Convert.ToBase64String(userWithProfile.ProfileAvatar.Data)}"
+                ? PictureToPreviewString.Map(userWithProfile.ProfileAvatar)
                 : null
         };
     }

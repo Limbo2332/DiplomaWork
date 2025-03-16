@@ -41,12 +41,13 @@ import RegionCitySelector from '../../components/Common/RegionCitySelector/Regio
 import { regions } from '../../Data/Regions.ts';
 import CategoryDropdown from '../../components/Common/CategoryDropdown/CategoryDropdown.tsx';
 import { useAuth } from '../../Contexts/authContext.tsx';
+import useBusinessService from '../../Services/businessesService.ts';
+import { useNotification } from '../../Contexts/notificationContext.tsx';
 
 interface BusinessState {
   name: string;
   location: string;
   category: string;
-  lastUpdated: string;
   price: string;
   currency: Currency;
   area: string;
@@ -57,37 +58,33 @@ interface BusinessState {
   averageMonthlyRevenue: string;
   averageMonthlyProfit: string;
   paybackPeriod: string;
-  equipment: boolean;
-  shelter: boolean;
-  generator: boolean;
-  negotiable: boolean;
-  previousOwnerSupport: boolean;
-  fop: boolean;
-  fopGroup: boolean;
-  competitors: boolean;
-  seasonality: boolean;
+  hasEquipment: boolean;
+  hasShelter: boolean;
+  hasGenerator: boolean;
+  isNegotiable: boolean;
+  hasPreviousOwnerSupport: boolean;
+  hasFop: boolean;
+  hasCompetitors: boolean;
+  isSeasonal: boolean;
   season: string;
-  deliveryServices: boolean;
-  authorName: string;
-  authorRegistrationDate: string;
-  authorSalesCount: string;
-  authorPhoneNumber: string;
-  authorTelegram: string;
-  authorInstagram: string;
-  authorFacebook: string;
-  authorTwitter: string;
-  authorSite: string;
+  hasDeliveryServices: boolean;
+  telegram: string;
+  instagram: string;
+  facebook: string;
+  twitter: string;
+  site: string;
   description: string;
   images: File[];
 }
 
 const CreateEditBusiness: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const { control, handleSubmit, setValue, watch, getValues } = useForm<BusinessState>({
     defaultValues: {
       name: '',
       location: '',
       category: '',
-      lastUpdated: '',
       price: '',
       currency: 'UAH',
       area: '',
@@ -98,26 +95,21 @@ const CreateEditBusiness: React.FC = () => {
       averageMonthlyRevenue: '',
       averageMonthlyProfit: '',
       paybackPeriod: '',
-      equipment: false,
-      shelter: false,
-      generator: false,
-      negotiable: false,
-      previousOwnerSupport: false,
-      fop: false,
-      fopGroup: false,
-      competitors: false,
-      seasonality: false,
+      hasEquipment: false,
+      hasShelter: false,
+      hasGenerator: false,
+      isNegotiable: false,
+      hasPreviousOwnerSupport: false,
+      hasFop: false,
+      hasCompetitors: false,
+      isSeasonal: false,
       season: '',
-      deliveryServices: false,
-      authorName: '',
-      authorRegistrationDate: '',
-      authorSalesCount: '',
-      authorPhoneNumber: '',
-      authorTelegram: '',
-      authorInstagram: '',
-      authorFacebook: '',
-      authorTwitter: '',
-      authorSite: '',
+      hasDeliveryServices: false,
+      telegram: '',
+      instagram: '',
+      facebook: '',
+      twitter: '',
+      site: '',
       description: '',
       images: [],
     },
@@ -126,6 +118,9 @@ const CreateEditBusiness: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const images = watch('images');
   const { isAdmin } = useAuth();
+
+  const { createBusiness } = useBusinessService();
+  const { showSuccessNotification } = useNotification();
 
   const onDrop = (acceptedFiles: File[]) => {
     const currentImages = getValues('images');
@@ -139,8 +134,34 @@ const CreateEditBusiness: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const onSubmit = (data: BusinessState) => {
-    console.log('Business data:', data);
+  const onSubmit = async (data: BusinessState) => {
+    setIsLoading(true);
+    const formDataToSend = new FormData();
+
+    for (const key in data) {
+      if (Object.prototype.hasOwnProperty.call(data, key)) {
+        const value = data[key as keyof BusinessState];
+
+        if (Array.isArray(value)) {
+          if (value.every(item => item instanceof File)) {
+            value.forEach(file => {
+              formDataToSend.append(key, file);
+            });
+          } else {
+            value.forEach(item => {
+              formDataToSend.append(key, item.toString());
+            });
+          }
+        } else {
+          formDataToSend.append(key, value.toString());
+        }
+      }
+    }
+    
+    await createBusiness(formDataToSend);
+
+    setIsLoading(false);
+    showSuccessNotification('Бізнес успішно відправлений на верифікацію!');
   };
 
   const handleApprove = () => {
@@ -193,6 +214,7 @@ const CreateEditBusiness: React.FC = () => {
                 backgroundColor="inherit"
                 regions={regions}
                 disabled={isAdmin}
+                onHandleRegionSelect={(region: string) => setValue('location', region)}
               />
             </div>
             <div className="col-8">
@@ -515,7 +537,7 @@ const CreateEditBusiness: React.FC = () => {
             )}
             <div className="col-8">
               <Controller
-                name="equipment"
+                name="hasEquipment"
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
@@ -527,7 +549,7 @@ const CreateEditBusiness: React.FC = () => {
             </div>
             <div className="col-8">
               <Controller
-                name="shelter"
+                name="hasShelter"
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
@@ -539,7 +561,7 @@ const CreateEditBusiness: React.FC = () => {
             </div>
             <div className="col-8">
               <Controller
-                name="generator"
+                name="hasGenerator"
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
@@ -551,7 +573,7 @@ const CreateEditBusiness: React.FC = () => {
             </div>
             <div className="col-8">
               <Controller
-                name="negotiable"
+                name="isNegotiable"
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
@@ -563,7 +585,7 @@ const CreateEditBusiness: React.FC = () => {
             </div>
             <div className="col-8">
               <Controller
-                name="previousOwnerSupport"
+                name="hasPreviousOwnerSupport"
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
@@ -575,7 +597,7 @@ const CreateEditBusiness: React.FC = () => {
             </div>
             <div className="col-8">
               <Controller
-                name="fop"
+                name="hasFop"
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
@@ -587,7 +609,7 @@ const CreateEditBusiness: React.FC = () => {
             </div>
             <div className="col-8">
               <Controller
-                name="competitors"
+                name="hasCompetitors"
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
@@ -599,7 +621,7 @@ const CreateEditBusiness: React.FC = () => {
             </div>
             <div className="col-8">
               <Controller
-                name="seasonality"
+                name="isSeasonal"
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
@@ -609,7 +631,7 @@ const CreateEditBusiness: React.FC = () => {
                 )}
               />
             </div>
-            {watch('seasonality') && (
+            {watch('isSeasonal') && (
               <div className="col-8">
                 <Controller
                   name="season"
@@ -630,7 +652,7 @@ const CreateEditBusiness: React.FC = () => {
             )}
             <div className="col-8">
               <Controller
-                name="deliveryServices"
+                name="hasDeliveryServices"
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
@@ -642,7 +664,7 @@ const CreateEditBusiness: React.FC = () => {
             </div>
             <div className="col-8">
               <Controller
-                name="authorTelegram"
+                name="telegram"
                 control={control}
                 render={({ field }) => (
                   <TextField
@@ -666,7 +688,7 @@ const CreateEditBusiness: React.FC = () => {
             </div>
             <div className="col-8">
               <Controller
-                name="authorInstagram"
+                name="instagram"
                 control={control}
                 render={({ field }) => (
                   <TextField
@@ -690,7 +712,7 @@ const CreateEditBusiness: React.FC = () => {
             </div>
             <div className="col-8">
               <Controller
-                name="authorFacebook"
+                name="facebook"
                 control={control}
                 render={({ field }) => (
                   <TextField
@@ -714,7 +736,7 @@ const CreateEditBusiness: React.FC = () => {
             </div>
             <div className="col-8">
               <Controller
-                name="authorTwitter"
+                name="twitter"
                 control={control}
                 render={({ field }) => (
                   <TextField
@@ -738,7 +760,7 @@ const CreateEditBusiness: React.FC = () => {
             </div>
             <div className="col-8">
               <Controller
-                name="authorSite"
+                name="site"
                 control={control}
                 render={({ field }) => (
                   <TextField
@@ -821,7 +843,11 @@ const CreateEditBusiness: React.FC = () => {
             )}
             {isAdmin && (
               <div className="col-8 mt-3 d-flex justify-content-center">
-                <CategoryDropdown />
+                <CategoryDropdown
+                  multiSelect={false}
+                  onOptionsSelected={(options: string[]) => setValue('category', options[0])}
+                  initialSelectedOptions={[]}
+                />
               </div>
             )}
             <div className="col-8 mt-3 text-center mb-4">
@@ -835,7 +861,7 @@ const CreateEditBusiness: React.FC = () => {
                   </Button>
                 </>
               ) : (
-                <Button type="submit" variant="contained" color="primary">
+                <Button type="submit" variant="contained" color="primary" loading={isLoading}>
                   Зберегти
                 </Button>
               )}

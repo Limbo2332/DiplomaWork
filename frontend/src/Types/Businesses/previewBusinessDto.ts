@@ -6,14 +6,14 @@ export type PreviewBusinessDto = {
   name: string;
   price: number;
   priceCurrency: Currency;
-  category: string;
-  termToPayback: number;
+  category: string | null;
+  termToPayBack: number;
   averageProfit: number;
   hasBargain: boolean;
   averageCheque: number;
   amountOfWorkers: number;
   flatSquare: number;
   location: string;
-  dateOfCreation: Date;
+  creationDate: Date;
   isSaved: boolean;
 }

@@ -1,14 +1,37 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { IconButton, Tooltip } from '@mui/material';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import StarIcon from '@mui/icons-material/Star';
+import { AddToFavoritesRequest } from '../../../Types/Businesses/Requests/addToFavoritesRequest.ts';
+import useBusinessService from '../../../Services/businessesService.ts';
 
-const StarButton = () => {
-  const [isFavorited, setIsFavorited] = useState(false);
+interface StarButtonProps {
+  postId: string;
+  defaultValue: boolean;
+}
 
-  const handleClick = () => {
+const StarButton = ({
+  postId,
+  defaultValue,
+}: StarButtonProps) => {
+  const [isFavorited, setIsFavorited] = useState(defaultValue);
+
+  const { addToFavoriteBusiness } = useBusinessService();
+
+  const handleClick = async () => {
+    const request: AddToFavoritesRequest = {
+      postId: postId,
+      value: !isFavorited,
+    };
+
+    await addToFavoriteBusiness(request);
+
     setIsFavorited(!isFavorited);
   };
+
+  useEffect(() => {
+    setIsFavorited(defaultValue);
+  }, [defaultValue]);
 
   return (
     <div
@@ -19,7 +42,6 @@ const StarButton = () => {
         cursor: 'pointer',
       }}
     >
-      {/* Кнопка із зіркою */}
       <Tooltip
         title={isFavorited ? 'Видалити з обраного' : 'Підписатися'}
         arrow

@@ -8,7 +8,7 @@ import { useAuth } from '../../../Contexts/authContext.tsx';
 import { PreviewBusinessDto } from '../../../Types/Businesses/previewBusinessDto.ts';
 import { Currency } from '../CurrencyDropdown/CurrencyDropdown.tsx';
 
-const currencyToStringRepresentation = (currency: Currency) => {
+export const currencyToStringRepresentation = (currency: Currency) => {
   switch (currency) {
     case 'UAH':
       return 'грн';
@@ -51,18 +51,19 @@ const Card = ({
                 className="business-card-price">{businessToPreviewDto.price} {currencyToStringRepresentation(businessToPreviewDto.priceCurrency)}.</p>
             </div>
           </div>
-          <div className="business-card-row">
-            <Typography variant="subtitle2" sx={{
-              color: 'text.secondary',
-            }}>{businessToPreviewDto.category}</Typography>
-          </div>
+          {businessToPreviewDto.category &&
+            (<div className="business-card-row">
+              <Typography variant="subtitle2" sx={{
+                color: 'text.secondary',
+              }}>{businessToPreviewDto.category}</Typography>
+            </div>)}
           <div className="business-card-grid">
             <div className="business-card-row justify-content-start gap-1">
               <AccessTime className="business-card-row-icon" />
               <div className="d-flex align-items-center gap-1">
                 <Typography variant="body1">Термін окупності:</Typography>
                 <Typography variant="body1"
-                  className="fw-bold">{businessToPreviewDto.termToPayback} місяців</Typography>
+                  className="fw-bold">{businessToPreviewDto.termToPayBack} місяців</Typography>
               </div>
             </div>
             <div className="business-card-row justify-content-start gap-1">
@@ -107,8 +108,8 @@ const Card = ({
           <div className="business-card-row">
             <Typography variant="subtitle2" sx={{
               color: 'text.secondary',
-            }}>{businessToPreviewDto.location} - {businessToPreviewDto.dateOfCreation.toDateString()}</Typography>
-            <StarButton />
+            }}>{businessToPreviewDto.location} - {new Date(businessToPreviewDto.creationDate).toLocaleDateString()}</Typography>
+            <StarButton postId={businessToPreviewDto.id} defaultValue={businessToPreviewDto.isSaved} />
           </div>
         </div>
       </div>

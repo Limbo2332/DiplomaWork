@@ -47,7 +47,7 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
   }, [navigate, refreshTokenValue, removeRefreshToken]);
 
   useEffect(() => {
-    const { accessToken, refreshToken } = getTokens();
+    const { accessToken, refreshToken, isAdmin } = getTokens();
 
     if (accessToken) {
       setAccessToken(accessToken);
@@ -56,13 +56,17 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
     if (refreshToken) {
       setRefreshTokenValue(refreshToken);
     }
+
+    if (isAdmin) {
+      setIsAdmin(JSON.parse(isAdmin));
+    }
   }, []);
 
   useEffect(() => {
     if (accessToken && refreshTokenValue) {
-      setTokens(accessToken, refreshTokenValue);
+      setTokens(accessToken, refreshTokenValue, isAdmin);
     }
-  }, [refreshTokenValue, accessToken]);
+  }, [refreshTokenValue, accessToken, isAdmin]);
 
   const registerUser = useCallback(async (email: string, fullName: string, password: string) => {
     const data: UserRegisterDto = { email, fullName, password };
@@ -73,7 +77,7 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
     }
 
     if (result.data) {
-      setTokens(result.data.token.accessToken, result.data.token.refreshToken);
+      setTokens(result.data.token.accessToken, result.data.token.refreshToken, result.data.user.isAdmin);
       setAccessToken(result.data.token.accessToken);
       setRefreshTokenValue(result.data.token.refreshToken);
       setCurrentUser(result.data.user);
@@ -92,7 +96,7 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
     }
 
     if (result.data) {
-      setTokens(result.data.token.accessToken, result.data.token.refreshToken);
+      setTokens(result.data.token.accessToken, result.data.token.refreshToken, result.data.user.isAdmin);
       setAccessToken(result.data.token.accessToken);
       setRefreshTokenValue(result.data.token.refreshToken);
       setIsAdmin(result.data.user.isAdmin);

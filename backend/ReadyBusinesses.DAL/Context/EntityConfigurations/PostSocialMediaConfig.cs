@@ -20,7 +20,7 @@ public class PostSocialMediaConfig : IEntityTypeConfiguration<PostSocialMedia>
             .OnDelete(DeleteBehavior.Cascade);
         
         builder.HasOne(x => x.Post)
-            .WithMany()
+            .WithMany(p => p.SocialMedias)
             .HasForeignKey(x => x.PostId)
             .OnDelete(DeleteBehavior.Cascade);
     }
