@@ -31,11 +31,11 @@ const Card = ({
 
   const onCardClick = () => {
     if (isAdmin) {
-      navigate('/createoreditbusiness/1');
+      navigate(`/createoreditbusiness/${businessToPreviewDto.id}`);
       return;
     }
 
-    navigate('/business/1');
+    navigate(`/business/${businessToPreviewDto.id}`);
   };
 
   return (

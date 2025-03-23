@@ -51,4 +51,20 @@ public class BusinessesController : ControllerBase
 
         return Ok();
     }
+
+    [HttpPost("approve")]
+    public async Task<IActionResult> ApproveBusiness([FromBody] ApproveBusinessDto request)
+    {
+        await _businessesService.ApproveBusinessAsync(request);
+
+        return Ok();
+    }
+    
+    [HttpPost("reject")]
+    public async Task<IActionResult> RejectBusiness([FromBody] RejectBusinessDto request)
+    {
+        await _businessesService.RejectBusinessAsync(request);
+
+        return Ok();
+    }
 }

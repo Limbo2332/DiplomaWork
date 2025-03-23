@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import {
   Button,
   Checkbox,
@@ -43,6 +43,8 @@ import CategoryDropdown from '../../components/Common/CategoryDropdown/CategoryD
 import { useAuth } from '../../Contexts/authContext.tsx';
 import useBusinessService from '../../Services/businessesService.ts';
 import { useNotification } from '../../Contexts/notificationContext.tsx';
+import { useNavigate, useParams } from 'react-router';
+import { ImagePathDto } from '../../Types/BlobImage/imagePathDto.ts';
 
 interface BusinessState {
   name: string;
@@ -66,21 +68,32 @@ interface BusinessState {
   hasFop: boolean;
   hasCompetitors: boolean;
   isSeasonal: boolean;
-  season: string;
+  season: string | null;
   hasDeliveryServices: boolean;
-  telegram: string;
-  instagram: string;
-  facebook: string;
-  twitter: string;
-  site: string;
+  telegram: string | null;
+  instagram: string | null;
+  facebook: string | null;
+  twitter: string | null;
+  site: string | null;
   description: string;
-  images: File[];
+  images: ImagePathDto[] | File[];
 }
+
+const seasonMapping = {
+  весна: 'spring',
+  літо: 'summer',
+  осінь: 'autumn',
+  зима: 'winter',
+};
+
+const getEnglishValue = (ukrainianValue) => {
+  return seasonMapping[ukrainianValue.toLowerCase()] || '';
+};
 
 const CreateEditBusiness: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const { control, handleSubmit, setValue, watch, getValues } = useForm<BusinessState>({
+  const { control, handleSubmit, setValue, watch, getValues, reset } = useForm<BusinessState>({
     defaultValues: {
       name: '',
       location: '',
@@ -115,15 +128,22 @@ const CreateEditBusiness: React.FC = () => {
     },
   });
 
+  const navigate = useNavigate();
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const images = watch('images');
+  const location = watch('location');
+  const category = watch('category');
+
   const { isAdmin } = useAuth();
 
-  const { createBusiness } = useBusinessService();
+  const { id } = useParams();
+
+  const { createBusiness, getBusiness, approveBusiness, rejectBusiness } = useBusinessService();
   const { showSuccessNotification } = useNotification();
 
   const onDrop = (acceptedFiles: File[]) => {
-    const currentImages = getValues('images');
+    const currentImages = getValues('images') as File[];
     setValue('images', [...currentImages, ...acceptedFiles]);
   };
 
@@ -145,34 +165,84 @@ const CreateEditBusiness: React.FC = () => {
         if (Array.isArray(value)) {
           if (value.every(item => item instanceof File)) {
             value.forEach(file => {
-              formDataToSend.append(key, file);
+              formDataToSend.append(key, file as File);
             });
           } else {
             value.forEach(item => {
               formDataToSend.append(key, item.toString());
             });
           }
-        } else {
+        } else if (value !== null) {
           formDataToSend.append(key, value.toString());
         }
       }
     }
-    
+
     await createBusiness(formDataToSend);
 
     setIsLoading(false);
     showSuccessNotification('Бізнес успішно відправлений на верифікацію!');
   };
 
-  const handleApprove = () => {
-    // Logic for approving the card
-    console.log('Card approved');
+  const handleApprove = async () => {
+    await approveBusiness({
+      category,
+      businessId: id!,
+    });
+
+    navigate('/');
   };
 
-  const handleReject = () => {
-    // Logic for rejecting the card
-    console.log('Card rejected');
+  const handleReject = async () => {
+    await rejectBusiness({
+      businessId: id!,
+    });
+
+    navigate('/');
   };
+
+  useEffect(() => {
+    const fetchBusinessInfo = async () => {
+      const result = await getBusiness(id!);
+
+      if (result?.data) {
+        reset({
+          name: result.data.name,
+          location: result.data.location,
+          category: result.data.category,
+          price: result.data.price.toString(),
+          currency: result.data.priceCurrency,
+          area: result.data.area,
+          rentPrice: result.data.rentPrice.toString(),
+          employees: result.data.employees.toString(),
+          salaryExpenses: result.data.salaryExpenses.toString(),
+          averageCheck: result.data.averageCheck.toString(),
+          averageMonthlyRevenue: result.data.averageMonthlyRevenue.toString(),
+          averageMonthlyProfit: result.data.averageMonthlyProfit.toString(),
+          paybackPeriod: result.data.timeToPayBack.toString(),
+          hasEquipment: result.data.hasEquipment,
+          hasShelter: result.data.hasShelter,
+          hasGenerator: result.data.hasGenerator,
+          isNegotiable: result.data.isNegotiable,
+          hasPreviousOwnerSupport: result.data.hasPreviousOwnerSupport,
+          hasFop: result.data.hasFop,
+          hasCompetitors: result.data.hasCompetitors,
+          isSeasonal: result.data.isSeasonal,
+          season: result.data.season,
+          hasDeliveryServices: result.data.hasDeliveryServices,
+          telegram: result.data.telegram,
+          instagram: result.data.instagram,
+          facebook: result.data.facebook,
+          twitter: result.data.twitter,
+          site: result.data.site,
+          description: result.data.description,
+          images: result.data.images,
+        });
+      }
+    };
+
+    fetchBusinessInfo();
+  }, []);
 
   return (
     <main className="main">
@@ -180,7 +250,16 @@ const CreateEditBusiness: React.FC = () => {
       <div className="container">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="row justify-content-center mt-2">
-            <div className="col-8">
+            {isAdmin && (
+              <div className="col-8 mt-3 d-flex justify-content-center">
+                <CategoryDropdown
+                  multiSelect={false}
+                  onOptionsSelected={(options: string[]) => setValue('category', options[0])}
+                  initialSelectedOptions={[]}
+                />
+              </div>
+            )}
+            <div className="col-8 mt-2">
               <Controller
                 name="name"
                 control={control}
@@ -214,10 +293,11 @@ const CreateEditBusiness: React.FC = () => {
                 backgroundColor="inherit"
                 regions={regions}
                 disabled={isAdmin}
+                selectedRegion={location}
                 onHandleRegionSelect={(region: string) => setValue('location', region)}
               />
             </div>
-            <div className="col-8">
+            <div className="col-8 mt-2">
               <Controller
                 name="price"
                 control={control}
@@ -541,7 +621,7 @@ const CreateEditBusiness: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={<Checkbox {...field} disabled={isAdmin} />}
+                    control={<Checkbox {...field} disabled={isAdmin} checked={field.value} />}
                     label="Обладнання"
                   />
                 )}
@@ -553,7 +633,7 @@ const CreateEditBusiness: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={<Checkbox {...field} disabled={isAdmin} />}
+                    control={<Checkbox {...field} disabled={isAdmin} checked={field.value} />}
                     label="Укриття"
                   />
                 )}
@@ -565,7 +645,7 @@ const CreateEditBusiness: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={<Checkbox {...field} disabled={isAdmin} />}
+                    control={<Checkbox {...field} disabled={isAdmin} checked={field.value} />}
                     label="Генератор чи EcoFlow"
                   />
                 )}
@@ -577,7 +657,7 @@ const CreateEditBusiness: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={<Checkbox {...field} disabled={isAdmin} />}
+                    control={<Checkbox {...field} disabled={isAdmin} checked={field.value} />}
                     label="Можливий торг"
                   />
                 )}
@@ -589,7 +669,7 @@ const CreateEditBusiness: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={<Checkbox {...field} disabled={isAdmin} />}
+                    control={<Checkbox {...field} disabled={isAdmin} checked={field.value} />}
                     label="Підтримка колишнього власника"
                   />
                 )}
@@ -601,7 +681,7 @@ const CreateEditBusiness: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={<Checkbox {...field} disabled={isAdmin} />}
+                    control={<Checkbox {...field} disabled={isAdmin} checked={field.value} />}
                     label="ФОП"
                   />
                 )}
@@ -613,7 +693,7 @@ const CreateEditBusiness: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={<Checkbox {...field} disabled={isAdmin} />}
+                    control={<Checkbox {...field} disabled={isAdmin} checked={field.value} />}
                     label="Конкуренти в межах району"
                   />
                 )}
@@ -625,7 +705,7 @@ const CreateEditBusiness: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={<Checkbox {...field} disabled={isAdmin} />}
+                    control={<Checkbox {...field} disabled={isAdmin} checked={field.value} />}
                     label="Сезонність"
                   />
                 )}
@@ -639,7 +719,7 @@ const CreateEditBusiness: React.FC = () => {
                   render={({ field }) => (
                     <FormControl fullWidth variant="outlined" margin="normal">
                       <InputLabel>Сезон</InputLabel>
-                      <Select {...field} label="Сезон" disabled={isAdmin}>
+                      <Select {...field} label="Сезон" disabled={isAdmin} value={getEnglishValue(field.value)}>
                         <MenuItem value="spring">Весна</MenuItem>
                         <MenuItem value="summer">Літо</MenuItem>
                         <MenuItem value="autumn">Осінь</MenuItem>
@@ -656,7 +736,7 @@ const CreateEditBusiness: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={<Checkbox {...field} disabled={isAdmin} />}
+                    control={<Checkbox {...field} disabled={isAdmin} checked={field.value} />}
                     label="Сервіси доставки"
                   />
                 )}
@@ -829,25 +909,22 @@ const CreateEditBusiness: React.FC = () => {
             {images.length > 0 && (
               <div className="col-8 w-100 d-flex justify-content-center mt-3">
                 <Carousel autoPlay navButtonsAlwaysVisible className="w-100 text-center">
-                  {images.map((file, index) => (
-                    <img
-                      key={index}
-                      className="business-image"
-                      src={URL.createObjectURL(file)}
-                      alt={`Preview ${index}`}
-                      style={{ maxHeight: '400px', objectFit: 'contain' }}
-                    />
-                  ))}
+                  {images.map((image, index) => {
+                    const src = image instanceof File
+                      ? URL.createObjectURL(image)
+                      : image.path;
+
+                    return (
+                      <img
+                        key={index}
+                        className="business-image"
+                        src={src}
+                        alt={`Preview ${index}`}
+                        style={{ maxHeight: '400px', objectFit: 'contain' }}
+                      />
+                    );
+                  })}
                 </Carousel>
-              </div>
-            )}
-            {isAdmin && (
-              <div className="col-8 mt-3 d-flex justify-content-center">
-                <CategoryDropdown
-                  multiSelect={false}
-                  onOptionsSelected={(options: string[]) => setValue('category', options[0])}
-                  initialSelectedOptions={[]}
-                />
               </div>
             )}
             <div className="col-8 mt-3 text-center mb-4">

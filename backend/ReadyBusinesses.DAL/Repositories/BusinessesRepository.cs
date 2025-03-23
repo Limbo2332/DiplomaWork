@@ -43,6 +43,12 @@ public class BusinessesRepository : IBusinessesRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task EditPostAsync(Post post)
+    {
+        _context.Posts.Update(post);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task AddToFavoritesAsync(Post post, User user)
     {
         var savedPost = new SavedPosts

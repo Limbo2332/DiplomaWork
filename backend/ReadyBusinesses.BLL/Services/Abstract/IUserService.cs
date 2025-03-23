@@ -7,4 +7,6 @@ public interface IUserService
     Task<ProfileDto> GetProfileAsync();
     
     Task SetProfileAsync(SetProfileDto profileDto);
+    
+    Task<AuthorDto> GetByIdAsync(Guid id);
 }

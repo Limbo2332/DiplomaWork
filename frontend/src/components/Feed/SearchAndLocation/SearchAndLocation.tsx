@@ -34,7 +34,9 @@ const SearchAndLocation = ({
         marginTop: '12px',
       }}
     >
-      <CategoryDropdown multiSelect
+      <CategoryDropdown
+        multiSelect
+        maxWidth="400px"
         initialSelectedOptions={filter.categories}
         onOptionsSelected={(options) => setFilter({
           ...filter,

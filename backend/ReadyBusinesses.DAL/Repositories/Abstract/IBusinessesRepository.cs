@@ -12,6 +12,8 @@ public interface IBusinessesRepository
     IEnumerable<Guid> GetSavedPostsIds(Guid userId);
     
     Task SavePostAsync(Post post);
+    
+    Task EditPostAsync(Post post);
 
     Task AddToFavoritesAsync(Post post, User user);
     

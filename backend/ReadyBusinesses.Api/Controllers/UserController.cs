@@ -16,6 +16,12 @@ public class UserController : ControllerBase
         _userService = userService;
     }
 
+    [HttpGet("{id}")]
+    public async Task<ActionResult<AuthorDto>> GetById([FromRoute] Guid id)
+    {
+        return Ok(await _userService.GetByIdAsync(id));
+    }
+
     [HttpGet("profileInfo")]
     public async Task<ActionResult<ProfileDto>> GetProfile()
     {

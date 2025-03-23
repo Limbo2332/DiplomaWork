@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;
 using ReadyBusinesses.Api;
 using ReadyBusinesses.Api.Extensions;
+using ReadyBusinesses.Common.Enums;
 using ReadyBusinesses.Common.Filters;
 using ReadyBusinesses.Common.Middlewares;
 using ReadyBusinesses.DLL.Context;
@@ -18,7 +19,10 @@ builder.Services.AddControllers(options =>
     options.Filters.Add(typeof(ValidateFilterAttribute));
     options.Filters.Add(typeof(CustomExceptionFilterAttribute));
 })
-.AddNewtonsoftJson(x => x.SerializerSettings.Converters.Add(new StringEnumConverter()));
+.AddNewtonsoftJson(x =>
+{
+    x.SerializerSettings.Converters.Add(new StringEnumConverter());
+});
 
 builder.Services.AddLogging(logging =>
 {

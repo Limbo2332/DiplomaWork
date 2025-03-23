@@ -7,6 +7,8 @@ import {
 } from '../Types/Businesses/Requests/mainFeedBusinessesRequestDto.ts';
 import { AddToFavoritesRequest } from '../Types/Businesses/Requests/addToFavoritesRequest.ts';
 import { BusinessDto } from '../Types/Businesses/businessDto.ts';
+import { ApproveBusinessDto } from '../Types/Businesses/Requests/approveBusinessDto.ts';
+import { RejectBusinessDto } from '../Types/Businesses/Requests/rejectBusinessDto.ts';
 
 const useBusinessService = () => {
   const { get, post, postFormData } = useHttpService({
@@ -33,12 +35,22 @@ const useBusinessService = () => {
     return await post('/favorites', request);
   }, [post]);
 
+  const approveBusiness = useCallback(async (request: ApproveBusinessDto): Promise<Result<void>> => {
+    return await post('/approve', request);
+  }, [post]);
+
+  const rejectBusiness = useCallback(async (request: RejectBusinessDto): Promise<Result<void>> => {
+    return await post('/reject', request);
+  }, [post]);
+
   return {
     getMainFeedBusinesses,
     getUnapprovedFeedBusinesses,
     createBusiness,
     addToFavoriteBusiness,
     getBusiness,
+    approveBusiness,
+    rejectBusiness,
   };
 };
 

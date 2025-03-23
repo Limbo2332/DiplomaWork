@@ -157,9 +157,11 @@ public class BusinessesService : IBusinessesService
     public async Task CreateBusinessAsync(CreateBusinessRequestDto request)
     {
         var currentUserId = _userIdGetter.CurrentUserId;
+        var user = await _userRepository.GetByIdAsync(currentUserId);
 
         var post = CreateBusinessRequestDtoToBusiness.Map(request);
         post.CreatedBy = currentUserId;
+        post.CreatedByUser = user!;
 
         foreach (var imageFile in request.Images)
         {
@@ -318,5 +320,33 @@ public class BusinessesService : IBusinessesService
         var authorSocialMedia = (await _userRepository.GetSocialMediaAsync(business.CreatedByUser.Id)).ToList();
         
         return PostToBusinessDto.Map(business, authorSocialMedia, currentUserId);
+    }
+
+    public async Task ApproveBusinessAsync(ApproveBusinessDto request)
+    {
+        var business = await _repository.GetBusinessAsync(request.BusinessId);
+
+        if (business is null)
+        {
+            return;
+        }
+
+        business.Category = request.Category;
+        business.BusinessStatus = BusinessStatus.Approved;
+
+        await _repository.EditPostAsync(business);
+    }
+
+    public async Task RejectBusinessAsync(RejectBusinessDto request)
+    {
+        var business = await _repository.GetBusinessAsync(request.BusinessId);
+
+        if (business is null)
+        {
+            return;
+        }
+        
+        business.BusinessStatus = BusinessStatus.Denied;
+        await _repository.EditPostAsync(business);
     }
 }

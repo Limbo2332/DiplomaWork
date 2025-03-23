@@ -2,6 +2,7 @@
 using ReadyBusinesses.Common.Dto.User;
 using ReadyBusinesses.Common.Entities;
 using ReadyBusinesses.Common.Enums;
+using ReadyBusinesses.Common.Exceptions;
 using ReadyBusinesses.Common.Logic.Abstract;
 using ReadyBusinesses.Common.MapperExtensions;
 using ReadyBusinesses.DLL.Repositories.Abstract;
@@ -150,5 +151,21 @@ public class UserService : IUserService
             
             await _userRepository.UpdateUserAvatarProfileAsync(currentUser!, profileImage);
         }
+    }
+
+    public async Task<AuthorDto> GetByIdAsync(Guid id)
+    {
+        var author = await _userRepository.GetByIdAsync(id);
+
+        if (author is null)
+        {
+            throw new NotFoundException("Author was not found");
+        }
+        
+        var socialMedias = (await _userRepository
+                .GetSocialMediaAsync(id))
+            .ToList();
+        
+        return UserToAuthorDto.Map(author, socialMedias);
     }
 }

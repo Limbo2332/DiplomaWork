@@ -1,15 +1,15 @@
-﻿import React, { useEffect, useState } from 'react';
-import useCategoriesService from '../../../Services/categoriesService.ts';
+﻿'use client';
+
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import useCategoriesService from '../../../Services/categoriesService';
 
 interface UseCategoryDropdownProps {
   initialSelectedOptions: string[];
   onOptionsSelected: (options: string[]) => void;
 }
 
-export const useCategoryDropdown = ({
-  initialSelectedOptions,
-  onOptionsSelected,
-}: UseCategoryDropdownProps) => {
+export const useCategoryDropdown = ({ initialSelectedOptions, onOptionsSelected }: UseCategoryDropdownProps) => {
   const { getCategories } = useCategoriesService();
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState<string[]>([]);
@@ -34,6 +34,10 @@ export const useCategoryDropdown = ({
   const [selectedOptions, setSelectedOptions] = useState<string[]>(initialSelectedOptions);
 
   useEffect(() => {
+    if (selectedOptions.length !== 0) {
+      return;
+    }
+
     setSelectedOptions(initialSelectedOptions);
   }, [initialSelectedOptions]);
 
@@ -77,3 +81,4 @@ export const useCategoryDropdown = ({
     isLoading,
   };
 };
+

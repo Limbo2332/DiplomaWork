@@ -15,4 +15,8 @@ public interface IBusinessesService
     Task AddToFavoritesAsync(AddToFavoritesRequest request);
     
     Task<BusinessDto> GetBusinessAsync(Guid id);
+    
+    Task ApproveBusinessAsync(ApproveBusinessDto request);
+    
+    Task RejectBusinessAsync(RejectBusinessDto request);
 }
