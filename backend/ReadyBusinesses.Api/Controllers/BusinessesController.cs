@@ -44,6 +44,14 @@ public class BusinessesController : ControllerBase
         return Ok();
     }
 
+    [HttpPost("edit")]
+    public async Task<IActionResult> EditBusiness([FromForm] EditBusinessRequestDto request)
+    {
+        await _businessesService.EditBusinessAsync(request);
+        
+        return Ok();
+    }
+
     [HttpPost("favorites")]
     public async Task<IActionResult> AddToFavorites([FromBody] AddToFavoritesRequest request)
     {
@@ -66,5 +74,12 @@ public class BusinessesController : ControllerBase
         await _businessesService.RejectBusinessAsync(request);
 
         return Ok();
+    }
+
+    [HttpPost("status")]
+    public async Task<ActionResult<MainFeedBusinessesResponseDto>> GetBusinessesByStatus(
+        [FromBody] GetBusinessesByStatusDto request)
+    {
+        return Ok(await _businessesService.GetBusinessesByStatusAsync(request));
     }
 }

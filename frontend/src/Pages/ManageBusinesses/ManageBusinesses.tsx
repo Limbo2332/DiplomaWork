@@ -1,14 +1,54 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useCallback, useState } from 'react';
 import { Button, Tab, Tabs, Typography } from '@mui/material';
 import InfiniteScrollCards from '../../components/Feed/InfiniteScrollCards/InfiniteScrollCards.tsx';
 import { useNavigate } from 'react-router';
 import Menu from '../../components/Menu/Menu.tsx';
 import './ManageBusinesses.scss';
+import { MainFeedBusinessesResponseDto } from '../../Types/Businesses/Responses/mainFeedBusinessesResponseDto.ts';
+import { GetBusinessesByStatus } from '../../Types/Businesses/Requests/getBusinessesByStatus.ts';
+import { BusinessStatus } from '../../Types/Businesses/businessStatus.ts';
+import useBusinessService from '../../Services/businessesService.ts';
+
+const tabValueToBusinessStatus = (tabValue: number): BusinessStatus => {
+  switch (tabValue) {
+    case 0:
+      return BusinessStatus.Approved;
+    case 1:
+      return BusinessStatus.WaitingForApproval;
+    case 2:
+      return BusinessStatus.Denied;
+    default:
+      throw new Error('Invalid tab value');
+  }
+};
 
 const ManageBusinesses = () => {
-  const [hasBusinesses, setHasBusinesses] = useState(true);
+  const [hasBusinesses, setHasBusinesses] = useState(false);
   const [tabValue, setTabValue] = useState(0);
   const navigate = useNavigate();
+
+  const { getBusinessesByStatus } = useBusinessService();
+
+  const getCards = useCallback(async (offset: number, pageSize: number): Promise<MainFeedBusinessesResponseDto> => {
+    const request: GetBusinessesByStatus = {
+      pageCount: pageSize,
+      offset: offset,
+      status: tabValueToBusinessStatus(tabValue),
+    };
+
+    const result = await getBusinessesByStatus(request);
+
+    setHasBusinesses((result?.data?.previewBusinesses?.length ?? 0) > 0);
+
+    if (!result?.data) {
+      return {
+        previewBusinesses: [],
+        hasMore: false,
+      };
+    }
+
+    return result.data;
+  }, [getBusinessesByStatus, tabValue]);
 
   const handleCreateBusiness = () => {
     navigate('/createoreditbusiness/0');
@@ -16,6 +56,7 @@ const ManageBusinesses = () => {
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
+    setHasBusinesses(true);
   };
 
   return (
@@ -36,7 +77,7 @@ const ManageBusinesses = () => {
           </Button>
         </div>
         {hasBusinesses ? (
-          <InfiniteScrollCards />
+          <InfiniteScrollCards key={tabValue} getCards={getCards} />
         ) : (
           <div className="no-businesses-message">
             <Typography variant="h5">

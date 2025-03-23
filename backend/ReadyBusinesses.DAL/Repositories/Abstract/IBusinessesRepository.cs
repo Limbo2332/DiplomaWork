@@ -20,4 +20,6 @@ public interface IBusinessesRepository
     Task RemoveFromFavoritesAsync(Guid postId, Guid userId);
     
     Task<Post?> GetBusinessAsync(Guid id);
+    
+    Task<IEnumerable<PostSocialMedia>> GetPostSocialMediasAsync(Guid postId);
 }

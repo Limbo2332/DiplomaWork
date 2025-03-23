@@ -2,6 +2,7 @@
 
 export type PreviewBusinessDto = {
   id: string;
+  createdBy: string;
   previewImageUrl: string;
   name: string;
   price: number;

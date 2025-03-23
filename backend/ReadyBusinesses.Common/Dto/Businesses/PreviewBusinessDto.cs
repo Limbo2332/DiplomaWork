@@ -6,6 +6,8 @@ public class PreviewBusinessDto
 {
     public Guid Id { get; set; }
     
+    public Guid CreatedBy { get; set; }
+    
     public required string PreviewImageUrl { get; set; }
 
     public required string Name { get; set; }

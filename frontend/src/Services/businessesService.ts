@@ -9,6 +9,7 @@ import { AddToFavoritesRequest } from '../Types/Businesses/Requests/addToFavorit
 import { BusinessDto } from '../Types/Businesses/businessDto.ts';
 import { ApproveBusinessDto } from '../Types/Businesses/Requests/approveBusinessDto.ts';
 import { RejectBusinessDto } from '../Types/Businesses/Requests/rejectBusinessDto.ts';
+import { GetBusinessesByStatus } from '../Types/Businesses/Requests/getBusinessesByStatus.ts';
 
 const useBusinessService = () => {
   const { get, post, postFormData } = useHttpService({
@@ -31,6 +32,10 @@ const useBusinessService = () => {
     return await postFormData('/create', request);
   }, [postFormData]);
 
+  const editBusiness = useCallback(async (request: FormData): Promise<Result<void>> => {
+    return await postFormData('/edit', request);
+  }, [postFormData]);
+
   const addToFavoriteBusiness = useCallback(async (request: AddToFavoritesRequest): Promise<Result<void>> => {
     return await post('/favorites', request);
   }, [post]);
@@ -43,6 +48,10 @@ const useBusinessService = () => {
     return await post('/reject', request);
   }, [post]);
 
+  const getBusinessesByStatus = useCallback(async (request: GetBusinessesByStatus): Promise<Result<MainFeedBusinessesResponseDto>> => {
+    return await post('/status', request);
+  }, [post]);
+
   return {
     getMainFeedBusinesses,
     getUnapprovedFeedBusinesses,
@@ -51,6 +60,8 @@ const useBusinessService = () => {
     getBusiness,
     approveBusiness,
     rejectBusiness,
+    getBusinessesByStatus,
+    editBusiness,
   };
 };
 

@@ -21,4 +21,6 @@ public interface IUserRepository
     Task UpdateUserDescriptionAsync(Guid userId, string description);
     
     Task UpdateUserAvatarProfileAsync(User currentUser, Picture picture);
+    
+    Task<PostPicture?> GetPostPictureAsync(Guid id);
 }

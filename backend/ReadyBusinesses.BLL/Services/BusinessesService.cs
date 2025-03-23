@@ -286,7 +286,7 @@ public class BusinessesService : IBusinessesService
             
             post.SocialMedias.Add(postSocialMedia);
         }
-
+        
         await _repository.SavePostAsync(post);
     }
 
@@ -348,5 +348,71 @@ public class BusinessesService : IBusinessesService
         
         business.BusinessStatus = BusinessStatus.Denied;
         await _repository.EditPostAsync(business);
+    }
+
+    public async Task<MainFeedBusinessesResponseDto> GetBusinessesByStatusAsync(GetBusinessesByStatusDto request)
+    {
+        var currentUserId = _userIdGetter.CurrentUserId;
+        var businesses = _repository.GetPosts(request.Status);
+        
+        var businessesList = await businesses
+            .Skip(request.Offset)
+            .Take(request.PageCount)
+            .ToListAsync();
+
+        return new MainFeedBusinessesResponseDto
+        {
+            PreviewBusinesses = businessesList
+                .Select(business => PostToBusinessPreviewDto.Map(business, currentUserId)),
+            HasMore = businesses.Count() > request.Offset + request.PageCount
+        };
+    }
+
+    public async Task EditBusinessAsync(EditBusinessRequestDto request)
+    {
+        var currentUserId = _userIdGetter.CurrentUserId;
+        var user = await _userRepository.GetByIdAsync(currentUserId);
+
+        var post = EditBusinessRequestDtoToBusiness.Map(request);
+        post.CreatedBy = currentUserId;
+        post.CreatedByUser = user!;
+
+        foreach (var imagePath in request.OldImages)
+        {
+            var postPicture = await _userRepository.GetPostPictureAsync(imagePath.Id);
+
+            if (postPicture is null)
+            {
+                continue;
+            }
+            
+            post.Pictures.Add(postPicture);
+        }
+        
+        foreach (var imageFile in request.NewImages)
+        {
+            using var memoryStream = new MemoryStream();
+            await imageFile.CopyToAsync(memoryStream);
+
+            var profileImage = new Picture
+            {
+                Id = Guid.NewGuid(),
+                Data = memoryStream.ToArray(),
+                Name = imageFile.Name,
+                ContentType = imageFile.ContentType
+            };
+
+            var postPicture = new PostPicture
+            {
+                PostId = post.Id,
+                Post = post,
+                Picture = profileImage,
+                PictureId = profileImage.Id
+            };
+            
+            post.Pictures.Add(postPicture);
+        }
+        
+        await _repository.EditPostAsync(post);
     }
 }

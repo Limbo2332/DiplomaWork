@@ -47,6 +47,7 @@ import { useNavigate, useParams } from 'react-router';
 import { ImagePathDto } from '../../Types/BlobImage/imagePathDto.ts';
 
 interface BusinessState {
+  id?: string;
   name: string;
   location: string;
   category: string;
@@ -139,7 +140,7 @@ const CreateEditBusiness: React.FC = () => {
 
   const { id } = useParams();
 
-  const { createBusiness, getBusiness, approveBusiness, rejectBusiness } = useBusinessService();
+  const { createBusiness, getBusiness, editBusiness, approveBusiness, rejectBusiness } = useBusinessService();
   const { showSuccessNotification } = useNotification();
 
   const onDrop = (acceptedFiles: File[]) => {
@@ -172,13 +173,30 @@ const CreateEditBusiness: React.FC = () => {
               formDataToSend.append(key, item.toString());
             });
           }
-        } else if (value !== null) {
+        } else if (value !== null && value !== undefined) {
           formDataToSend.append(key, value.toString());
         }
       }
     }
 
-    await createBusiness(formDataToSend);
+    if (id) {
+      formDataToSend.append('id', id);
+
+      if (data.images) {
+        const oldImages = data.images.filter(image => (image as ImagePathDto)?.id !== undefined) as ImagePathDto[];
+        const newImages = data.images.filter(image => (image as File)?.name !== undefined) as File[];
+
+        newImages.forEach(file => {
+          formDataToSend.append('newImages', file as File);
+        });
+
+        formDataToSend.append('oldImages', JSON.stringify(oldImages));
+      }
+
+      await editBusiness(formDataToSend);
+    } else {
+      await createBusiness(formDataToSend);
+    }
 
     setIsLoading(false);
     showSuccessNotification('Бізнес успішно відправлений на верифікацію!');

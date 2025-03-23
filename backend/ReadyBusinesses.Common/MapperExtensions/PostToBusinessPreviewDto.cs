@@ -12,6 +12,7 @@ public static class PostToBusinessPreviewDto
         return new PreviewBusinessDto
         {
             Id = post.Id,
+            CreatedBy = currentUserId,
             Category = post.Category,
             Location = post.Location,
             Name = post.Name,

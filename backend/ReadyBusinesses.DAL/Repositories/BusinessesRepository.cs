@@ -90,4 +90,13 @@ public class BusinessesRepository : IBusinessesRepository
                 .ThenInclude(socialMedia => socialMedia.SocialMedia)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
+
+    public async Task<IEnumerable<PostSocialMedia>> GetPostSocialMediasAsync(Guid postId)
+    {
+        return await _context.PostsSocialMedias
+            .Include(p => p.SocialMedia)
+            .Include(p => p.Post)
+            .Where(p => p.PostId == postId)
+            .ToListAsync();
+    }
 }

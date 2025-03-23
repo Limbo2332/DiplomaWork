@@ -27,10 +27,10 @@ const Card = ({
   businessToPreviewDto,
 }: CardProps) => {
   const navigate = useNavigate();
-  const { isAdmin } = useAuth();
+  const { isAdmin, currentUser } = useAuth();
 
   const onCardClick = () => {
-    if (isAdmin) {
+    if (isAdmin || currentUser?.id === businessToPreviewDto.createdBy) {
       navigate(`/createoreditbusiness/${businessToPreviewDto.id}`);
       return;
     }

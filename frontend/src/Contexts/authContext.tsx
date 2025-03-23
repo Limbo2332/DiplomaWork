@@ -47,7 +47,7 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
   }, [navigate, refreshTokenValue, removeRefreshToken]);
 
   useEffect(() => {
-    const { accessToken, refreshToken, isAdmin } = getTokens();
+    const { accessToken, refreshToken, isAdmin, currentUser } = getTokens();
 
     if (accessToken) {
       setAccessToken(accessToken);
@@ -60,13 +60,17 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
     if (isAdmin) {
       setIsAdmin(JSON.parse(isAdmin));
     }
+
+    if (currentUser) {
+      setCurrentUser(currentUser);
+    }
   }, []);
 
   useEffect(() => {
     if (accessToken && refreshTokenValue) {
-      setTokens(accessToken, refreshTokenValue, isAdmin);
+      setTokens(accessToken, refreshTokenValue, isAdmin, currentUser);
     }
-  }, [refreshTokenValue, accessToken, isAdmin]);
+  }, [refreshTokenValue, accessToken, isAdmin, currentUser]);
 
   const registerUser = useCallback(async (email: string, fullName: string, password: string) => {
     const data: UserRegisterDto = { email, fullName, password };
@@ -77,7 +81,7 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
     }
 
     if (result.data) {
-      setTokens(result.data.token.accessToken, result.data.token.refreshToken, result.data.user.isAdmin);
+      setTokens(result.data.token.accessToken, result.data.token.refreshToken, result.data.user.isAdmin, result.data.user);
       setAccessToken(result.data.token.accessToken);
       setRefreshTokenValue(result.data.token.refreshToken);
       setCurrentUser(result.data.user);
@@ -96,7 +100,7 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
     }
 
     if (result.data) {
-      setTokens(result.data.token.accessToken, result.data.token.refreshToken, result.data.user.isAdmin);
+      setTokens(result.data.token.accessToken, result.data.token.refreshToken, result.data.user.isAdmin, result.data.user);
       setAccessToken(result.data.token.accessToken);
       setRefreshTokenValue(result.data.token.refreshToken);
       setIsAdmin(result.data.user.isAdmin);

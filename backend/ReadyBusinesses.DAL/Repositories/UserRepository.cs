@@ -87,4 +87,9 @@ public class UserRepository : IUserRepository
         currentUser.ProfileAvatarId = picture.Id;
         await _dbContext.SaveChangesAsync();
     }
+
+    public Task<PostPicture?> GetPostPictureAsync(Guid id)
+    {
+        return _dbContext.PostPictures.FirstOrDefaultAsync(p => p.PictureId == id);
+    }
 }
