@@ -16,7 +16,7 @@ public static class EditBusinessRequestDtoToBusiness
             PriceInUah = CurrencyConvertation.ToUah(editBusinessRequestDto.Currency, editBusinessRequestDto.Price),
             Currency = editBusinessRequestDto.Currency,
             Location = editBusinessRequestDto.Location,
-            Category = null,
+            Category = editBusinessRequestDto.Category,
             RoomArea = editBusinessRequestDto.Area,
             RoomRent = editBusinessRequestDto.RentPrice,
             AverageChequePrice = editBusinessRequestDto.AverageCheck,
@@ -35,7 +35,7 @@ public static class EditBusinessRequestDtoToBusiness
             EmployersCount = editBusinessRequestDto.Employees,
             EmployersSalaryPerMonth = editBusinessRequestDto.SalaryExpenses,
             BusinessStatus = BusinessStatus.WaitingForApproval,
-            HasCompetitors = editBusinessRequestDto.HasCompetitors
+            HasCompetitors = editBusinessRequestDto.HasCompetitors,
         };
     }
 }

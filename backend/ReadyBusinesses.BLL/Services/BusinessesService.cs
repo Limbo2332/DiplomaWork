@@ -377,6 +377,8 @@ public class BusinessesService : IBusinessesService
         post.CreatedBy = currentUserId;
         post.CreatedByUser = user!;
 
+        var currentPost = await _repository.GetPostByIdAsync(post.Id);
+
         foreach (var imagePath in request.OldImages)
         {
             var postPicture = await _userRepository.GetPostPictureAsync(imagePath.Id);
@@ -398,14 +400,16 @@ public class BusinessesService : IBusinessesService
             {
                 Id = Guid.NewGuid(),
                 Data = memoryStream.ToArray(),
-                Name = imageFile.Name,
+                Name = imageFile.FileName,
                 ContentType = imageFile.ContentType
             };
+            
+            await _userRepository.AddPictureAsync(profileImage);
 
             var postPicture = new PostPicture
             {
-                PostId = post.Id,
-                Post = post,
+                PostId = currentPost!.Id,
+                Post = currentPost,
                 Picture = profileImage,
                 PictureId = profileImage.Id
             };
@@ -413,6 +417,6 @@ public class BusinessesService : IBusinessesService
             post.Pictures.Add(postPicture);
         }
         
-        await _repository.EditPostAsync(post);
+        await _repository.EditPostAsync(currentPost!, post);
     }
 }

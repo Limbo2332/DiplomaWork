@@ -1,41 +1,35 @@
-﻿import React, { useEffect, useState } from 'react';
-import { Checkbox, FormControlLabel } from '@mui/material';
+﻿import React from 'react';
+import { Box, Switch, Typography } from '@mui/joy';
 
-interface SingleCheckboxFilterProps {
-  label: string;
-  checked?: boolean;
-  onChange: (value: boolean) => void;
-}
-
-const SingleCheckboxFilter = ({
+const CheckboxFilterControl = ({
   label,
-  checked = false,
+  icon,
+  checked,
   onChange,
-}: SingleCheckboxFilterProps) => {
-  const [isChecked, setIsChecked] = useState(checked);
-
-  useEffect(() => {
-    setIsChecked(checked);
-  }, [checked]);
-
-  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(event.target.checked);
-
-    setIsChecked(event.target.checked);
-  };
-
+  disabled,
+}: {
+  label: string;
+  icon?: React.ReactNode;
+  checked?: boolean;
+  onChange: (checked: boolean) => void;
+  disabled?: boolean;
+}) => {
   return (
-    <FormControlLabel
-      control={
-        <Checkbox
-          checked={isChecked}
-          onChange={handleCheckboxChange}
-          name={label}
-        />
-      }
-      label={label}
-    />
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        py: 0.5,
+      }}
+    >
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ color: 'primary.500', mr: 1 }}>{icon}</Box>
+        <Typography level="body-md">{label}</Typography>
+      </Box>
+      <Switch disabled={disabled} checked={checked} onChange={(e) => onChange(e.target.checked)} />
+    </Box>
   );
 };
 
-export default SingleCheckboxFilter;
+export default CheckboxFilterControl;

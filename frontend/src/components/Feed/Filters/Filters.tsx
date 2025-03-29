@@ -1,23 +1,39 @@
-﻿import React, { useCallback, useState } from 'react';
-import { Box, Button, Collapse, Grid, IconButton, Typography } from '@mui/material';
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import RangeFilter from '../../Common/RangeFilter/RangeFilter.tsx';
-import CurrencyRangeFilter from '../../Common/CurrencyRangeFilter/CurrencyRangeFilter.tsx';
-import SingleCheckboxFilter from '../../Common/CheckboxFilter/CheckboxFilter.tsx';
-import HryvniaRangeFilter from '../../Common/HryvnyaRangeFilter/HryvnyaRangeFilter.tsx';
-import { FilterDto } from '../../../Types/Businesses/filterDto.ts';
-import { defaultFilterDtoValues } from '../../../Pages/MainFeed/MainFeed.tsx';
-import { Currency } from '../../Common/CurrencyDropdown/CurrencyDropdown.tsx';
+﻿'use client';
+
+import React, { useCallback, useState } from 'react';
+import { Box, Button, Card, CardContent, Divider, Grid, IconButton, Stack, Typography } from '@mui/joy';
+import {
+  AddCircle,
+  Apartment,
+  Bookmark,
+  BusinessCenter,
+  EvStation,
+  ExpandLess,
+  ExpandMore,
+  FilterAlt,
+  Handshake,
+  HomeRepairService,
+  LocalShipping,
+  MonetizationOn,
+  Receipt,
+  RestartAlt,
+  SupervisorAccount,
+  SupportAgent,
+  Timer,
+  VisibilityOff,
+} from '@mui/icons-material';
+import type { FilterDto } from '../../../Types/Businesses/filterDto';
+import { defaultFilterDtoValues } from '../../../Pages/MainFeed/MainFeed';
+import CurrencyRangeFilterControl from '../../Common/CurrencyRangeFilter/CurrencyRangeFilter';
+import RangeFilterControl from '../../Common/RangeFilter/RangeFilter';
+import CheckboxFilterControl from '../../Common/CheckboxFilter/CheckboxFilter';
 
 interface FiltersProps {
   filter: FilterDto;
   setFilter: (filterDto: FilterDto) => void;
 }
 
-const Filters = ({
-  filter,
-  setFilter,
-}: FiltersProps) => {
+const Filters = ({ filter, setFilter }: FiltersProps) => {
   const [filtersExpanded, setFiltersExpanded] = useState(false);
 
   const handleResetFilters = useCallback(() => {
@@ -25,205 +41,297 @@ const Filters = ({
   }, [setFilter]);
 
   return (
-    <Box sx={{
-      border: '2px solid #b3d4fc',
-      borderRadius: 1,
-      padding: 2,
-      marginTop: 1,
-    }}>
+    <Card
+      variant="outlined"
+      sx={{
+        mt: 2,
+        overflow: 'visible',
+      }}
+    >
       <Box
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: filtersExpanded ? 2 : 0,
+          p: 2,
+          borderBottom: filtersExpanded ? '1px solid' : 'none',
+          borderColor: 'divider',
         }}
       >
-        <Typography variant="h6">Фільтри</Typography>
-        <IconButton onClick={() => setFiltersExpanded(!filtersExpanded)}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <FilterAlt sx={{ mr: 1, color: 'primary.500' }} />
+          <Typography level="title-md">Фільтри</Typography>
+        </Box>
+        <IconButton variant="plain" color="neutral" onClick={() => setFiltersExpanded(!filtersExpanded)}>
           {filtersExpanded ? <ExpandLess /> : <ExpandMore />}
         </IconButton>
       </Box>
-      <Collapse in={filtersExpanded}>
-        <Box>
+
+      {filtersExpanded && (
+        <CardContent sx={{ p: 3 }}>
           <Grid container spacing={3}>
-            <Grid item xs={12} sm={6} md={3.6}>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <CurrencyRangeFilter label="Ціна"
-                  min={filter.priceStart}
-                  max={filter.priceEnd}
+            <Grid xs={12} md={4}>
+              <Stack spacing={3}>
+                <CurrencyRangeFilterControl
+                  label="Ціна"
+                  min={0}
+                  max={10000000}
                   step={1000}
-                  onSubmit={(minValue, maxValue) => setFilter({
-                    ...filter,
-                    priceStart: minValue,
-                    priceEnd: maxValue,
-                  })}
-                  onCurrencyChange={(currency: Currency) => {
+                  value={[filter.priceStart, filter.priceEnd]}
+                  onChange={(newValue) =>
+                    setFilter({
+                      ...filter,
+                      priceStart: newValue[0],
+                      priceEnd: newValue[1],
+                    })
+                  }
+                  currency={filter.priceCurrency}
+                  onCurrencyChange={(currency) =>
                     setFilter({
                       ...filter,
                       priceCurrency: currency,
-                    });
-                  }}
+                    })
+                  }
                 />
-                <RangeFilter
+
+                <RangeFilterControl
                   label="Площа приміщення"
-                  min={filter.flatSquareStart}
-                  max={filter.flatSquareEnd}
+                  icon={<Apartment />}
+                  min={0}
+                  max={5000}
                   step={5}
-                  onSubmit={(minValue, maxValue) => setFilter({
-                    ...filter,
-                    flatSquareStart: minValue,
-                    flatSquareEnd: maxValue,
-                  })}
-                  elementPreview={<span className="mx-1">м<sup>2</sup></span>}
-                  element={<Typography variant="body2" color="textSecondary"
-                    className="d-flex align-items-center">м<sup>2</sup></Typography>}
+                  value={[filter.flatSquareStart, filter.flatSquareEnd]}
+                  onChange={(newValue) =>
+                    setFilter({
+                      ...filter,
+                      flatSquareStart: newValue[0],
+                      flatSquareEnd: newValue[1],
+                    })
+                  }
+                  unit="м²"
                 />
-                <RangeFilter
+
+                <RangeFilterControl
                   label="Кількість працівників"
-                  min={filter.amountOfWorkersStart}
-                  max={filter.amountOfWorkersEnd}
+                  icon={<SupervisorAccount />}
+                  min={1}
+                  max={1000}
                   step={1}
-                  onSubmit={(minValue, maxValue) => setFilter({
-                    ...filter,
-                    amountOfWorkersStart: minValue,
-                    amountOfWorkersEnd: maxValue,
-                  })}
+                  value={[filter.amountOfWorkersStart, filter.amountOfWorkersEnd]}
+                  onChange={(newValue) =>
+                    setFilter({
+                      ...filter,
+                      amountOfWorkersStart: newValue[0],
+                      amountOfWorkersEnd: newValue[1],
+                    })
+                  }
                 />
-              </Box>
+              </Stack>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={5}>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <HryvniaRangeFilter label="Середній чек"
-                  min={filter.averageChequeStart}
-                  max={filter.averageChequeEnd}
-                  step={100}
-                  onSubmit={(minValue, maxValue) => setFilter({
-                    ...filter,
-                    averageChequeStart: minValue,
-                    averageChequeEnd: maxValue,
-                  })}
+            {/* Financial Filters */}
+            <Grid xs={12} md={4}>
+              <Stack spacing={3}>
+                <RangeFilterControl
+                  label="Середній чек"
+                  icon={<Receipt />}
+                  min={0}
+                  max={15000}
+                  step={1}
+                  value={[filter.averageChequeStart, filter.averageChequeEnd]}
+                  onChange={(newValue) =>
+                    setFilter({
+                      ...filter,
+                      averageChequeStart: newValue[0],
+                      averageChequeEnd: newValue[1],
+                    })
+                  }
+                  unit="грн"
                 />
 
-                <HryvniaRangeFilter label="Середній виторг на місяць"
-                  min={filter.averageIncomeStart}
-                  max={filter.averageIncomeEnd}
-                  step={100}
-                  onSubmit={(minValue, maxValue) => setFilter({
-                    ...filter,
-                    averageIncomeStart: minValue,
-                    averageIncomeEnd: maxValue,
-                  })}
+                <RangeFilterControl
+                  label="Середній виторг на місяць"
+                  icon={<MonetizationOn />}
+                  min={1}
+                  max={1000000}
+                  step={10000}
+                  value={[filter.averageIncomeStart, filter.averageIncomeEnd]}
+                  onChange={(newValue) =>
+                    setFilter({
+                      ...filter,
+                      averageIncomeStart: newValue[0],
+                      averageIncomeEnd: newValue[1],
+                    })
+                  }
+                  unit="грн"
                 />
 
-                <HryvniaRangeFilter label="Середній чистий прибуток на місяць"
-                  min={filter.averageProfitStart}
-                  max={filter.averageProfitEnd}
-                  step={100}
-                  onSubmit={(minValue, maxValue) => setFilter({
-                    ...filter,
-                    averageProfitStart: minValue,
-                    averageProfitEnd: maxValue,
-                  })}
+                <RangeFilterControl
+                  label="Середній чистий прибуток на місяць"
+                  icon={<AddCircle />}
+                  min={1}
+                  max={1000000}
+                  step={5000}
+                  value={[filter.averageProfitStart, filter.averageProfitEnd]}
+                  onChange={(newValue) =>
+                    setFilter({
+                      ...filter,
+                      averageProfitStart: newValue[0],
+                      averageProfitEnd: newValue[1],
+                    })
+                  }
+                  unit="грн"
                 />
-                <RangeFilter
+
+                <RangeFilterControl
                   label="Час окупності бізнесу"
-                  min={filter.timeToPaybackStart}
-                  max={filter.timeToPaybackEnd}
+                  icon={<Timer />}
+                  min={1}
+                  max={1200}
                   step={1}
-                  onSubmit={(minValue, maxValue) => setFilter({
-                    ...filter,
-                    timeToPaybackStart: minValue,
-                    timeToPaybackEnd: maxValue,
-                  })}
-                  elementPreview={<span className="mx-1">місяців</span>}
-                  element={<Typography variant="body2" color="textSecondary"
-                    className="d-flex align-items-center">місяців</Typography>}
+                  value={[filter.timeToPaybackStart, filter.timeToPaybackEnd]}
+                  onChange={(newValue) =>
+                    setFilter({
+                      ...filter,
+                      timeToPaybackStart: newValue[0],
+                      timeToPaybackEnd: newValue[1],
+                    })
+                  }
+                  unit="місяців"
                 />
-              </Box>
+              </Stack>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={3}>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <SingleCheckboxFilter label="З обладнанням"
-                  checked={filter.hasEquipment}
-                  onChange={(changedValue) => setFilter({
-                    ...filter,
-                    hasEquipment: changedValue,
-                  })}
-                />
+            {/* Checkbox Filters */}
+            <Grid xs={12} md={4}>
+              <Card variant="soft" sx={{ p: 2 }}>
+                <Typography level="title-sm" sx={{ mb: 1 }}>
+                  Характеристики бізнесу
+                </Typography>
+                <Divider sx={{ my: 1 }} />
+                <Stack spacing={1}>
+                  <CheckboxFilterControl
+                    label="З обладнанням"
+                    icon={<HomeRepairService />}
+                    checked={filter.hasEquipment}
+                    onChange={(checked) =>
+                      setFilter({
+                        ...filter,
+                        hasEquipment: checked,
+                      })
+                    }
+                  />
 
-                <SingleCheckboxFilter label="З генератором чи EcoFlow"
-                  checked={filter.hasGeneratorOrEcoFlow}
-                  onChange={(changedValue) => setFilter({
-                    ...filter,
-                    hasGeneratorOrEcoFlow: changedValue,
-                  })}
-                />
+                  <CheckboxFilterControl
+                    label="З генератором чи EcoFlow"
+                    icon={<EvStation />}
+                    checked={filter.hasGeneratorOrEcoFlow}
+                    onChange={(checked) =>
+                      setFilter({
+                        ...filter,
+                        hasGeneratorOrEcoFlow: checked,
+                      })
+                    }
+                  />
 
-                <SingleCheckboxFilter
-                  label="Торг"
-                  checked={filter.hasBargain}
-                  onChange={(changedValue) => setFilter({
-                    ...filter,
-                    hasBargain: changedValue,
-                  })}
-                />
+                  <CheckboxFilterControl
+                    label="Торг"
+                    icon={<Handshake />}
+                    checked={filter.hasBargain}
+                    onChange={(checked) =>
+                      setFilter({
+                        ...filter,
+                        hasBargain: checked,
+                      })
+                    }
+                  />
 
-                <SingleCheckboxFilter
-                  label="Підтримка від власника"
-                  checked={filter.hasSupportFromOwner}
-                  onChange={(changedValue) => setFilter({
-                    ...filter,
-                    hasSupportFromOwner: changedValue,
-                  })}
-                />
+                  <CheckboxFilterControl
+                    label="Підтримка від власника"
+                    icon={<SupportAgent />}
+                    checked={filter.hasSupportFromOwner}
+                    onChange={(checked) =>
+                      setFilter({
+                        ...filter,
+                        hasSupportFromOwner: checked,
+                      })
+                    }
+                  />
 
-                <SingleCheckboxFilter label="ФОП"
-                  checked={filter.hasPhop}
-                  onChange={(changedValue) => setFilter({
-                    ...filter,
-                    hasPhop: changedValue,
-                  })}
-                />
+                  <CheckboxFilterControl
+                    label="ФОП"
+                    icon={<BusinessCenter />}
+                    checked={filter.hasPhop}
+                    onChange={(checked) =>
+                      setFilter({
+                        ...filter,
+                        hasPhop: checked,
+                      })
+                    }
+                  />
 
-                <SingleCheckboxFilter label="Інтеграція з сервісами доставки"
-                  checked={filter.hasIntegrationWithDeliveryServices}
-                  onChange={(changedValue) => setFilter({
-                    ...filter,
-                    hasIntegrationWithDeliveryServices: changedValue,
-                  })}
-                />
+                  <CheckboxFilterControl
+                    label="Інтеграція з сервісами доставки"
+                    icon={<LocalShipping />}
+                    checked={filter.hasIntegrationWithDeliveryServices}
+                    onChange={(checked) =>
+                      setFilter({
+                        ...filter,
+                        hasIntegrationWithDeliveryServices: checked,
+                      })
+                    }
+                  />
 
-                <SingleCheckboxFilter label="Лише збережені"
-                  checked={filter.onlySaved}
-                  onChange={(changedValue) => setFilter({
-                    ...filter,
-                    onlySaved: changedValue,
-                  })}
-                />
+                  <Divider sx={{ my: 1 }} />
+                  <Typography level="title-sm" sx={{ mb: 1 }}>
+                    Налаштування відображення
+                  </Typography>
 
-                <SingleCheckboxFilter label="Сховати переглянуті"
-                  checked={filter.hideViewed}
-                  onChange={(changedValue) => setFilter({
-                    ...filter,
-                    hideViewed: changedValue,
-                  })}
-                />
-              </Box>
+                  <CheckboxFilterControl
+                    label="Лише збережені"
+                    icon={<Bookmark />}
+                    checked={filter.onlySaved}
+                    onChange={(checked) =>
+                      setFilter({
+                        ...filter,
+                        onlySaved: checked,
+                      })
+                    }
+                  />
+
+                  <CheckboxFilterControl
+                    label="Сховати переглянуті"
+                    icon={<VisibilityOff />}
+                    checked={filter.hideViewed}
+                    onChange={(checked) =>
+                      setFilter({
+                        ...filter,
+                        hideViewed: checked,
+                      })
+                    }
+                  />
+                </Stack>
+              </Card>
             </Grid>
           </Grid>
 
-          <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 3 }}>
-            <Button variant="contained" onClick={handleResetFilters}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <Button
+              variant="outlined"
+              color="neutral"
+              startDecorator={<RestartAlt />}
+              onClick={handleResetFilters}
+              size="lg"
+              sx={{ borderRadius: 'full', px: 4 }}
+            >
               Скинути фільтри
             </Button>
           </Box>
-        </Box>
-      </Collapse>
-    </Box>
+        </CardContent>
+      )}
+    </Card>
   );
 };
 
 export default Filters;
+

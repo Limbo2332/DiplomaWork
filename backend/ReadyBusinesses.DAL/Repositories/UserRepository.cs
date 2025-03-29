@@ -92,4 +92,18 @@ public class UserRepository : IUserRepository
     {
         return _dbContext.PostPictures.FirstOrDefaultAsync(p => p.PictureId == id);
     }
+
+    public async Task AddPostPictureAsync(PostPicture postPicture)
+    {
+        await _dbContext.PostPictures.AddAsync(postPicture);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<Picture> AddPictureAsync(Picture picture)
+    {
+        var addedPicture = await _dbContext.Pictures.AddAsync(picture);
+        await _dbContext.SaveChangesAsync();
+
+        return addedPicture.Entity;
+    }
 }

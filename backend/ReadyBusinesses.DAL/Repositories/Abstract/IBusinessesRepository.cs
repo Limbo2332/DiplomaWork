@@ -14,12 +14,12 @@ public interface IBusinessesRepository
     Task SavePostAsync(Post post);
     
     Task EditPostAsync(Post post);
+    
+    Task EditPostAsync(Post currentPost, Post post);
 
     Task AddToFavoritesAsync(Post post, User user);
     
     Task RemoveFromFavoritesAsync(Guid postId, Guid userId);
     
     Task<Post?> GetBusinessAsync(Guid id);
-    
-    Task<IEnumerable<PostSocialMedia>> GetPostSocialMediasAsync(Guid postId);
 }

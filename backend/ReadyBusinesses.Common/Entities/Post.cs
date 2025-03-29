@@ -54,6 +54,8 @@ public class Post : BaseEntity
     
     public decimal EmployersSalaryPerMonth { get; set; }
     
+    public int InvestmentScore { get; set; }
+    
     public BusinessStatus BusinessStatus { get; set; }
     
     public Guid CreatedBy { get; set; }

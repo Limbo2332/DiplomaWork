@@ -17,4 +17,5 @@ export type PreviewBusinessDto = {
   location: string;
   creationDate: Date;
   isSaved: boolean;
+  investmentScore: number;
 }

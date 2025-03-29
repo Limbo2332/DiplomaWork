@@ -1,100 +1,251 @@
-﻿import React, { useEffect, useState } from 'react';
-import { Avatar, Divider, Paper, Typography } from '@mui/material';
-import { Facebook, Instagram, Telegram, Twitter, Web } from '@mui/icons-material';
-
-import './AuthorProfile.scss';
-import Menu from '../../components/Menu/Menu.tsx';
-
+﻿import type React from 'react';
+import { useEffect, useState } from 'react';
+import {
+  AspectRatio,
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Divider,
+  Grid,
+  IconButton,
+  Sheet,
+  Stack,
+  Typography,
+} from '@mui/joy';
+import {
+  ArrowBack,
+  Business,
+  CalendarMonth,
+  Call,
+  Email,
+  Facebook,
+  Instagram,
+  Person,
+  Telegram,
+  Twitter,
+  Web,
+} from '@mui/icons-material';
+import { Link, useNavigate, useParams } from 'react-router';
+import Menu from '../../components/Menu/Menu';
 import defaultImage from '../../assets/images/default-image.png';
-import { AuthorDto } from '../../Types/Profile/authorDto.ts';
-import { Loading } from '../../components/Common/Loading/Loading.tsx';
-import useUserService from '../../Services/userService.ts';
-import { Link, useParams } from 'react-router';
+import type { AuthorDto } from '../../Types/Profile/authorDto';
+import { Loading } from '../../components/Common/Loading/Loading';
+import useUserService from '../../Services/userService';
 
-const AuthorProfile: React.FC = () => {
+// Social media link component
+const SocialLink = ({ icon, url }: { icon: React.ReactNode; url: string }) => {
+  if (!url) return null;
+  return (
+    <IconButton
+      component={Link}
+      to={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      variant="soft"
+      color="primary"
+      size="md"
+    >
+      {icon}
+    </IconButton>
+  );
+};
+
+const AuthorProfile = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { getAuthor } = useUserService();
-
   const [authorData, setAuthorData] = useState<AuthorDto | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchAuthorData = async () => {
+      setIsLoading(true);
       const result = await getAuthor(id!);
 
       if (result?.data) {
         setAuthorData(result.data);
       }
+      setIsLoading(false);
     };
 
     fetchAuthorData();
-  }, []);
+  }, [id]);
 
-  if (!authorData) {
+  if (isLoading || !authorData) {
     return <Loading />;
   }
 
   return (
-    <main className="main">
+    <Box sx={{ bgcolor: 'background.surface', minHeight: '100vh' }}>
       <Menu />
-      <div className="author-main">
-        <Paper className="author-profile-container" elevation={3}>
-          <div className="author-profile-header">
-            <Avatar alt={authorData.name} src={authorData.avatarPreview ?? defaultImage} className="author-avatar" sx={{
-              width: '300px !important',
-              height: '300px !important',
-            }} />
-            <Typography variant="h4" className="author-name">
-              {authorData.name}
-            </Typography>
-          </div>
-          <Divider className="divider" />
-          <div className="author-profile-details">
-            <Typography variant="body1" className="author-bio">
-              {authorData.description}
-            </Typography>
-            <div className="author-info">
-              <Typography variant="subtitle1">
-                <strong>Зареєстрований:</strong> {new Date(authorData.registrationDate).toLocaleDateString()}
-              </Typography>
-              {authorData.phoneNumber && (<Typography variant="subtitle1">
-                <strong>Номер телефону:</strong> {authorData.phoneNumber}
-              </Typography>)}
-              <Typography variant="subtitle1">
-                <strong>Email:</strong> {authorData.email}
-              </Typography>
-            </div>
-            <div className="social-medias">
-              {authorData.telegram && (
-                <Link to={authorData.telegram} target="_blank" rel="noopener noreferrer" className="social-media">
-                  <Telegram />
-                </Link>
-              )}
-              {authorData.instagram && (
-                <Link to={authorData.instagram} target="_blank" rel="noopener noreferrer" className="social-media">
-                  <Instagram />
-                </Link>
-              )}
-              {authorData.twitter && (
-                <Link to={authorData.twitter} target="_blank" rel="noopener noreferrer" className="social-media">
-                  <Twitter />
-                </Link>
-              )}
-              {authorData.facebook && (
-                <Link to={authorData.facebook} target="_blank" rel="noopener noreferrer" className="social-media">
-                  <Facebook />
-                </Link>
-              )}
-              {authorData.site && (
-                <Link to={authorData.site} target="_blank" rel="noopener noreferrer" className="social-media">
-                  <Web />
-                </Link>
-              )}
-            </div>
-          </div>
-        </Paper>
-      </div>
-    </main>
+
+      {/* Page Header */}
+      <Sheet
+        variant="soft"
+        color="primary"
+        sx={{
+          p: 2,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2,
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
+        <IconButton variant="soft" color="primary" onClick={() => navigate(-1)}>
+          <ArrowBack />
+        </IconButton>
+        <Typography level="title-md">Профіль продавця</Typography>
+      </Sheet>
+
+      <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto' }}>
+        <Grid container spacing={3}>
+          {/* Left Column - Profile Info */}
+          <Grid xs={12} md={4}>
+            <Card variant="outlined" sx={{ mb: { xs: 2, md: 0 } }}>
+              <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                <Avatar
+                  src={authorData.avatarPreview ?? defaultImage}
+                  alt={authorData.name}
+                  sx={{
+                    width: 150,
+                    height: 150,
+                    mb: 2,
+                    border: '4px solid',
+                    borderColor: 'primary.500',
+                  }}
+                />
+                <Typography level="h3" sx={{ mb: 0.5 }}>
+                  {authorData.name}
+                </Typography>
+                <Chip variant="soft" color="primary" startDecorator={<Person />} size="md">
+                  Продавець бізнесу
+                </Chip>
+
+                <Divider sx={{ my: 2, width: '100%' }} />
+
+                <Stack spacing={2} sx={{ width: '100%' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <CalendarMonth sx={{ color: 'primary.500' }} />
+                    <Box sx={{ textAlign: 'left' }}>
+                      <Typography level="body-xs" color="neutral">
+                        Зареєстрований
+                      </Typography>
+                      <Typography level="body-md">
+                        {new Date(authorData.registrationDate).toLocaleDateString()}
+                      </Typography>
+                    </Box>
+                  </Box>
+
+                  {authorData.phoneNumber && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Call sx={{ color: 'primary.500' }} />
+                      <Box sx={{ textAlign: 'left' }}>
+                        <Typography level="body-xs" color="neutral">
+                          Телефон
+                        </Typography>
+                        <Typography level="body-md">{authorData.phoneNumber}</Typography>
+                      </Box>
+                    </Box>
+                  )}
+
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Email sx={{ color: 'primary.500' }} />
+                    <Box sx={{ textAlign: 'left' }}>
+                      <Typography level="body-xs" color="neutral">
+                        Email
+                      </Typography>
+                      <Typography level="body-md">{authorData.email}</Typography>
+                    </Box>
+                  </Box>
+                </Stack>
+
+                {(authorData.phoneNumber || authorData.telegram || authorData.instagram || authorData.twitter
+                    || authorData.facebook || authorData.site) &&
+                  <>
+                    <Typography level="title-sm" sx={{ mb: 1.5 }}>
+                      Соціальні мережі
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                      <SocialLink icon={<Telegram />} url={authorData.telegram || ''} />
+                      <SocialLink icon={<Instagram />} url={authorData.instagram || ''} />
+                      <SocialLink icon={<Twitter />} url={authorData.twitter || ''} />
+                      <SocialLink icon={<Facebook />} url={authorData.facebook || ''} />
+                      <SocialLink icon={<Web />} url={authorData.site || ''} />
+                    </Box>
+                    <Divider sx={{ my: 2, width: '100%' }} />
+                  </>
+                }
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Right Column - About and Listings */}
+          <Grid xs={12} md={8}>
+            {/* About Section */}
+            <Card variant="outlined" sx={{ mb: 3 }}>
+              <CardContent>
+                <Typography level="title-lg" startDecorator={<Person sx={{ color: 'primary.500' }} />} sx={{ mb: 2 }}>
+                  Про продавця
+                </Typography>
+                <Divider sx={{ mb: 2 }} />
+                {authorData.description ? (
+                  <Typography level="body-md" sx={{ whiteSpace: 'pre-line' }}>
+                    {authorData.description}
+                  </Typography>
+                ) : (
+                  <Typography level="body-md" color="neutral">
+                    Продавець не додав опис про себе.
+                  </Typography>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Listings Section */}
+            <Card variant="outlined">
+              <CardContent>
+                <Typography level="title-lg" startDecorator={<Business sx={{ color: 'primary.500' }} />} sx={{ mb: 2 }}>
+                  Бізнеси продавця
+                </Typography>
+                <Divider sx={{ mb: 2 }} />
+
+                <Grid container spacing={2}>
+                  {[1, 2, 3].map((item) => (
+                    <Grid key={item} xs={12} sm={6} md={4}>
+                      <Card variant="soft" sx={{ height: '100%' }}>
+                        <AspectRatio ratio="4/3" sx={{ minHeight: 120 }}>
+                          <img src={defaultImage} alt="Business preview" style={{ objectFit: 'cover' }} />
+                        </AspectRatio>
+                        <CardContent>
+                          <Typography level="title-sm">Бізнес #{item}</Typography>
+                          <Typography level="body-sm" sx={{ mb: 1 }}>
+                            Категорія бізнесу
+                          </Typography>
+                          <Typography level="body-sm" fontWeight="bold">
+                            {(Math.random() * 1000000).toFixed(0)} грн
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                  <Button variant="outlined" color="primary" sx={{ borderRadius: 'full', px: 4 }}>
+                    Переглянути всі бізнеси
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Box>
+    </Box>
   );
 };
 
 export default AuthorProfile;
+

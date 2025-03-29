@@ -27,7 +27,10 @@ public class BusinessesRepository : IBusinessesRepository
 
     public Task<Post?> GetPostByIdAsync(Guid id)
     {
-        return _context.Posts.FirstOrDefaultAsync(p => p.Id == id);
+        return _context.Posts
+            .Include(p => p.Pictures)
+            .ThenInclude(picture => picture.Picture)
+            .FirstOrDefaultAsync(p => p.Id == id);
     }
 
     public IEnumerable<Guid> GetSavedPostsIds(Guid userId)
@@ -47,6 +50,27 @@ public class BusinessesRepository : IBusinessesRepository
     {
         _context.Posts.Update(post);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task EditPostAsync(Post currentPost, Post post)
+    {
+        _context.Entry(currentPost).CurrentValues.SetValues(post);
+        
+        foreach (var picture in post.Pictures)
+        {
+            currentPost.Pictures.Add(picture);
+        }
+
+        try
+        {
+            _context.Posts.Update(currentPost);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     public async Task AddToFavoritesAsync(Post post, User user)

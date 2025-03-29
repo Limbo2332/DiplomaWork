@@ -1,7 +1,6 @@
-﻿import { Typography } from '@mui/material';
-
+﻿import { Tooltip, Typography } from '@mui/material';
 import './Card.scss';
-import { AccessTime, Apartment, Badge, MonetizationOn, PriceChange, Receipt } from '@mui/icons-material';
+import { AccessTime, Apartment, Assessment, Badge, MonetizationOn, PriceChange, Receipt } from '@mui/icons-material';
 import StarButton from '../Bookmark/StarButton.tsx';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../../../Contexts/authContext.tsx';
@@ -17,6 +16,92 @@ export const currencyToStringRepresentation = (currency: Currency) => {
     case 'USD':
       return 'доларів';
   }
+};
+
+type InvestmentMarkCategory =
+  | 'Відмінна інвестиція'
+  | 'Гарна інвестиція'
+  | 'Задовільна інвестиція'
+  | 'Посередня інвестиція'
+  | 'Ризикована інвестиція';
+
+interface InvestmentMark {
+  category: InvestmentMarkCategory;
+  description: string;
+  score: number;
+  color: string;
+}
+
+const getInvestmentMark = (score: number): InvestmentMark => {
+  if (score >= 90) {
+    return {
+      category: 'Відмінна інвестиція',
+      description: 'Лідер ринку, Високоефективний бізнес',
+      score,
+      color: '#4caf50', // green
+    };
+  } else if (score >= 75) {
+    return {
+      category: 'Гарна інвестиція',
+      description: 'Стабільний і перспективний бізнес',
+      score,
+      color: '#8bc34a', // light green
+    };
+  } else if (score >= 60) {
+    return {
+      category: 'Задовільна інвестиція',
+      description: 'Стабільний бізнес з потенціалом',
+      score,
+      color: '#ffc107', // amber
+    };
+  } else if (score >= 45) {
+    return {
+      category: 'Посередня інвестиція',
+      description: 'Бізнес з викликами та можливостями',
+      score,
+      color: '#ff9800', // orange
+    };
+  } else {
+    return {
+      category: 'Ризикована інвестиція',
+      description: 'Бізнес з високим ризиком',
+      score,
+      color: '#f44336', // red
+    };
+  }
+};
+
+const InvestmentMarkBadge = ({ score }: { score: number }) => {
+  const mark = getInvestmentMark(score);
+
+  return (
+    <Tooltip
+      title={
+        <div>
+          <Typography variant="subtitle2">{mark.category}</Typography>
+          <Typography variant="body2">{mark.description}</Typography>
+          <Typography variant="body2">Оцінка: {mark.score}/100</Typography>
+        </div>
+      }
+      placement="top"
+      arrow
+    >
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px',
+        backgroundColor: mark.color,
+        color: '#fff',
+        padding: '4px 8px',
+        borderRadius: '4px',
+      }}>
+        <Assessment fontSize="small" />
+        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+          {mark.score}
+        </Typography>
+      </div>
+    </Tooltip>
+  );
 };
 
 interface CardProps {
@@ -41,11 +126,26 @@ const Card = ({
   return (
     <div className="d-flex justify-content-center">
       <div className="business-card">
-        <img className="business-card-image" src={businessToPreviewDto.previewImageUrl} alt="Фото оголошення"
-          onClick={onCardClick} />
+        <div className="position-relative">
+          <img
+            className="business-card-image"
+            src={businessToPreviewDto.previewImageUrl || '/placeholder.svg'}
+            alt="Фото оголошення"
+            onClick={onCardClick}
+          />
+          {businessToPreviewDto.investmentScore !== 0 && (
+            <div style={{
+              position: 'absolute',
+              top: '10px',
+              right: '10px',
+              zIndex: 1,
+            }}>
+              <InvestmentMarkBadge score={businessToPreviewDto.investmentScore} />
+            </div>
+          )}
+        </div>
         <div className="business-card-rows">
           <div className="business-card-row">
-            <Typography variant="h4">{businessToPreviewDto.name}</Typography>
             <div className="d-flex flex-row justify-content-between align-items-center gap-2">
               <p
                 className="business-card-price">{businessToPreviewDto.price} {currencyToStringRepresentation(businessToPreviewDto.priceCurrency)}.</p>

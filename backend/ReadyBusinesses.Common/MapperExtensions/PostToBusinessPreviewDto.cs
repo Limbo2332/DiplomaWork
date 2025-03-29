@@ -26,7 +26,8 @@ public static class PostToBusinessPreviewDto
             HasBargain = post.HasBargaining,
             IsSaved = post.CreatedByUser.SavedPosts.Any(p => p.PostId == post.Id && p.UserId == currentUserId),
             AmountOfWorkers = post.EmployersCount,
-            TermToPayBack = Math.Round(post.PriceInUah / post.AverageProfitPerMonth)
+            TermToPayBack = Math.Round(post.PriceInUah / post.AverageProfitPerMonth),
+            InvestmentScore = post.InvestmentScore
         };
     }
 }

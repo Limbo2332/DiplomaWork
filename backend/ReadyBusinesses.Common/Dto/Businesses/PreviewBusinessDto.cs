@@ -35,4 +35,6 @@ public class PreviewBusinessDto
     public DateTime CreationDate { get; set; }
     
     public bool IsSaved { get; set; }
+    
+    public int InvestmentScore { get; set; }
 }

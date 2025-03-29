@@ -1,14 +1,28 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿import type React from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Avatar, Button, Grid, Paper, TextField } from '@mui/material';
-import { Facebook, Instagram, Telegram, Twitter } from '@mui/icons-material';
-import './EditAuthorProfile.scss';
-import Menu from '../../components/Menu/Menu.tsx';
-import useUserService from '../../Services/userService.ts';
-
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CircularProgress,
+  FormControl,
+  FormLabel,
+  Grid,
+  IconButton,
+  Input,
+  Textarea,
+  Typography,
+} from '@mui/joy';
+import { AddAPhoto, Facebook, Instagram, Phone, Save, Telegram, Twitter, Web } from '@mui/icons-material';
+import { useNavigate } from 'react-router';
+import Menu from '../../components/Menu/Menu';
+import useUserService from '../../Services/userService';
 import defaultProfileImage from '../../assets/images/default-image.png';
-import { SetProfileDto } from '../../Types/Profile/setProfileDto.ts';
-import { useNotification } from '../../Contexts/notificationContext.tsx';
+import type { SetProfileDto } from '../../Types/Profile/setProfileDto';
+import { useNotification } from '../../Contexts/notificationContext';
 
 interface AuthorProfileProps {
   profileImageUrl?: string;
@@ -21,7 +35,8 @@ interface AuthorProfileProps {
   twitterLink?: string;
 }
 
-const EditAuthorProfile: React.FC = () => {
+const EditAuthorProfile = () => {
+  const navigate = useNavigate();
   const { control, handleSubmit, reset } = useForm<AuthorProfileProps>({
     defaultValues: {
       description: '',
@@ -34,10 +49,9 @@ const EditAuthorProfile: React.FC = () => {
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [profileImage, setProfileImage] = useState<File | null>(null);
-
   const [fullName, setFullName] = useState<string | null>(null);
-
   const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchProfileInfo = async () => {
@@ -65,10 +79,10 @@ const EditAuthorProfile: React.FC = () => {
     };
 
     fetchProfileInfo();
-  }, []);
+  }, [getProfileInfo, reset]);
 
   const onSubmit = async (data: AuthorProfileProps) => {
-    setIsLoading(true);
+    setIsSubmitting(true);
 
     const setProfileDto: SetProfileDto = {
       profileImage: profileImage,
@@ -110,7 +124,7 @@ const EditAuthorProfile: React.FC = () => {
 
     await setProfileInfo(formData);
 
-    setIsLoading(false);
+    setIsSubmitting(false);
     showSuccessNotification('Інформація успішно збережена!');
   };
 
@@ -130,162 +144,188 @@ const EditAuthorProfile: React.FC = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
-    <main className="main">
+    <Box sx={{ bgcolor: 'background.surface', minHeight: '100vh' }}>
       <Menu />
-      <div className="edit-author-main">
-        <Paper className="edit-author-profile-container" elevation={3}>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="edit-profile-header">
-              <div className="avatar-description-container">
-                <div className="avatar-container">
-                  <Button variant="contained" component="label" className="avatar-upload-button">
-                    <Avatar alt="Author Avatar" src={avatarUrl ?? defaultProfileImage} className="author-avatar" />
-                    <input type="file" hidden onChange={handleAvatarChange} accept="image/*" />
-                  </Button>
-                </div>
-                <div className="description-container">
-                  <TextField
-                    defaultValue=" "
-                    label="Повне ім'я"
-                    fullWidth
-                    margin="normal"
-                    disabled
-                    value={fullName}
-                  />
+
+      <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 900, mx: 'auto' }}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Card variant="outlined">
+            <CardContent sx={{ p: 3 }}>
+              <Grid container spacing={3}>
+                {/* Avatar on the left */}
+                <Grid xs={12} sm={4}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      height: '100%',
+                    }}
+                  >
+                    <Box sx={{ position: 'relative', mb: 2 }}>
+                      <Avatar
+                        src={avatarUrl || defaultProfileImage}
+                        alt="Profile Avatar"
+                        sx={{
+                          width: 150,
+                          height: 150,
+                          border: '4px solid',
+                          borderColor: 'primary.500',
+                        }}
+                      />
+                      <IconButton
+                        component="label"
+                        color="primary"
+                        variant="solid"
+                        size="md"
+                        sx={{
+                          position: 'absolute',
+                          bottom: 0,
+                          right: 0,
+                          borderRadius: '50%',
+                        }}
+                      >
+                        <AddAPhoto />
+                        <input type="file" hidden onChange={handleAvatarChange} accept="image/*" />
+                      </IconButton>
+                    </Box>
+                    <Typography level="title-lg" sx={{ mb: 1 }}>
+                      {fullName}
+                    </Typography>
+                  </Box>
+                </Grid>
+
+                {/* Description on the right */}
+                <Grid xs={12} sm={8}>
                   <Controller
                     name="description"
                     control={control}
                     render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="Опис"
-                        fullWidth
-                        margin="normal"
-                        multiline
-                        rows={3}
-                        disabled={isLoading}
-                      />
+                      <FormControl sx={{ height: '100%' }}>
+                        <Textarea
+                          {...field}
+                          minRows={8}
+                          sx={{ height: 'calc(100% - 30px)' }} // Subtract label height
+                          placeholder="Розкажіть про себе, свій досвід та бізнеси, які ви пропонуєте..."
+                        />
+                      </FormControl>
                     )}
                   />
-                </div>
-              </div>
-            </div>
-            <div className="edit-profile-details">
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                </Grid>
+
+                {/* Contact Info */}
+                <Grid xs={12} sm={6}>
                   <Controller
                     name="phoneNumber"
                     control={control}
                     render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="Номер телефону"
-                        fullWidth
-                        margin="normal"
-                        disabled={isLoading}
-                      />
+                      <FormControl sx={{ mb: 2 }}>
+                        <FormLabel>Номер телефону</FormLabel>
+                        <Input {...field} startDecorator={<Phone />} placeholder="+380 XX XXX XX XX" />
+                      </FormControl>
                     )}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Controller
                     name="personalSiteLink"
                     control={control}
                     render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="Персональний сайт"
-                        fullWidth
-                        margin="normal"
-                        disabled={isLoading}
-                      />
+                      <FormControl sx={{ mb: 2 }}>
+                        <FormLabel>Персональний сайт</FormLabel>
+                        <Input {...field} startDecorator={<Web />} placeholder="https://example.com" />
+                      </FormControl>
                     )}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+
+                <Grid xs={12}>
                   <Controller
                     name="telegramLink"
                     control={control}
                     render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="Telegram"
-                        fullWidth
-                        margin="normal"
-                        InputProps={{
-                          startAdornment: <Telegram className="social-media-icon" />,
-                        }}
-                        disabled={isLoading}
-                      />
+                      <FormControl sx={{ mb: 2 }}>
+                        <Input {...field} startDecorator={<Telegram />} placeholder="Telegram" />
+                      </FormControl>
                     )}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+
+                <Grid xs={12}>
                   <Controller
                     name="instagramLink"
                     control={control}
                     render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="Instagram"
-                        fullWidth
-                        margin="normal"
-                        InputProps={{
-                          startAdornment: <Instagram className="social-media-icon" />,
-                        }}
-                        disabled={isLoading}
-                      />
+                      <FormControl sx={{ mb: 2 }}>
+                        <Input {...field} startDecorator={<Instagram />} placeholder="Instagram" />
+                      </FormControl>
                     )}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+
+                <Grid xs={12}>
                   <Controller
                     name="facebookLink"
                     control={control}
                     render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="Facebook"
-                        fullWidth
-                        margin="normal"
-                        InputProps={{
-                          startAdornment: <Facebook className="social-media-icon" />,
-                        }}
-                        disabled={isLoading}
-                      />
+                      <FormControl sx={{ mb: 2 }}>
+                        <Input {...field} startDecorator={<Facebook />} placeholder="Facebook" />
+                      </FormControl>
                     )}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+
+                <Grid xs={12}>
                   <Controller
                     name="twitterLink"
                     control={control}
                     render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="Twitter"
-                        fullWidth
-                        margin="normal"
-                        InputProps={{
-                          startAdornment: <Twitter className="social-media-icon" />,
-                        }}
-                        disabled={isLoading}
-                      />
+                      <FormControl sx={{ mb: 2 }}>
+                        <Input {...field} startDecorator={<Twitter />} placeholder="Twitter" />
+                      </FormControl>
                     )}
                   />
                 </Grid>
+
+                {/* Save Button */}
+                <Grid xs={12}>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                    <Button
+                      type="submit"
+                      loading={isSubmitting}
+                      size="lg"
+                      color="primary"
+                      startDecorator={<Save />}
+                      sx={{ borderRadius: 'full', px: 4 }}
+                    >
+                      Зберегти зміни
+                    </Button>
+                  </Box>
+                </Grid>
               </Grid>
-              <Button type="submit" variant="contained" color="primary" className="submit-button mt-3"
-                loading={isLoading}>
-                Зберегти
-              </Button>
-            </div>
-          </form>
-        </Paper>
-      </div>
-    </main>
+            </CardContent>
+          </Card>
+        </form>
+      </Box>
+    </Box>
   );
 };
 
 export default EditAuthorProfile;
+

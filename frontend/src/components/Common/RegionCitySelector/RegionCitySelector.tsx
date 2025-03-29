@@ -1,19 +1,20 @@
-﻿import React from 'react';
+﻿'use client';
 import {
   Box,
+  Button,
+  Card,
   Grid,
   IconButton,
+  Input,
   List,
+  ListItem,
   ListItemButton,
-  ListItemText,
-  Paper,
-  TextField,
+  ListItemContent,
+  Sheet,
   Typography,
-} from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useRegionCitySelector } from './RegionCitySelector.logic.ts';
-import ClearIcon from '@mui/icons-material/Clear';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
+} from '@mui/joy';
+import { ArrowBack, Clear, LocationOn, Search } from '@mui/icons-material';
+import { useRegionCitySelector } from './RegionCitySelector.logic';
 
 export interface Region {
   name: string;
@@ -31,58 +32,66 @@ interface RegionCitySelectorProps {
   disabled?: boolean;
   selectedRegion?: string;
   onHandleRegionSelect: (region: string) => void;
+  dropdownWidth?: string | number;
 }
 
 const groupRegionsByLetter = (regions: Region[]) => {
-  return regions.reduce((acc, region) => {
-    const firstLetter = region.name[0].toUpperCase();
+  return regions.reduce(
+    (acc, region) => {
+      const firstLetter = region.name[0].toUpperCase();
 
-    if (!acc[firstLetter]) {
-      acc[firstLetter] = [];
-    }
+      if (!acc[firstLetter]) {
+        acc[firstLetter] = [];
+      }
 
-    const isFirstAdded = acc[firstLetter].length === 0;
+      const isFirstAdded = acc[firstLetter].length === 0;
 
-    acc[firstLetter].push({
-      name: region.name,
-      isFirstAdded,
-    });
+      acc[firstLetter].push({
+        name: region.name,
+        isFirstAdded,
+      });
 
-    return acc;
-  }, {} as Record<string, { name: string; isFirstAdded: boolean }[]>);
+      return acc;
+    },
+    {} as Record<string, { name: string; isFirstAdded: boolean }[]>,
+  );
 };
 
 const groupCitiesByLetter = (cities: string[]) => {
-  return cities.reduce((acc, city) => {
-    const firstLetter = city[0].toUpperCase();
+  return cities.reduce(
+    (acc, city) => {
+      const firstLetter = city[0].toUpperCase();
 
-    if (!acc[firstLetter]) {
-      acc[firstLetter] = [];
-    }
+      if (!acc[firstLetter]) {
+        acc[firstLetter] = [];
+      }
 
-    const isFirstAdded = acc[firstLetter].length === 0;
+      const isFirstAdded = acc[firstLetter].length === 0;
 
-    acc[firstLetter].push({
-      name: city,
-      isFirstAdded,
-    });
+      acc[firstLetter].push({
+        name: city,
+        isFirstAdded,
+      });
 
-    return acc;
-  }, {} as Record<string, { name: string; isFirstAdded: boolean }[]>);
+      return acc;
+    },
+    {} as Record<string, { name: string; isFirstAdded: boolean }[]>,
+  );
 };
 
-const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
+const RegionCitySelector = ({
   regions,
   minWidth = '300px',
   maxWidth = '400px',
   height = '50px',
-  border = '1px solid #ccc',
-  backgroundColor = '#fff',
+  border,
+  backgroundColor,
   open = false,
   disabled = false,
   selectedRegion,
   onHandleRegionSelect,
-}) => {
+  dropdownWidth = '700px',
+}: RegionCitySelectorProps) => {
   const {
     containerRef,
     currentRegion,
@@ -109,43 +118,59 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
 
   if (!isOpen) {
     return (
-      <Box
+      <Button
+        variant="outlined"
+        color="neutral"
+        startDecorator={<LocationOn />}
+        endDecorator={
+          selected && !disabled ? (
+            <IconButton
+              variant="plain"
+              color="neutral"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                clearSelection();
+                setIsOpen(false);
+              }}
+            >
+              <Clear fontSize="small" />
+            </IconButton>
+          ) : null
+        }
         sx={{
-          display: 'flex',
-          alignItems: 'center',
+          minWidth,
+          maxWidth,
+          height,
           justifyContent: 'space-between',
-          border: border,
-          borderRadius: '4px',
-          padding: '8px 12px',
-          minWidth: minWidth,
-          maxWidth: maxWidth,
-          height: height,
-          mx: 'auto',
-          backgroundColor: backgroundColor,
+          borderRadius: 'md',
+          px: 1.5,
+          py: 1,
+          backgroundColor: backgroundColor || 'background.surface',
           cursor: disabled ? 'not-allowed' : 'pointer',
           opacity: disabled ? 0.6 : 1,
+          border: border || '1px solid',
+          borderColor: 'divider',
+          '&:hover': {
+            backgroundColor: disabled ? backgroundColor || 'background.surface' : 'background.level1',
+          },
         }}
         onClick={() => !disabled && setIsOpen(!isOpen)}
+        disabled={disabled}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
-          <LocationOnIcon color="primary" />
-          <Typography variant="body1" sx={{ flex: 1 }}>
-            {selected || 'Виберіть регіон або місто'}
-          </Typography>
-        </Box>
-        {selected && !disabled && (
-          <IconButton
-            size="small"
-            onClick={(e) => {
-              e.stopPropagation();
-              clearSelection();
-              setIsOpen(false);
-            }}
-          >
-            <ClearIcon />
-          </IconButton>
-        )}
-      </Box>
+        <Typography
+          level="body-md"
+          sx={{
+            flex: 1,
+            textAlign: 'left',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {selected || 'Виберіть регіон або місто'}
+        </Typography>
+      </Button>
     );
   }
 
@@ -159,41 +184,54 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
         mx: '0',
       }}
     >
-      <Box
+      <Button
+        variant="outlined"
+        color="neutral"
+        startDecorator={<LocationOn />}
+        endDecorator={
+          selected && !disabled ? (
+            <IconButton variant="plain" color="neutral" size="sm" onClick={clearSelection}>
+              <Clear fontSize="small" />
+            </IconButton>
+          ) : null
+        }
         sx={{
-          display: 'flex',
-          alignItems: 'center',
+          minWidth,
+          maxWidth,
+          height,
           justifyContent: 'space-between',
-          border: border,
-          borderRadius: '4px',
-          padding: '8px 12px',
-          minWidth: minWidth,
-          maxWidth: maxWidth,
-          height: height,
-          backgroundColor: backgroundColor,
+          borderRadius: 'md',
+          px: 1.5,
+          py: 1,
+          backgroundColor: backgroundColor || 'background.surface',
           cursor: disabled ? 'not-allowed' : 'pointer',
           opacity: disabled ? 0.6 : 1,
+          border: border || '1px solid',
+          borderColor: 'primary.500',
+          '&:hover': {
+            backgroundColor: disabled ? backgroundColor || 'background.surface' : 'background.level1',
+          },
         }}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        disabled={disabled}
       >
-        <Box
-          sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-          onClick={() => !disabled && setIsOpen(!isOpen)}
+        <Typography
+          level="body-md"
+          sx={{
+            flex: 1,
+            textAlign: 'left',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
         >
-          <LocationOnIcon color="primary" />
-          <Typography variant="body1">
-            {selected || 'Виберіть регіон або місто'}
-          </Typography>
-        </Box>
-        {selected && !disabled && (
-          <IconButton size="small" onClick={clearSelection}>
-            <ClearIcon />
-          </IconButton>
-        )}
-      </Box>
+          {selected || 'Виберіть регіон або місто'}
+        </Typography>
+      </Button>
 
       {isOpen && (
-        <Paper
-          elevation={3}
+        <Card
+          variant="outlined"
           sx={{
             position: 'absolute',
             top: '100%',
@@ -201,74 +239,92 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
             zIndex: 10,
             mt: 1,
             p: 2,
-            maxHeight: 300,
+            maxHeight: 400,
             overflowY: 'auto',
-            backgroundColor: '#fff',
-            width: 700,
+            width: dropdownWidth,
+            boxShadow: 'md',
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-            {currentRegion && (
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            {currentRegion ? (
               <IconButton
                 onClick={handleBack}
-                size="small"
-                sx={{ mr: 1, color: 'primary.main' }}
+                variant="soft"
+                color="primary"
+                size="sm"
+                sx={{ mr: 1 }}
                 disabled={disabled}
               >
-                <ArrowBackIcon fontSize="small" />
+                <ArrowBack />
               </IconButton>
+            ) : (
+              <LocationOn color="primary" sx={{ mr: 1 }} />
             )}
-            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-              {currentRegion || 'Шукати оголошення по всій країні'}
-            </Typography>
+            <Typography level="title-md">{currentRegion || 'Шукати оголошення по всій країні'}</Typography>
           </Box>
-          <TextField
+
+          <Input
             fullWidth
             placeholder="Введіть перші літери..."
             value={search}
             onChange={handleSearchChange}
-            size="small"
+            startDecorator={<Search />}
+            size="md"
             variant="outlined"
             disabled={disabled}
+            sx={{ mb: 2 }}
           />
 
-          <Grid container sx={{ marginTop: '5px' }}>
+          {!currentRegion && Object.keys(groupedRegions).length === 0 && (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <Typography level="body-lg" color="neutral">
+                Нічого не знайдено
+              </Typography>
+            </Box>
+          )}
+
+          {currentRegion && Object.keys(groupedCities).length === 0 && (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <Typography level="body-lg" color="neutral">
+                Нічого не знайдено
+              </Typography>
+            </Box>
+          )}
+
+          <Grid container spacing={1}>
             {!currentRegion &&
               Object.entries(groupedRegions).map(([letter, regions]) => (
-                <Grid item xs={6} md={4} key={letter}>
-                  <List dense sx={{
-                    paddingTop: '4px',
-                    paddingBottom: 0,
-                  }}>
+                <Grid xs={12} sm={6} md={4} key={letter}>
+                  <Sheet
+                    variant="soft"
+                    color="primary"
+                    sx={{
+                      p: 0.5,
+                      mb: 1,
+                      borderRadius: 'md',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography level="title-sm">{letter}</Typography>
+                  </Sheet>
+                  <List size="sm" sx={{ py: 0 }}>
                     {regions.map((region) => (
-                      <div key={region.name} className="d-flex justify-content-center align-items-center">
-                        <Typography
-                          variant="subtitle2"
-                          sx={{
-                            fontWeight: 600,
-                            fontSize: '0.8rem',
-                            color: 'text.secondary',
-                            minWidth: 10,
-                          }}
-                        >
-                          {region.isFirstAdded ? letter : ' '}
-                        </Typography>
+                      <ListItem key={region.name} sx={{ py: 0 }}>
                         <ListItemButton
                           onClick={() => !disabled && handleRegionSelect(region.name)}
                           sx={{
-                            py: 0.5, '&:hover': {
-                              backgroundColor: 'transparent',
-                              color: 'inherit',
-                            },
+                            py: 0.5,
+                            borderRadius: 'md',
                           }}
                           disabled={disabled}
                         >
-                          <ListItemText
-                            primary={region.name}
-                            primaryTypographyProps={{ fontSize: '0.8rem' }}
-                          />
+                          <ListItemContent>
+                            <Typography level="body-sm">{region.name}</Typography>
+                          </ListItemContent>
                         </ListItemButton>
-                      </div>
+                      </ListItem>
                     ))}
                   </List>
                 </Grid>
@@ -276,47 +332,48 @@ const RegionCitySelector: React.FC<RegionCitySelectorProps> = ({
 
             {currentRegion &&
               Object.entries(groupedCities).map(([letter, cityNames]) => (
-                <Grid item xs={6} md={4} key={letter}>
-                  <List dense>
+                <Grid xs={12} sm={6} md={4} key={letter}>
+                  <Sheet
+                    variant="soft"
+                    color="primary"
+                    sx={{
+                      p: 0.5,
+                      mb: 1,
+                      borderRadius: 'md',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography level="title-sm">{letter}</Typography>
+                  </Sheet>
+                  <List size="sm" sx={{ py: 0 }}>
                     {cityNames.map((city) => (
-                      <div key={city.name} className="d-flex justify-content-center align-items-center">
-                        <Typography
-                          variant="subtitle2"
-                          sx={{
-                            fontWeight: 600,
-                            fontSize: '0.8rem',
-                            color: 'text.secondary',
-                            minWidth: 10,
-                          }}
-                        >
-                          {city.isFirstAdded ? letter : ' '}
-                        </Typography>
+                      <ListItem key={city.name} sx={{ py: 0 }}>
                         <ListItemButton
                           selected={selected === city.name}
                           onClick={() => !disabled && handleCitySelect(city.name)}
                           sx={{
-                            py: 0.5, '&:hover': {
-                              backgroundColor: 'transparent',
-                              color: 'inherit',
-                            },
+                            py: 0.5,
+                            borderRadius: 'md',
                           }}
                           disabled={disabled}
                         >
-                          <ListItemText
-                            primary={city.name}
-                            primaryTypographyProps={{ fontSize: '0.8rem' }}
-                          />
+                          <ListItemContent>
+                            <Typography level="body-sm">{city.name}</Typography>
+                          </ListItemContent>
                         </ListItemButton>
-                      </div>
+                      </ListItem>
                     ))}
                   </List>
                 </Grid>
               ))}
           </Grid>
-        </Paper>
+        </Card>
       )}
     </Box>
   );
 };
 
 export default RegionCitySelector;
+

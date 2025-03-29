@@ -12,6 +12,8 @@ public class EditBusinessRequestDto
     
     public required string Location { get; set; }
     
+    public required string Category { get; set; }
+    
     public decimal Price { get; set; }
     
     public Currency Currency { get; set; }

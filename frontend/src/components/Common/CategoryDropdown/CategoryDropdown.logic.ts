@@ -34,7 +34,7 @@ export const useCategoryDropdown = ({ initialSelectedOptions, onOptionsSelected 
   const [selectedOptions, setSelectedOptions] = useState<string[]>(initialSelectedOptions);
 
   useEffect(() => {
-    if (selectedOptions.length !== 0) {
+    if (selectedOptions.length !== 0 && selectedOptions.every(option => !!option)) {
       return;
     }
 
