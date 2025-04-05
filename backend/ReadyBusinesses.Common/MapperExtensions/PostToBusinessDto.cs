@@ -11,6 +11,7 @@ public class PostToBusinessDto
     {
         return new BusinessDto
         {
+            Id = post.Id,
             IsSaved = post.CreatedByUser.SavedPosts.Any(p => p.PostId == post.Id && p.UserId == currentUserId),
             Name = post.Name,
             Location = post.Location,

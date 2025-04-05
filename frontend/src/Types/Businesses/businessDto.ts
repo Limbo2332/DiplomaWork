@@ -2,6 +2,7 @@
 import { ImagePathDto } from '../BlobImage/imagePathDto.ts';
 
 export type BusinessDto = {
+  id: string;
   isSaved: boolean;
   name: string;
   location: string;

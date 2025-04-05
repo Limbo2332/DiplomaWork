@@ -59,7 +59,7 @@ export const NotificationContextProvider = ({ children }: NotificationContextPro
           <Alert
             severity={notification.color}
             variant="filled"
-            sx={{ width: '100%' }}
+            sx={{ width: '100%', zIndex: 1000000 }}
             color={notification.color}
           >
             {notification.message}

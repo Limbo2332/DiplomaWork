@@ -13,7 +13,6 @@ import {
   Divider,
   Grid,
   IconButton,
-  Sheet,
   Tab,
   TabList,
   Tabs,
@@ -24,7 +23,6 @@ import {
   AcUnit,
   AddCircle,
   Apartment,
-  ArrowBack,
   BeachAccess,
   BusinessRounded,
   Call,
@@ -34,8 +32,6 @@ import {
   DeliveryDining,
   EvStation,
   Facebook,
-  Favorite,
-  FavoriteBorder,
   HomeRepairService,
   Instagram,
   LocalAtm,
@@ -45,7 +41,6 @@ import {
   MoneyOff,
   NightShelter,
   Receipt,
-  Share,
   SupervisorAccount,
   Telegram,
   Timer,
@@ -63,6 +58,8 @@ import HtmlRenderer from '../../components/Common/HtmlRenderer/HtmlRenderer';
 import Recommendation from '../../components/Recommendation/Recommendation.tsx';
 
 import defaultImage from '../../assets/images/default-image.png';
+import Menu from '../../components/Menu/Menu.tsx';
+import StarButton from '../../components/Common/Bookmark/StarButton.tsx';
 
 // Image gallery component
 const ImageGallery = ({ images }: { images: Array<{ id: string; path: string }> }) => {
@@ -310,304 +307,261 @@ const BusinessPage = () => {
     return <Loading />;
   }
 
-  const handleFavoriteToggle = () => {
-    setIsFavorite(!isFavorite);
-    // Here you would call your API to save/unsave the business
-  };
-
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator
-        .share({
-          title: business.name,
-          text: `Check out this business: ${business.name}`,
-          url: window.location.href,
-        })
-        .catch((error) => console.log('Error sharing', error));
-    } else {
-      // Fallback for browsers that don't support the Web Share API
-      navigator.clipboard.writeText(window.location.href);
-      // Show a toast notification that the link was copied
-    }
-  };
-
   const totalScore = Object.values(aiRecommendation.scores).reduce((sum, score) => sum + score, 0);
 
   return (
-    <Box sx={{ bgcolor: 'background.surface', minHeight: '100vh' }}>
-      {/* Header */}
-      <Sheet
-        variant="solid"
-        color="primary"
-        invertedColors
-        sx={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          p: 2,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 2,
-        }}
-      >
-        <IconButton variant="soft" color="neutral" onClick={() => navigate(-1)}>
-          <ArrowBack />
-        </IconButton>
-        <Typography level="title-lg">Перегляд бізнесу</Typography>
-        <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
-          <IconButton variant="soft" color="neutral" onClick={handleFavoriteToggle}>
-            {isFavorite ? <Favorite /> : <FavoriteBorder />}
-          </IconButton>
-          <IconButton variant="soft" color="neutral" onClick={handleShare}>
-            <Share />
-          </IconButton>
-        </Box>
-      </Sheet>
+    <>
+      <Menu />
 
-      <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto' }}>
-        {/* Business Header */}
-        <Card variant="outlined" sx={{ mb: 3 }}>
-          <CardContent sx={{ pb: 0 }}>
-            <Grid container spacing={2}>
-              <Grid xs={12} md={8}>
-                <Box sx={{ mb: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                    <Typography level="h3">{business.name}</Typography>
-                    <Chip size="sm" variant="soft" color="success" startDecorator={<Verified />}>
-                      Перевірено
-                    </Chip>
-                  </Box>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
-                    <Chip
-                      variant="soft"
-                      size="sm"
-                      startDecorator={<LocationOn fontSize="small" />}
-                      sx={{ borderRadius: 'full' }}
-                    >
-                      {business.location}
-                    </Chip>
-                    <Chip variant="soft" size="sm" sx={{ borderRadius: 'full' }}>
-                      {business.category}
-                    </Chip>
-                    <Chip
-                      variant="soft"
-                      size="sm"
-                      startDecorator={<DateRange fontSize="small" />}
-                      sx={{ borderRadius: 'full' }}
-                    >
-                      Оновлено: {new Date(business.updatedAt).toLocaleDateString()}
-                    </Chip>
-                  </Box>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    {business.telegram && <SocialLink icon={<Telegram />} url={business.telegram} />}
-                    {business.instagram && <SocialLink icon={<Instagram />} url={business.instagram} />}
-                    {business.twitter && <SocialLink icon={<Twitter />} url={business.twitter} />}
-                    {business.facebook && <SocialLink icon={<Facebook />} url={business.facebook} />}
-                    {business.site && <SocialLink icon={<Web />} url={business.site} />}
-                  </Box>
-                </Box>
-              </Grid>
-              <Grid xs={12} md={4}>
-                <Card variant="solid" color="primary" invertedColors sx={{ height: '100%' }}>
-                  <CardContent>
-                    <Typography level="h2" sx={{ mb: 1 }}>
-                      {formatNumberWithSpacesManual(business.price)}{' '}
-                      {currencyToStringRepresentation(business.priceCurrency)}
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                      <Chip variant="soft" startDecorator={<Timer fontSize="small" />} sx={{ borderRadius: 'full' }}>
-                        Окупність: {business.timeToPayBack} міс.
-                      </Chip>
-                      {business.isNegotiable && (
-                        <Chip variant="soft" sx={{ borderRadius: 'full' }}>
-                          Можливий торг
+      <Box sx={{ bgcolor: 'background.surface', minHeight: '100vh' }}>
+        <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto' }}>
+          {/* Business Header */}
+          <Card variant="outlined" sx={{ mb: 3 }}>
+            <CardContent sx={{ pb: 0 }}>
+              <Grid container spacing={2}>
+                <Grid xs={12} md={8}>
+                  <Box sx={{ mb: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                      <div className="d-flex align-items-center gap-2">
+                        <Typography level="h3">{business.name}</Typography>
+                        <Chip size="sm" variant="soft" color="success" startDecorator={<Verified />}>
+                          Перевірено
                         </Chip>
-                      )}
+                      </div>
+                      <StarButton postId={business.id} defaultValue={business.isSaved} />
                     </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-
-        {/* Main Content */}
-        <Grid container spacing={3}>
-          {/* Left Column */}
-          <Grid xs={12} md={8}>
-            <Card variant="outlined" sx={{ mb: 3 }}>
-              <CardOverflow>
-                <Tabs
-                  value={activeTab}
-                  onChange={(_, value) => setActiveTab(value as number)}
-                  sx={{ bgcolor: 'background.level1' }}
-                >
-                  <TabList variant="plain" sx={{ p: 0, borderRadius: 0 }}>
-                    <Tab>Опис</Tab>
-                    <Tab>Фінансові показники</Tab>
-                    <Tab>Характеристики</Tab>
-                    <Tab>AI Аналіз</Tab>
-                  </TabList>
-                </Tabs>
-              </CardOverflow>
-
-              {/* Fixed: Using conditional rendering instead of TabPanel components */}
-              <Box>
-                {activeTab === 0 && <DescriptionTab business={business} />}
-                {activeTab === 1 && <FinancialTab business={business} />}
-                {activeTab === 2 && <FeaturesTab business={business} />}
-                {activeTab === 3 && <AIAnalysisTab aiRecommendation={aiRecommendation} />}
-              </Box>
-            </Card>
-          </Grid>
-
-          {/* Right Column */}
-          <Grid xs={12} md={4}>
-            {/* Author Card */}
-            <Card variant="outlined" sx={{ mb: 3 }}>
-              <CardContent>
-                <Typography level="title-md" sx={{ mb: 2 }}>
-                  Продавець
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                  <Avatar
-                    src={business.authorImagePreview ?? defaultImage}
-                    size="lg"
-                    variant="outlined"
-                    sx={{ border: '2px solid', borderColor: 'primary.500', cursor: 'pointer' }}
-                    onClick={() => navigate(`/authors/${business?.authorId}`)}
-                  />
-                  <Box>
-                    <Typography level="title-sm">{business.authorName}</Typography>
-                    <Typography level="body-sm" sx={{ mb: 1 }}>
-                      На платформі з {new Date(business.authorRegistrationDate).toLocaleDateString()}
-                    </Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
+                      <Chip
+                        variant="soft"
+                        size="sm"
+                        startDecorator={<LocationOn fontSize="small" />}
+                        sx={{ borderRadius: 'full' }}
+                      >
+                        {business.location}
+                      </Chip>
+                      <Chip variant="soft" size="sm" sx={{ borderRadius: 'full' }}>
+                        {business.category}
+                      </Chip>
+                      <Chip
+                        variant="soft"
+                        size="sm"
+                        startDecorator={<DateRange fontSize="small" />}
+                        sx={{ borderRadius: 'full' }}
+                      >
+                        Оновлено: {new Date(business.updatedAt).toLocaleDateString()}
+                      </Chip>
+                    </Box>
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                      {business.authorTelegram && <SocialLink icon={<Telegram />} url={business.authorTelegram} />}
-                      {business.authorInstagram && <SocialLink icon={<Instagram />} url={business.authorInstagram} />}
-                      {business.authorTwitter && <SocialLink icon={<Twitter />} url={business.authorTwitter} />}
-                      {business.authorFacebook && <SocialLink icon={<Facebook />} url={business.authorFacebook} />}
-                      {business.authorSite && <SocialLink icon={<Web />} url={business.authorSite} />}
+                      {business.telegram && <SocialLink icon={<Telegram />} url={business.telegram} />}
+                      {business.instagram && <SocialLink icon={<Instagram />} url={business.instagram} />}
+                      {business.twitter && <SocialLink icon={<Twitter />} url={business.twitter} />}
+                      {business.facebook && <SocialLink icon={<Facebook />} url={business.facebook} />}
+                      {business.site && <SocialLink icon={<Web />} url={business.site} />}
                     </Box>
                   </Box>
-                </Box>
-                {business.authorPhoneNumber && (
-                  <Button
-                    variant="outlined"
-                    color="neutral"
-                    fullWidth
-                    startDecorator={<Call />}
-                    sx={{ mt: 2, borderRadius: 'full' }}
-                  >
-                    {business.authorPhoneNumber}
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
+                </Grid>
+                <Grid xs={12} md={4}>
+                  <Card variant="solid" color="primary" invertedColors sx={{ height: '100%' }}>
+                    <CardContent>
+                      <Typography level="h2" sx={{ mb: 1 }}>
+                        {formatNumberWithSpacesManual(business.price)}{' '}
+                        {currencyToStringRepresentation(business.priceCurrency)}
+                      </Typography>
+                      <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                        <Chip variant="soft" startDecorator={<Timer fontSize="small" />} sx={{ borderRadius: 'full' }}>
+                          Окупність: {business.timeToPayBack} міс.
+                        </Chip>
+                        {business.isNegotiable && (
+                          <Chip variant="soft" sx={{ borderRadius: 'full' }}>
+                            Можливий торг
+                          </Chip>
+                        )}
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
 
-            {/* AI Score Summary Card */}
-            <Card variant="outlined" sx={{ mb: 3 }}>
-              <CardContent>
-                <Typography level="title-md" sx={{ mb: 2 }}>
-                  AI Оцінка
-                </Typography>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexDirection: 'column',
-                    mb: 2,
-                  }}
-                >
-                  <Badge
-                    badgeContent={`${totalScore}/100`}
-                    color={totalScore >= 75 ? 'success' : totalScore >= 60 ? 'primary' : 'warning'}
-                    size="lg"
+          {/* Main Content */}
+          <Grid container spacing={3}>
+            {/* Left Column */}
+            <Grid xs={12} md={8}>
+              <Card variant="outlined" sx={{ mb: 3 }}>
+                <CardOverflow>
+                  <Tabs
+                    value={activeTab}
+                    onChange={(_, value) => setActiveTab(value as number)}
+                    sx={{ bgcolor: 'background.level1' }}
+                  >
+                    <TabList variant="plain" sx={{ p: 0, borderRadius: 0 }}>
+                      <Tab>Опис</Tab>
+                      <Tab>Фінансові показники</Tab>
+                      <Tab>Характеристики</Tab>
+                      <Tab>AI Аналіз</Tab>
+                    </TabList>
+                  </Tabs>
+                </CardOverflow>
+
+                {/* Fixed: Using conditional rendering instead of TabPanel components */}
+                <Box>
+                  {activeTab === 0 && <DescriptionTab business={business} />}
+                  {activeTab === 1 && <FinancialTab business={business} />}
+                  {activeTab === 2 && <FeaturesTab business={business} />}
+                  {activeTab === 3 && <AIAnalysisTab aiRecommendation={aiRecommendation} />}
+                </Box>
+              </Card>
+            </Grid>
+
+            {/* Right Column */}
+            <Grid xs={12} md={4}>
+              {/* Author Card */}
+              <Card variant="outlined" sx={{ mb: 3 }}>
+                <CardContent>
+                  <Typography level="title-md" sx={{ mb: 2 }}>
+                    Продавець
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Avatar
+                      src={business.authorImagePreview ?? defaultImage}
+                      size="lg"
+                      variant="outlined"
+                      sx={{ border: '2px solid', borderColor: 'primary.500', cursor: 'pointer' }}
+                      onClick={() => navigate(`/authors/${business?.authorId}`)}
+                    />
+                    <Box>
+                      <Typography level="title-sm">{business.authorName}</Typography>
+                      <Typography level="body-sm" sx={{ mb: 1 }}>
+                        На платформі з {new Date(business.authorRegistrationDate).toLocaleDateString()}
+                      </Typography>
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        {business.authorTelegram && <SocialLink icon={<Telegram />} url={business.authorTelegram} />}
+                        {business.authorInstagram && <SocialLink icon={<Instagram />} url={business.authorInstagram} />}
+                        {business.authorTwitter && <SocialLink icon={<Twitter />} url={business.authorTwitter} />}
+                        {business.authorFacebook && <SocialLink icon={<Facebook />} url={business.authorFacebook} />}
+                        {business.authorSite && <SocialLink icon={<Web />} url={business.authorSite} />}
+                      </Box>
+                    </Box>
+                  </Box>
+                  {business.authorPhoneNumber && (
+                    <Button
+                      variant="outlined"
+                      color="neutral"
+                      fullWidth
+                      startDecorator={<Call />}
+                      sx={{ mt: 2, borderRadius: 'full' }}
+                    >
+                      {business.authorPhoneNumber}
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* AI Score Summary Card */}
+              <Card variant="outlined" sx={{ mb: 3 }}>
+                <CardContent>
+                  <Typography level="title-md" sx={{ mb: 2 }}>
+                    AI Оцінка
+                  </Typography>
+                  <Box
                     sx={{
-                      '& .MuiBadge-badge': {
-                        fontSize: '1rem',
-                        height: 'auto',
-                        minWidth: '3rem',
-                        borderRadius: '1rem',
-                        p: 1,
-                      },
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexDirection: 'column',
+                      mb: 2,
                     }}
                   >
-                    <Avatar
+                    <Badge
+                      badgeContent={`${totalScore}/100`}
+                      color={totalScore >= 75 ? 'success' : totalScore >= 60 ? 'primary' : 'warning'}
+                      size="lg"
                       sx={{
-                        width: 100,
-                        height: 100,
-                        bgcolor: totalScore >= 75 ? 'success.100' : totalScore >= 60 ? 'primary.100' : 'warning.100',
-                        color: totalScore >= 75 ? 'success.700' : totalScore >= 60 ? 'primary.700' : 'warning.700',
-                        fontSize: '2rem',
-                        fontWeight: 'bold',
+                        '& .MuiBadge-badge': {
+                          fontSize: '1rem',
+                          height: 'auto',
+                          minWidth: '3rem',
+                          borderRadius: '1rem',
+                          p: 1,
+                        },
                       }}
                     >
-                      {totalScore}
-                    </Avatar>
-                  </Badge>
-                  <Typography level="title-sm" sx={{ mt: 2 }}>
-                    {totalScore >= 90
-                      ? 'Відмінна інвестиція'
-                      : totalScore >= 75
-                        ? 'Гарна інвестиція'
-                        : totalScore >= 60
-                          ? 'Задовільна інвестиція'
-                          : totalScore >= 45
-                            ? 'Посередня інвестиція'
-                            : 'Ризикована інвестиція'}
+                      <Avatar
+                        sx={{
+                          width: 100,
+                          height: 100,
+                          bgcolor: totalScore >= 75 ? 'success.100' : totalScore >= 60 ? 'primary.100' : 'warning.100',
+                          color: totalScore >= 75 ? 'success.700' : totalScore >= 60 ? 'primary.700' : 'warning.700',
+                          fontSize: '2rem',
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        {totalScore}
+                      </Avatar>
+                    </Badge>
+                    <Typography level="title-sm" sx={{ mt: 2 }}>
+                      {totalScore >= 90
+                        ? 'Відмінна інвестиція'
+                        : totalScore >= 75
+                          ? 'Гарна інвестиція'
+                          : totalScore >= 60
+                            ? 'Задовільна інвестиція'
+                            : totalScore >= 45
+                              ? 'Посередня інвестиція'
+                              : 'Ризикована інвестиція'}
+                    </Typography>
+                  </Box>
+                  <Divider sx={{ my: 2 }} />
+                  <Typography level="body-sm" sx={{ mb: 1 }}>
+                    Ключові переваги:
                   </Typography>
-                </Box>
-                <Divider sx={{ my: 2 }} />
-                <Typography level="body-sm" sx={{ mb: 1 }}>
-                  Ключові переваги:
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-                  {aiRecommendation.strengths.slice(0, 2).map((strength, index) => (
-                    <Chip key={index} size="sm" variant="soft" color="success" sx={{ borderRadius: 'full' }}>
-                      {strength.length > 30 ? strength.substring(0, 30) + '...' : strength}
-                    </Chip>
-                  ))}
-                </Box>
-                <Button
-                  variant="plain"
-                  color="primary"
-                  fullWidth
-                  onClick={() => setActiveTab(3)}
-                  sx={{ borderRadius: 'full' }}
-                >
-                  Детальний аналіз
-                </Button>
-              </CardContent>
-            </Card>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                    {aiRecommendation.strengths.slice(0, 2).map((strength, index) => (
+                      <Chip key={index} size="sm" variant="soft" color="success" sx={{ borderRadius: 'full' }}>
+                        {strength.length > 30 ? strength.substring(0, 30) + '...' : strength}
+                      </Chip>
+                    ))}
+                  </Box>
+                  <Button
+                    variant="plain"
+                    color="primary"
+                    fullWidth
+                    onClick={() => setActiveTab(3)}
+                    sx={{ borderRadius: 'full' }}
+                  >
+                    Детальний аналіз
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
-        </Grid>
-      </Box>
+        </Box>
 
-      {/* Floating Action Buttons */}
-      <Box
-        sx={{
-          position: 'fixed',
-          bottom: 16,
-          right: 16,
-          display: { xs: 'flex', md: 'none' },
-          gap: 1,
-          zIndex: 10,
-        }}
-      >
-        <Tooltip title="Зателефонувати" placement="top">
-          <IconButton size="lg" variant="solid" color="success" aria-label="Call">
-            <Call />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Написати" placement="top">
-          <IconButton size="lg" variant="solid" color="primary" aria-label="Message">
-            <Chat />
-          </IconButton>
-        </Tooltip>
+        {/* Floating Action Buttons */}
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 16,
+            right: 16,
+            display: { xs: 'flex', md: 'none' },
+            gap: 1,
+            zIndex: 10,
+          }}
+        >
+          <Tooltip title="Зателефонувати" placement="top">
+            <IconButton size="lg" variant="solid" color="success" aria-label="Call">
+              <Call />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Написати" placement="top">
+            <IconButton size="lg" variant="solid" color="primary" aria-label="Message">
+              <Chat />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 };
 

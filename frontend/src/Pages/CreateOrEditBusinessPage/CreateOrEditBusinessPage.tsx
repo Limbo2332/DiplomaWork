@@ -177,10 +177,8 @@ const CreateEditBusiness = () => {
   const { createBusiness, getBusiness, editBusiness, approveBusiness, rejectBusiness } = useBusinessService();
   const { showSuccessNotification } = useNotification();
 
-  const images = watch('images');
   const location = watch('location');
   const category = watch('category');
-  console.log(category);
   const isSeasonal = watch('isSeasonal');
   const currency = watch('currency');
 

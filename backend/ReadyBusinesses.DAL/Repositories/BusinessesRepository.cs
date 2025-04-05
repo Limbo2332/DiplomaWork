@@ -60,17 +60,9 @@ public class BusinessesRepository : IBusinessesRepository
         {
             currentPost.Pictures.Add(picture);
         }
-
-        try
-        {
-            _context.Posts.Update(currentPost);
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        
+        _context.Posts.Update(currentPost);
+        await _context.SaveChangesAsync();
     }
 
     public async Task AddToFavoritesAsync(Post post, User user)

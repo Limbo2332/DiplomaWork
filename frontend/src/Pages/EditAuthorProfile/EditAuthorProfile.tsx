@@ -23,6 +23,7 @@ import useUserService from '../../Services/userService';
 import defaultProfileImage from '../../assets/images/default-image.png';
 import type { SetProfileDto } from '../../Types/Profile/setProfileDto';
 import { useNotification } from '../../Contexts/notificationContext';
+import { useAuth } from '../../Contexts/authContext.tsx';
 
 interface AuthorProfileProps {
   profileImageUrl?: string;
@@ -53,6 +54,8 @@ const EditAuthorProfile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { currentUser } = useAuth();
+
   useEffect(() => {
     const fetchProfileInfo = async () => {
       setIsLoading(true);
@@ -79,7 +82,7 @@ const EditAuthorProfile = () => {
     };
 
     fetchProfileInfo();
-  }, [getProfileInfo, reset]);
+  }, []);
 
   const onSubmit = async (data: AuthorProfileProps) => {
     setIsSubmitting(true);
@@ -126,6 +129,7 @@ const EditAuthorProfile = () => {
 
     setIsSubmitting(false);
     showSuccessNotification('Інформація успішно збережена!');
+    navigate(`/authors/${currentUser?.id}`);
   };
 
   const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {

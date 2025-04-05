@@ -11,12 +11,10 @@ import {
   Divider,
   Grid,
   IconButton,
-  Sheet,
   Stack,
   Typography,
 } from '@mui/joy';
 import {
-  ArrowBack,
   Business,
   CalendarMonth,
   Call,
@@ -28,14 +26,13 @@ import {
   Twitter,
   Web,
 } from '@mui/icons-material';
-import { Link, useNavigate, useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import Menu from '../../components/Menu/Menu';
 import defaultImage from '../../assets/images/default-image.png';
 import type { AuthorDto } from '../../Types/Profile/authorDto';
 import { Loading } from '../../components/Common/Loading/Loading';
 import useUserService from '../../Services/userService';
 
-// Social media link component
 const SocialLink = ({ icon, url }: { icon: React.ReactNode; url: string }) => {
   if (!url) return null;
   return (
@@ -55,7 +52,6 @@ const SocialLink = ({ icon, url }: { icon: React.ReactNode; url: string }) => {
 
 const AuthorProfile = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const { getAuthor } = useUserService();
   const [authorData, setAuthorData] = useState<AuthorDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -81,25 +77,6 @@ const AuthorProfile = () => {
   return (
     <Box sx={{ bgcolor: 'background.surface', minHeight: '100vh' }}>
       <Menu />
-
-      {/* Page Header */}
-      <Sheet
-        variant="soft"
-        color="primary"
-        sx={{
-          p: 2,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 2,
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        <IconButton variant="soft" color="primary" onClick={() => navigate(-1)}>
-          <ArrowBack />
-        </IconButton>
-        <Typography level="title-md">Профіль продавця</Typography>
-      </Sheet>
 
       <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto' }}>
         <Grid container spacing={3}>
@@ -166,10 +143,7 @@ const AuthorProfile = () => {
                 {(authorData.phoneNumber || authorData.telegram || authorData.instagram || authorData.twitter
                     || authorData.facebook || authorData.site) &&
                   <>
-                    <Typography level="title-sm" sx={{ mb: 1.5 }}>
-                      Соціальні мережі
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                    <Box sx={{ display: 'flex', gap: 1, marginTop: 2, justifyContent: 'center' }}>
                       <SocialLink icon={<Telegram />} url={authorData.telegram || ''} />
                       <SocialLink icon={<Instagram />} url={authorData.instagram || ''} />
                       <SocialLink icon={<Twitter />} url={authorData.twitter || ''} />

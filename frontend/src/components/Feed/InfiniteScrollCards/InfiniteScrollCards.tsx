@@ -39,7 +39,7 @@ const InfiniteScrollCards = ({
         pageStart={0}
         loadMore={loadMore}
         hasMore={hasMore}
-        loader={<Loading />}
+        loader={<Loading key={0} />}
       >
         {businessesToPreviewDto.map((businessToPreviewDto) => (
           <Card key={businessToPreviewDto.id} businessToPreviewDto={businessToPreviewDto} />

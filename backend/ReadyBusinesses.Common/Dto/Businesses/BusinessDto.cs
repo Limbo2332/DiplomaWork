@@ -5,6 +5,8 @@ namespace ReadyBusinesses.Common.Dto.Businesses;
 
 public class BusinessDto
 {
+    public Guid Id { get; set; }
+
     public bool IsSaved { get; set; }
     
     public required string Name { get; set; }
