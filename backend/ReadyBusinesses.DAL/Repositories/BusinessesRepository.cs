@@ -24,10 +24,7 @@ public class BusinessesRepository : IBusinessesRepository
             .Include(p => p.Pictures)
                 .ThenInclude(picture => picture.Picture)
             .Include(post => post.Recommendations)
-                .ThenInclude(r => r.Recommendation)
-            .OrderByDescending(post => post.Recommendations.FirstOrDefault(r => r.Recommendation.ByAI) != null 
-                    ? post.Recommendations.First(r => r.Recommendation.ByAI).Recommendation.RatingScore
-                    : post.InvestmentScore);
+                .ThenInclude(r => r.Recommendation);
     }
 
     public Task<Post> GetBusinessWithoutDependenciesByIdAsync(Guid id)

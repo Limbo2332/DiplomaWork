@@ -10,6 +10,7 @@ using ReadyBusinesses.Common.Helpers;
 using ReadyBusinesses.Common.Logic.Abstract;
 using ReadyBusinesses.Common.MapperExtensions;
 using ReadyBusinesses.DLL.Repositories.Abstract;
+using ReadyBusinesses.Topsis;
 
 namespace ReadyBusinesses.BLL.Services;
 
@@ -18,12 +19,14 @@ public class BusinessesService : IBusinessesService
     private readonly IBusinessesRepository _repository;
     private readonly IUserRepository _userRepository;
     private readonly IUserIdGetter _userIdGetter;
+    private readonly ISolver _solver;
 
-    public BusinessesService(IBusinessesRepository repository, IUserIdGetter userIdGetter, IUserRepository userRepository)
+    public BusinessesService(IBusinessesRepository repository, IUserIdGetter userIdGetter, IUserRepository userRepository, ISolver solver)
     {
         _repository = repository;
         _userIdGetter = userIdGetter;
         _userRepository = userRepository;
+        _solver = solver;
     }
 
     public async Task<MainFeedBusinessesResponseDto> GetBusinessesAsync(MainFeedBusinessesRequestDto request)
@@ -118,7 +121,6 @@ public class BusinessesService : IBusinessesService
             businesses = businesses
                 .Where(b => savedPostsIds.Contains(b.Id));
         }
-
         
         // TODO: view post
         
@@ -126,6 +128,21 @@ public class BusinessesService : IBusinessesService
             .Skip(request.Offset)
             .Take(request.PageCount)
             .ToListAsync();
+
+        switch (request.Filter.SortBy)
+        {
+            case SortOptions.Default:
+                businessesList = businessesList.OrderByDescending(b => b.CreatedAt).ToList();
+                break;
+            case SortOptions.Ai:
+                businessesList = _solver.GetSortedPosts(businessesList);
+                break;
+            case SortOptions.Expert:
+                // TODO: sorting by expert rating
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
 
         return new MainFeedBusinessesResponseDto
         {

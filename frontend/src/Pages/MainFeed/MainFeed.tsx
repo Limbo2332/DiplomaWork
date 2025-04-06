@@ -1,11 +1,11 @@
-﻿import React, { useCallback, useState } from 'react';
+﻿import { useCallback, useState } from 'react';
 import SearchAndLocation from '../../components/Feed/SearchAndLocation/SearchAndLocation.tsx';
 import Filters from '../../components/Feed/Filters/Filters.tsx';
 import InfiniteScrollCards from '../../components/Feed/InfiniteScrollCards/InfiniteScrollCards.tsx';
 import useBusinessService from '../../Services/businessesService.ts';
-import { MainFeedBusinessesRequestDto } from '../../Types/Businesses/Requests/mainFeedBusinessesRequestDto.ts';
-import { FilterDto } from '../../Types/Businesses/filterDto.ts';
-import { MainFeedBusinessesResponseDto } from '../../Types/Businesses/Responses/mainFeedBusinessesResponseDto.ts';
+import type { MainFeedBusinessesRequestDto } from '../../Types/Businesses/Requests/mainFeedBusinessesRequestDto.ts';
+import { FilterDto, SortOptions as SortOptionsEnum } from '../../Types/Businesses/filterDto.ts';
+import type { MainFeedBusinessesResponseDto } from '../../Types/Businesses/Responses/mainFeedBusinessesResponseDto.ts';
 
 export const defaultFilterDtoValues: FilterDto = {
   categories: [],
@@ -34,6 +34,7 @@ export const defaultFilterDtoValues: FilterDto = {
   flatSquareStart: 5,
   flatSquareEnd: 5000000,
   hasGeneratorOrEcoFlow: false,
+  sortBy: SortOptionsEnum.Default,
 };
 
 const MainFeed = () => {
@@ -41,24 +42,27 @@ const MainFeed = () => {
 
   const [filter, setFilter] = useState<FilterDto>(defaultFilterDtoValues);
 
-  const getCards = useCallback(async (offset: number, pageSize: number): Promise<MainFeedBusinessesResponseDto> => {
-    const request: MainFeedBusinessesRequestDto = {
-      pageCount: pageSize,
-      offset: offset,
-      filter: filter,
-    };
-
-    const result = await getMainFeedBusinesses(request);
-
-    if (!result?.data) {
-      return {
-        previewBusinesses: [],
-        hasMore: false,
+  const getCards = useCallback(
+    async (offset: number, pageSize: number): Promise<MainFeedBusinessesResponseDto> => {
+      const request: MainFeedBusinessesRequestDto = {
+        pageCount: pageSize,
+        offset: offset,
+        filter: filter,
       };
-    }
 
-    return result.data;
-  }, [filter, getMainFeedBusinesses]);
+      const result = await getMainFeedBusinesses(request);
+
+      if (!result?.data) {
+        return {
+          previewBusinesses: [],
+          hasMore: false,
+        };
+      }
+
+      return result.data;
+    },
+    [filter, getMainFeedBusinesses],
+  );
 
   return (
     <>
@@ -70,3 +74,4 @@ const MainFeed = () => {
 };
 
 export default MainFeed;
+

@@ -1,5 +1,11 @@
 ﻿import { Currency } from '../../components/Common/CurrencyDropdown/CurrencyDropdown.tsx';
 
+export enum SortOptions {
+  Default,
+  Ai,
+  Expert
+}
+
 export type FilterDto = {
   categories: string[];
   search?: string;
@@ -27,4 +33,6 @@ export type FilterDto = {
   hasIntegrationWithDeliveryServices: boolean;
   onlySaved: boolean;
   hideViewed: boolean;
+
+  sortBy: SortOptions;
 }

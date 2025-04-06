@@ -55,4 +55,6 @@ public class FilterDto
     public bool OnlySaved { get; set; }
     
     public bool HideViewed { get; set; }
+    
+    public SortOptions SortBy { get; set; }
 }

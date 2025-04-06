@@ -5,7 +5,7 @@ namespace ReadyBusinesses.Topsis;
 public class Solver : ISolver
 {
     private readonly List<bool> MaximizedCriterias;
-    public static decimal[] CriteriaWeightsForChatGpt = [0.1M, 0.1M, 0.1M, 0.1M, 0.1M, 0.1M, 0.15M, 0.05M, 0.1M, 0.2M];
+    public static decimal[] CriteriaWeightsForChatGpt = [0.1M, 0.1M, 0.1M, 0.0333M, 0.0333M, 0.0333M, 0.1M, 0.15M, 0.05M, 0.1M, 0.2M];
 
     public Solver()
     {
@@ -25,11 +25,15 @@ public class Solver : ISolver
         };
     }
     
-    public IEnumerable<Post> GetSortedPosts(
-        IEnumerable<Post> businesses, 
-        List<decimal[]> criteriaMatrix, 
-        decimal[] criteriaWeights)
+    public List<Post> GetSortedPosts(List<Post> businesses)
     {
+        var criteriaMatrix = businesses
+            .SelectMany(b => b.Recommendations)
+            .Select(r => r.Recommendation.CriteriaMatrix)
+            .ToList();
+
+        var criteriaWeights = CriteriaWeightsForChatGpt;
+        
         var normalized = NormalizeCriteriaMatrix(criteriaMatrix);
         var weightedNormalized = CalculateWeightedNormalizedCriteriaMatrix(normalized, criteriaWeights);
         var (pis, nis) = CalculatePisAndNis(weightedNormalized);
