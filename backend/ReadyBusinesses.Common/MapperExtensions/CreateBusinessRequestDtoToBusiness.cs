@@ -16,7 +16,7 @@ public static class CreateBusinessRequestDtoToBusiness
             PriceInUah = CurrencyConvertation.ToUah(createBusinessRequestDto.Currency, createBusinessRequestDto.Price),
             Currency = createBusinessRequestDto.Currency,
             Location = createBusinessRequestDto.Location,
-            Category = null,
+            Category = createBusinessRequestDto.Category,
             RoomArea = createBusinessRequestDto.Area,
             RoomRent = createBusinessRequestDto.RentPrice,
             AverageChequePrice = createBusinessRequestDto.AverageCheck,

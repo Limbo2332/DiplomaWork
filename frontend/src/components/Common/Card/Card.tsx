@@ -133,7 +133,7 @@ const Card = ({
             alt="Фото оголошення"
             onClick={onCardClick}
           />
-          {businessToPreviewDto.investmentScore !== 0 && (
+          {!!businessToPreviewDto.investmentScore && (
             <div style={{
               position: 'absolute',
               top: '10px',

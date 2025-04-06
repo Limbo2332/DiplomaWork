@@ -65,4 +65,6 @@ public class Post : BaseEntity
     public ICollection<PostPicture> Pictures { get; set; } = [];
     
     public ICollection<PostSocialMedia> SocialMedias { get; set; } = [];
+    
+    public ICollection<PostRecommendation> Recommendations { get; set; } = [];
 }

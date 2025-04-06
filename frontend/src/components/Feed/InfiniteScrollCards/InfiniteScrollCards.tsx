@@ -34,8 +34,9 @@ const InfiniteScrollCards = ({
   }, [getCards]);
 
   return (
-    <div className="d-flex flex-column gap-5 mt-3">
+    <div className="mt-3">
       <InfiniteScroll
+        className="d-flex flex-column gap-3"
         pageStart={0}
         loadMore={loadMore}
         hasMore={hasMore}

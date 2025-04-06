@@ -9,6 +9,8 @@ public static class PostToBusinessPreviewDto
 {
     public static PreviewBusinessDto Map(Post post, Guid currentUserId)
     {
+        var aiRecommendation = post.Recommendations.Select(r => r.Recommendation).FirstOrDefault(x => x.ByAI);
+        
         return new PreviewBusinessDto
         {
             Id = post.Id,
@@ -18,7 +20,7 @@ public static class PostToBusinessPreviewDto
             Name = post.Name,
             PreviewImageUrl = PictureToPreviewString.Map(post.Pictures.First().Picture),
             PriceCurrency = post.Currency,
-            Price = CurrencyConvertation.To(post.Currency, Currency.UAH, post.PriceInUah),
+            Price = CurrencyConvertation.To(Currency.UAH, post.Currency, post.PriceInUah),
             AverageCheque = post.AverageChequePrice,
             AverageProfit = post.AverageProfitPerMonth,
             CreationDate = post.CreatedAt,
@@ -27,7 +29,9 @@ public static class PostToBusinessPreviewDto
             IsSaved = post.CreatedByUser.SavedPosts.Any(p => p.PostId == post.Id && p.UserId == currentUserId),
             AmountOfWorkers = post.EmployersCount,
             TermToPayBack = Math.Round(post.PriceInUah / post.AverageProfitPerMonth),
-            InvestmentScore = post.InvestmentScore
+            InvestmentScore = aiRecommendation is not null 
+                ? Math.Round(aiRecommendation.RatingScore, 2)
+                : null
         };
     }
 }

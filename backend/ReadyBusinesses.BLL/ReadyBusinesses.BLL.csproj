@@ -7,7 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\ReadyBusinesses.AI\ReadyBusinesses.AI.csproj" />
       <ProjectReference Include="..\ReadyBusinesses.DAL\ReadyBusinesses.DAL.csproj" />
+      <ProjectReference Include="..\ReadyBusinesses.Topsis\ReadyBusinesses.Topsis.csproj" />
     </ItemGroup>
 
 </Project>

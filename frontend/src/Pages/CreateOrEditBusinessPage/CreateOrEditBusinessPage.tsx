@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import {
   AspectRatio,
   Box,
@@ -11,6 +11,7 @@ import {
   Grid,
   IconButton,
   Input,
+  LinearProgress,
   Option,
   Select,
   Sheet,
@@ -36,6 +37,7 @@ import {
   LocalAtm,
   MonetizationOn,
   Money,
+  Psychology,
   Public,
   Receipt,
   Save,
@@ -58,10 +60,13 @@ import { useNotification } from '../../Contexts/notificationContext';
 import type { ImagePathDto } from '../../Types/BlobImage/imagePathDto';
 import { regions } from '../../Data/Regions';
 import uah from '../../assets/images/hryvnia.svg';
-import { Currency } from '../../components/Common/CurrencyDropdown/CurrencyDropdown.tsx';
+import type { Currency } from '../../components/Common/CurrencyDropdown/CurrencyDropdown.tsx';
 import CheckboxFilterControl from '../../components/Common/CheckboxFilter/CheckboxFilter.tsx';
 import CategoryDropdown from '../../components/Common/CategoryDropdown/CategoryDropdown.tsx';
 import RegionCitySelector from '../../components/Common/RegionCitySelector/RegionCitySelector.tsx';
+import Recommendation from '../../components/Recommendation/Recommendation.tsx';
+import useRecommendationService from '../../Services/recommendationService.ts';
+import { RecommendationDto } from '../../Types/Recommendation/recommendationDto.ts';
 
 interface BusinessState {
   id?: string;
@@ -135,8 +140,10 @@ const CreateEditBusiness = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [currencyMenuOpen, setCurrencyMenuOpen] = useState(false);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [aiRecommendation, setAiRecommendation] = useState<RecommendationDto | null>(null);
+  const [isRecommendationLoading, setIsRecommendationLoading] = useState(false);
 
-  const { control, handleSubmit, setValue, watch, getValues, reset } = useForm<BusinessState>({
+  const { control, handleSubmit, setValue, watch, reset } = useForm<BusinessState>({
     defaultValues: {
       name: '',
       location: '',
@@ -176,6 +183,7 @@ const CreateEditBusiness = () => {
   const { isAdmin } = useAuth();
   const { createBusiness, getBusiness, editBusiness, approveBusiness, rejectBusiness } = useBusinessService();
   const { showSuccessNotification } = useNotification();
+  const { startRecommendation } = useRecommendationService();
 
   const location = watch('location');
   const category = watch('category');
@@ -183,7 +191,7 @@ const CreateEditBusiness = () => {
   const currency = watch('currency');
 
   const onDrop = (acceptedFiles: File[]) => {
-    const currentImages = getValues('images') as File[];
+    const currentImages = watch('images') as File[];
     setValue('images', [...currentImages, ...acceptedFiles]);
 
     // Create preview URLs for the new images
@@ -232,9 +240,7 @@ const CreateEditBusiness = () => {
       formDataToSend.append('id', id);
 
       if (data.images) {
-        const oldImages = data.images.filter(
-          (image) => (image as ImagePathDto)?.id !== undefined,
-        ) as ImagePathDto[];
+        const oldImages = data.images.filter((image) => (image as ImagePathDto)?.id !== undefined) as ImagePathDto[];
         const newImages = data.images.filter((image) => (image as File)?.name !== undefined) as File[];
 
         newImages.forEach((file) => {
@@ -269,6 +275,26 @@ const CreateEditBusiness = () => {
     });
 
     navigate('/');
+  };
+
+  const runAIRecommendation = async () => {
+    if (!id) {
+      return;
+    }
+
+    try {
+      setIsRecommendationLoading(true);
+
+      const recommendation = await startRecommendation({
+        businessId: id,
+      });
+
+      if (recommendation?.data) {
+        setAiRecommendation(recommendation.data);
+      }
+    } finally {
+      setIsRecommendationLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -334,7 +360,7 @@ const CreateEditBusiness = () => {
   const getCurrencyIcon = () => {
     switch (currency) {
       case 'UAH':
-        return <img src={uah} alt="UAH" style={{ width: 20, height: 20 }} />;
+        return <img src={uah || '/placeholder.svg'} alt="UAH" style={{ width: 20, height: 20 }} />;
       case 'USD':
         return <AttachMoney />;
       case 'EURO':
@@ -361,8 +387,7 @@ const CreateEditBusiness = () => {
           borderColor: 'divider',
         }}
       >
-        <Typography
-          level="title-lg">{id ? 'Редагування бізнесу' : 'Створення бізнесу'}</Typography>
+        <Typography level="title-lg">{id ? 'Редагування бізнесу' : 'Створення бізнесу'}</Typography>
       </Sheet>
 
       <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto' }}>
@@ -373,40 +398,64 @@ const CreateEditBusiness = () => {
               onChange={(_, value) => setActiveTab(value as number)}
               sx={{ bgcolor: 'background.level1' }}
             >
-
-              <TabList variant="plain" sx={{ p: 0, borderRadius: 0 }}>
+              <TabList
+                variant="plain"
+                sx={{
+                  p: 0,
+                  borderRadius: 0,
+                  width: '100%',
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  overflow: 'hidden',
+                  '& .MuiTab-root': {
+                    minHeight: '40px',
+                    py: 0.5,
+                    px: { xs: 0.75, sm: 1 },
+                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                    flex: '1 1 auto',
+                    maxWidth: { xs: '33.333%', md: '16.666%' },
+                  },
+                }}
+              >
                 <Tab>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <Info fontSize="small" />
-                    <span>Основна інформація</span>
+                    <span>Основна</span>
                   </Box>
                 </Tab>
                 <Tab>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <MonetizationOn fontSize="small" />
-                    <span>Фінансові показники</span>
+                    <span>Фінанси</span>
                   </Box>
                 </Tab>
                 <Tab>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <Settings fontSize="small" />
                     <span>Характеристики</span>
                   </Box>
                 </Tab>
                 <Tab>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <Public fontSize="small" />
-                    <span>Соціальні мережі</span>
+                    <span>Соц. мережі</span>
                   </Box>
                 </Tab>
                 <Tab>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <Description fontSize="small" />
                     <span>Опис та фото</span>
                   </Box>
                 </Tab>
+                {isAdmin && (
+                  <Tab>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Psychology fontSize="small" />
+                      <span>AI Рекомендації</span>
+                    </Box>
+                  </Tab>
+                )}
               </TabList>
-
             </Tabs>
 
             <CardContent sx={{ p: 4 }}>
@@ -447,11 +496,7 @@ const CreateEditBusiness = () => {
                         placeholder="Введіть ціну"
                         startDecorator={getCurrencyIcon()}
                         endDecorator={
-                          <IconButton
-                            variant="plain"
-                            color="neutral"
-                            onClick={() => setCurrencyMenuOpen(true)}
-                          >
+                          <IconButton variant="plain" color="neutral" onClick={() => setCurrencyMenuOpen(true)}>
                             <AttachMoney />
                           </IconButton>
                         }
@@ -482,8 +527,9 @@ const CreateEditBusiness = () => {
                           <Button
                             variant={currency === 'UAH' ? 'solid' : 'plain'}
                             color="primary"
-                            startDecorator={<img src={uah} alt="UAH"
-                              style={{ width: 20, height: 20 }} />}
+                            startDecorator={
+                              <img src={uah || '/placeholder.svg'} alt="UAH" style={{ width: 20, height: 20 }} />
+                            }
                             onClick={() => handleCurrencyChange('UAH')}
                           >
                             UAH
@@ -512,7 +558,9 @@ const CreateEditBusiness = () => {
                   <Grid xs={12}>
                     <FormControl>
                       <Typography level="title-md">Розташування</Typography>
-                      <RegionCitySelector regions={regions} minWidth="100%"
+                      <RegionCitySelector
+                        regions={regions}
+                        minWidth="100%"
                         onHandleRegionSelect={(region) => setValue('location', region)}
                         selectedRegion={location}
                       />
@@ -524,7 +572,8 @@ const CreateEditBusiness = () => {
                       <Typography level="title-md">Категорія</Typography>
                       <CategoryDropdown
                         initialSelectedOptions={[category]}
-                        onOptionsSelected={(options) => setValue('category', options[0])} />
+                        onOptionsSelected={(options) => setValue('category', options[0])}
+                      />
                     </FormControl>
                   </Grid>
                 </Grid>
@@ -661,19 +710,19 @@ const CreateEditBusiness = () => {
                         onChange={(value) => setValue('hasEquipment', value)}
                         label="Обладнання"
                         disabled={isAdmin}
-                        checked={getValues('hasEquipment')}
+                        checked={watch('hasEquipment')}
                       />
                       <CheckboxFilterControl
                         onChange={(value) => setValue('hasShelter', value)}
                         label="Укриття"
                         disabled={isAdmin}
-                        checked={getValues('hasShelter')}
+                        checked={watch('hasShelter')}
                       />
                       <CheckboxFilterControl
                         label="Генератор чи EcoFlow"
                         disabled={isAdmin}
                         onChange={(value) => setValue('hasGenerator', value)}
-                        checked={getValues('hasGenerator')}
+                        checked={watch('hasGenerator')}
                       />
                     </Card>
                   </Grid>
@@ -688,18 +737,20 @@ const CreateEditBusiness = () => {
                         label="Можливий торг"
                         disabled={isAdmin}
                         onChange={(value) => setValue('isNegotiable', value)}
-                        checked={getValues('isNegotiable')}
+                        checked={watch('isNegotiable')}
                       />
                       <CheckboxFilterControl
                         label="Підтримка колишнього власника"
                         disabled={isAdmin}
                         onChange={(value) => setValue('hasPreviousOwnerSupport', value)}
-                        checked={getValues('hasPreviousOwnerSupport')}
+                        checked={watch('hasPreviousOwnerSupport')}
                       />
-                      <CheckboxFilterControl onChange={(value) => setValue('hasFop', value)}
+                      <CheckboxFilterControl
+                        onChange={(value) => setValue('hasFop', value)}
                         label="ФОП"
-                        checked={getValues('hasFop')}
-                        disabled={isAdmin} />
+                        checked={watch('hasFop')}
+                        disabled={isAdmin}
+                      />
                     </Card>
                   </Grid>
 
@@ -713,19 +764,19 @@ const CreateEditBusiness = () => {
                         label="Конкуренти в межах району"
                         disabled={isAdmin}
                         onChange={(value) => setValue('hasCompetitors', value)}
-                        checked={getValues('hasCompetitors')}
+                        checked={watch('hasCompetitors')}
                       />
                       <CheckboxFilterControl
                         label="Сервіси доставки"
                         disabled={isAdmin}
                         onChange={(value) => setValue('hasDeliveryServices', value)}
-                        checked={getValues('hasDeliveryServices')}
+                        checked={watch('hasDeliveryServices')}
                       />
                       <CheckboxFilterControl
                         label="Сезонність"
                         disabled={isAdmin}
                         onChange={(value) => setValue('isSeasonal', value)}
-                        checked={getValues('isSeasonal')}
+                        checked={watch('isSeasonal')}
                       />
                     </Card>
                   </Grid>
@@ -834,7 +885,8 @@ const CreateEditBusiness = () => {
                                   : {}),
                               }}
                             />
-                          )} />
+                          )}
+                        />
                       </Box>
                       {control._formState.errors.description && (
                         <FormHelperText>{control._formState.errors.description.message}</FormHelperText>
@@ -892,7 +944,7 @@ const CreateEditBusiness = () => {
                                 <Grid key={index} xs={6} sm={4} md={3}>
                                   <AspectRatio ratio="1/1" sx={{ borderRadius: 'md', overflow: 'hidden' }}>
                                     <img
-                                      src={src}
+                                      src={src || '/placeholder.svg'}
                                       alt={`Preview ${index}`}
                                       style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                                     />
@@ -907,28 +959,60 @@ const CreateEditBusiness = () => {
                   </Grid>
                 </Grid>
               )}
+
+              {/* AI Recommendation Tab */}
+              {isAdmin && activeTab === 5 && (
+                <Grid container spacing={3}>
+                  <Grid xs={12}>
+                    {!aiRecommendation && !isRecommendationLoading && (
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, py: 4 }}>
+                        <Psychology sx={{ fontSize: 60, color: 'primary.500' }} />
+                        <Typography level="h4">AI Рекомендації</Typography>
+                        <Typography level="body-md" textAlign="center" sx={{ maxWidth: 600, mb: 2 }}>
+                          Запустіть аналіз бізнесу за допомогою штучного інтелекту, щоб отримати детальну оцінку та
+                          рекомендації щодо потенційної інвестиції.
+                        </Typography>
+                        <Button
+                          variant="solid"
+                          color="primary"
+                          size="lg"
+                          startDecorator={<Psychology />}
+                          loading={isRecommendationLoading}
+                          onClick={runAIRecommendation}
+                        >
+                          Запустити AI аналіз
+                        </Button>
+                      </Box>
+                    )}
+
+                    {isRecommendationLoading && (
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, py: 4 }}>
+                        <LinearProgress sx={{ width: '100%', mb: 2 }} />
+                        <Typography level="h4">Аналіз бізнесу...</Typography>
+                        <Typography level="body-md" textAlign="center">
+                          Наш ШІ аналізує дані бізнесу та генерує рекомендації. Це може зайняти кілька секунд.
+                        </Typography>
+                      </Box>
+                    )}
+
+                    {aiRecommendation && !isRecommendationLoading && (
+                      <Recommendation
+                        recommendation={aiRecommendation}
+                      />
+                    )}
+                  </Grid>
+                </Grid>
+              )}
             </CardContent>
           </Card>
 
           <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 4 }}>
             {isAdmin ? (
               <>
-                <Button
-                  size="lg"
-                  variant="solid"
-                  color="success"
-                  startDecorator={<Check />}
-                  onClick={handleApprove}
-                >
+                <Button size="lg" variant="solid" color="success" startDecorator={<Check />} onClick={handleApprove}>
                   Опублікувати
                 </Button>
-                <Button
-                  size="lg"
-                  variant="solid"
-                  color="danger"
-                  startDecorator={<Close />}
-                  onClick={handleReject}
-                >
+                <Button size="lg" variant="solid" color="danger" startDecorator={<Close />} onClick={handleReject}>
                   Відмовити
                 </Button>
               </>

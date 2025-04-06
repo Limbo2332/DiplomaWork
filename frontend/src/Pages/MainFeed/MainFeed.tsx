@@ -17,11 +17,11 @@ export const defaultFilterDtoValues: FilterDto = {
   amountOfWorkersStart: 1,
   amountOfWorkersEnd: 1000,
   averageChequeStart: 1,
-  averageChequeEnd: 15000,
+  averageChequeEnd: 15000000,
   averageIncomeStart: 1,
-  averageIncomeEnd: 1000000,
+  averageIncomeEnd: 10000000,
   averageProfitStart: 1,
-  averageProfitEnd: 1000000,
+  averageProfitEnd: 10000000,
   timeToPaybackStart: 1,
   timeToPaybackEnd: 1200,
   hasEquipment: false,
@@ -32,7 +32,7 @@ export const defaultFilterDtoValues: FilterDto = {
   onlySaved: false,
   hideViewed: false,
   flatSquareStart: 5,
-  flatSquareEnd: 5000,
+  flatSquareEnd: 5000000,
   hasGeneratorOrEcoFlow: false,
 };
 

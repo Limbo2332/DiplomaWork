@@ -60,6 +60,7 @@ import Recommendation from '../../components/Recommendation/Recommendation.tsx';
 import defaultImage from '../../assets/images/default-image.png';
 import Menu from '../../components/Menu/Menu.tsx';
 import StarButton from '../../components/Common/Bookmark/StarButton.tsx';
+import { RecommendationDto } from '../../Types/Recommendation/recommendationDto.ts';
 
 // Image gallery component
 const ImageGallery = ({ images }: { images: Array<{ id: string; path: string }> }) => {
@@ -242,13 +243,10 @@ const FeaturesTab = ({ business }: { business: BusinessDto }) => (
   </Box>
 );
 
-const AIAnalysisTab = ({ aiRecommendation }: { aiRecommendation: any }) => (
+const AIAnalysisTab = ({ aiRecommendation }: { aiRecommendation: RecommendationDto }) => (
   <Box sx={{ p: 3 }}>
     <Recommendation
-      scores={aiRecommendation.scores}
-      recommendations={aiRecommendation.recommendations}
-      strengths={aiRecommendation.strengths}
-      weaknesses={aiRecommendation.weaknesses}
+      recommendation={aiRecommendation}
     />
   </Box>
 );
@@ -261,30 +259,6 @@ const BusinessPage = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [business, setBusiness] = useState<BusinessDto | null>(null);
-
-  // Example AI recommendation data - in a real app, this would come from your API
-  const aiRecommendation = {
-    scores: {
-      location: 8, // out of 10
-      financial: 24, // out of 30
-      adaptation: 7, // out of 10
-      team: 12, // out of 15
-      ownerSupport: 4, // out of 5
-      popularity: 8, // out of 10
-      aiEvaluation: 16, // out of 20
-    },
-    recommendations: [
-      'Розгляньте можливість розширення асортименту для збільшення середнього чеку.',
-      'Інвестуйте в маркетинг для підвищення впізнаваності бренду.',
-      'Оптимізуйте витрати на оренду шляхом перегляду умов договору.',
-    ],
-    strengths: [
-      'Вигідне розташування з високою прохідністю.',
-      'Стабільний прибуток з потенціалом зростання.',
-      'Добре навчений персонал з низькою плинністю.',
-    ],
-    weaknesses: ['Висока конкуренція в районі.', 'Сезонні коливання попиту.', 'Обмежений простір для розширення.'],
-  };
 
   useEffect(() => {
     const fetchBusiness = async () => {
@@ -306,8 +280,6 @@ const BusinessPage = () => {
   if (!business || isLoading || !id) {
     return <Loading />;
   }
-
-  const totalScore = Object.values(aiRecommendation.scores).reduce((sum, score) => sum + score, 0);
 
   return (
     <>
@@ -404,12 +376,12 @@ const BusinessPage = () => {
                   </Tabs>
                 </CardOverflow>
 
-                {/* Fixed: Using conditional rendering instead of TabPanel components */}
                 <Box>
                   {activeTab === 0 && <DescriptionTab business={business} />}
                   {activeTab === 1 && <FinancialTab business={business} />}
                   {activeTab === 2 && <FeaturesTab business={business} />}
-                  {activeTab === 3 && <AIAnalysisTab aiRecommendation={aiRecommendation} />}
+                  {activeTab === 3 && business.aiRecommendation &&
+                    <AIAnalysisTab aiRecommendation={business.aiRecommendation} />}
                 </Box>
               </Card>
             </Grid>
@@ -474,8 +446,8 @@ const BusinessPage = () => {
                     }}
                   >
                     <Badge
-                      badgeContent={`${totalScore}/100`}
-                      color={totalScore >= 75 ? 'success' : totalScore >= 60 ? 'primary' : 'warning'}
+                      badgeContent={`${business.aiRecommendation!.ratingScore}/100`}
+                      color={business.aiRecommendation!.ratingScore >= 75 ? 'success' : business.aiRecommendation!.ratingScore >= 60 ? 'primary' : 'warning'}
                       size="lg"
                       sx={{
                         '& .MuiBadge-badge': {
@@ -491,23 +463,23 @@ const BusinessPage = () => {
                         sx={{
                           width: 100,
                           height: 100,
-                          bgcolor: totalScore >= 75 ? 'success.100' : totalScore >= 60 ? 'primary.100' : 'warning.100',
-                          color: totalScore >= 75 ? 'success.700' : totalScore >= 60 ? 'primary.700' : 'warning.700',
+                          bgcolor: business.aiRecommendation!.ratingScore >= 75 ? 'success.100' : business.aiRecommendation!.ratingScore >= 60 ? 'primary.100' : 'warning.100',
+                          color: business.aiRecommendation!.ratingScore >= 75 ? 'success.700' : business.aiRecommendation!.ratingScore >= 60 ? 'primary.700' : 'warning.700',
                           fontSize: '2rem',
                           fontWeight: 'bold',
                         }}
                       >
-                        {totalScore}
+                        {business.aiRecommendation!.ratingScore}
                       </Avatar>
                     </Badge>
                     <Typography level="title-sm" sx={{ mt: 2 }}>
-                      {totalScore >= 90
+                      {business.aiRecommendation!.ratingScore >= 90
                         ? 'Відмінна інвестиція'
-                        : totalScore >= 75
+                        : business.aiRecommendation!.ratingScore >= 75
                           ? 'Гарна інвестиція'
-                          : totalScore >= 60
+                          : business.aiRecommendation!.ratingScore >= 60
                             ? 'Задовільна інвестиція'
-                            : totalScore >= 45
+                            : business.aiRecommendation!.ratingScore >= 45
                               ? 'Посередня інвестиція'
                               : 'Ризикована інвестиція'}
                     </Typography>
@@ -517,7 +489,7 @@ const BusinessPage = () => {
                     Ключові переваги:
                   </Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-                    {aiRecommendation.strengths.slice(0, 2).map((strength, index) => (
+                    {business.aiRecommendation?.pluses.slice(0, 2).map((strength, index) => (
                       <Chip key={index} size="sm" variant="soft" color="success" sx={{ borderRadius: 'full' }}>
                         {strength.length > 30 ? strength.substring(0, 30) + '...' : strength}
                       </Chip>

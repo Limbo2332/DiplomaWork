@@ -36,5 +36,5 @@ public class PreviewBusinessDto
     
     public bool IsSaved { get; set; }
     
-    public int InvestmentScore { get; set; }
+    public double? InvestmentScore { get; set; }
 }

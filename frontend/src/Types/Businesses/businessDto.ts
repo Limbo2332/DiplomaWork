@@ -1,5 +1,6 @@
 ﻿import { Currency } from '../../components/Common/CurrencyDropdown/CurrencyDropdown.tsx';
 import { ImagePathDto } from '../BlobImage/imagePathDto.ts';
+import { RecommendationDto } from '../Recommendation/recommendationDto.ts';
 
 export type BusinessDto = {
   id: string;
@@ -45,4 +46,5 @@ export type BusinessDto = {
   isSeasonal: boolean;
   season: string | null;
   hasDeliveryServices: boolean;
+  aiRecommendation: RecommendationDto | null;
 }

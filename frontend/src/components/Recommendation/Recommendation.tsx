@@ -30,20 +30,10 @@ import {
   SupportAgent,
   TrendingUp,
 } from '@mui/icons-material';
+import { RecommendationDto } from '../../Types/Recommendation/recommendationDto';
 
 export interface AIRecommendationProps {
-  scores: {
-    location: number; // out of 10
-    financial: number; // out of 30
-    adaptation: number; // out of 10
-    team: number; // out of 15
-    ownerSupport: number; // out of 5
-    popularity: number; // out of 10
-    aiEvaluation: number; // out of 20
-  };
-  recommendations: string[];
-  strengths: string[];
-  weaknesses: string[];
+  recommendation: RecommendationDto;
 }
 
 const getInvestmentRating = (
@@ -87,20 +77,19 @@ const renderStars = (count: number) => {
   return stars;
 };
 
-const Recommendation = ({ scores, recommendations, strengths, weaknesses }: AIRecommendationProps) => {
+const Recommendation = ({ recommendation }: AIRecommendationProps) => {
   const [expanded, setExpanded] = useState<boolean>(true);
 
-  const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);
-  const rating = getInvestmentRating(totalScore);
+  const rating = getInvestmentRating(recommendation.ratingScore);
 
   const scoreCategories = [
-    { name: 'Локація', value: scores.location, max: 10, icon: <LocationOn /> },
-    { name: 'Фінансові показники', value: scores.financial, max: 30, icon: <Payments /> },
-    { name: 'Адаптація до умов в Україні', value: scores.adaptation, max: 10, icon: <Shield /> },
-    { name: 'Команда', value: scores.team, max: 15, icon: <Groups /> },
-    { name: 'Підтримка колишнього власника', value: scores.ownerSupport, max: 5, icon: <SupportAgent /> },
-    { name: 'Популярність бізнесу', value: scores.popularity, max: 10, icon: <TrendingUp /> },
-    { name: 'Комплексна оцінка ШІ', value: scores.aiEvaluation, max: 20, icon: <Psychology /> },
+    { name: 'Локація', value: recommendation.locationScore, max: 10, icon: <LocationOn /> },
+    { name: 'Фінансові показники', value: recommendation.financialScore, max: 30, icon: <Payments /> },
+    { name: 'Адаптація до умов в Україні', value: recommendation.adaptationScore, max: 10, icon: <Shield /> },
+    { name: 'Команда', value: recommendation.teamScore, max: 15, icon: <Groups /> },
+    { name: 'Підтримка колишнього власника', value: recommendation.supportScore, max: 5, icon: <SupportAgent /> },
+    { name: 'Популярність бізнесу', value: recommendation.popularityScore, max: 10, icon: <TrendingUp /> },
+    { name: 'Комплексна оцінка ШІ', value: recommendation.shiScore, max: 20, icon: <Psychology /> },
   ];
 
   return (
@@ -117,7 +106,7 @@ const Recommendation = ({ scores, recommendations, strengths, weaknesses }: AIRe
             <Psychology sx={{ fontSize: 28, color: 'primary.500' }} />
             <Typography level="title-lg">AI Рекомендації та Оцінка</Typography>
             <Chip size="lg" variant="soft" color={rating.color} sx={{ ml: 'auto', px: 2 }}>
-              {totalScore}/100 балів
+              {recommendation.ratingScore}/100 балів
             </Chip>
           </Box>
         </AccordionSummary>
@@ -181,7 +170,7 @@ const Recommendation = ({ scores, recommendations, strengths, weaknesses }: AIRe
               <Card variant="soft" color="success" sx={{ flex: 1 }}>
                 <Typography level="title-md">Сильні сторони</Typography>
                 <List size="sm">
-                  {strengths.map((strength, index) => (
+                  {recommendation.pluses.map((strength, index) => (
                     <ListItem key={index}>
                       <ListItemDecorator>
                         <Star fontSize="small" />
@@ -195,7 +184,7 @@ const Recommendation = ({ scores, recommendations, strengths, weaknesses }: AIRe
               <Card variant="soft" color="danger" sx={{ flex: 1 }}>
                 <Typography level="title-md">Слабкі сторони</Typography>
                 <List size="sm">
-                  {weaknesses.map((weakness, index) => (
+                  {recommendation.minuses.map((weakness, index) => (
                     <ListItem key={index}>
                       <ListItemDecorator>
                         <Star fontSize="small" />
@@ -214,7 +203,7 @@ const Recommendation = ({ scores, recommendations, strengths, weaknesses }: AIRe
             </Typography>
             <Sheet variant="outlined" sx={{ p: 2, borderRadius: 'md' }}>
               <List size="sm">
-                {recommendations.map((recommendation, index) => (
+                {recommendation.recommendations.map((recommendation, index) => (
                   <ListItem key={index}>
                     <ListItemDecorator>
                       <Psychology fontSize="small" color="primary" />

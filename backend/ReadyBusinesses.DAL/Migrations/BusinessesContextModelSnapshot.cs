@@ -209,6 +209,21 @@ namespace ReadyBusinesses.DLL.Migrations
                     b.ToTable("PostPictures");
                 });
 
+            modelBuilder.Entity("ReadyBusinesses.Common.Entities.PostRecommendation", b =>
+                {
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RecommendationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PostId", "RecommendationId");
+
+                    b.HasIndex("RecommendationId");
+
+                    b.ToTable("PostRecommendation");
+                });
+
             modelBuilder.Entity("ReadyBusinesses.Common.Entities.PostSocialMedia", b =>
                 {
                     b.Property<Guid>("PostId")
@@ -222,6 +237,78 @@ namespace ReadyBusinesses.DLL.Migrations
                     b.HasIndex("SocialMediaId");
 
                     b.ToTable("PostsSocialMedias");
+                });
+
+            modelBuilder.Entity("ReadyBusinesses.Common.Entities.Recommendation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("AdaptationScore")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("float(18)");
+
+                    b.Property<bool>("ByAI")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CriteriaMatrix")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CriteriaWeights")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("FinancialScore")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("float(18)");
+
+                    b.Property<double>("LocationScore")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("float(18)");
+
+                    b.Property<string>("Minuses")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Pluses")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("PopularityScore")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("float(18)");
+
+                    b.Property<double>("RatingScore")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("float(18)");
+
+                    b.Property<string>("Recommendations")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("ShiScore")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("float(18)");
+
+                    b.Property<double>("SupportScore")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("float(18)");
+
+                    b.Property<double>("TeamScore")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("float(18)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Recommendations");
                 });
 
             modelBuilder.Entity("ReadyBusinesses.Common.Entities.RefreshToken", b =>
@@ -406,6 +493,25 @@ namespace ReadyBusinesses.DLL.Migrations
                     b.Navigation("Post");
                 });
 
+            modelBuilder.Entity("ReadyBusinesses.Common.Entities.PostRecommendation", b =>
+                {
+                    b.HasOne("ReadyBusinesses.Common.Entities.Post", "Post")
+                        .WithMany("Recommendations")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("ReadyBusinesses.Common.Entities.Recommendation", "Recommendation")
+                        .WithMany()
+                        .HasForeignKey("RecommendationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("Recommendation");
+                });
+
             modelBuilder.Entity("ReadyBusinesses.Common.Entities.PostSocialMedia", b =>
                 {
                     b.HasOne("ReadyBusinesses.Common.Entities.Post", "Post")
@@ -487,6 +593,8 @@ namespace ReadyBusinesses.DLL.Migrations
             modelBuilder.Entity("ReadyBusinesses.Common.Entities.Post", b =>
                 {
                     b.Navigation("Pictures");
+
+                    b.Navigation("Recommendations");
 
                     b.Navigation("SocialMedias");
                 });

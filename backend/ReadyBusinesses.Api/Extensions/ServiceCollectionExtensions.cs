@@ -10,6 +10,7 @@ using ReadyBusinesses.Common.Logic.Abstract;
 using ReadyBusinesses.DLL.Context;
 using ReadyBusinesses.DLL.Repositories;
 using ReadyBusinesses.DLL.Repositories.Abstract;
+using ReadyBusinesses.Topsis;
 
 namespace ReadyBusinesses.Api.Extensions
 {
@@ -76,14 +77,18 @@ namespace ReadyBusinesses.Api.Extensions
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IBusinessesRepository, BusinessesRepository>();
+            services.AddScoped<IRecommendationRepository, RecommendationRepository>();
         }
 
         public static void RegisterCustomServices(this IServiceCollection services)
         {
+            services.AddScoped<ISolver, Solver>();
+            
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IBusinessesService, BusinessesService>();
+            services.AddScoped<IRecommendationService, RecommendationService>();
         }
     }
 }

@@ -6,6 +6,8 @@ namespace ReadyBusinesses.DLL.Repositories.Abstract;
 public interface IBusinessesRepository
 {
     IQueryable<Post> GetPosts(BusinessStatus businessStatus);
+
+    Task<Post> GetBusinessWithoutDependenciesByIdAsync(Guid id);
     
     Task<Post?> GetPostByIdAsync(Guid id);
 

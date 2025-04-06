@@ -98,7 +98,7 @@ const Filters = ({ filter, setFilter }: FiltersProps) => {
                   label="Площа приміщення"
                   icon={<Apartment />}
                   min={0}
-                  max={5000}
+                  max={5000000}
                   step={5}
                   value={[filter.flatSquareStart, filter.flatSquareEnd]}
                   onChange={(newValue) =>
@@ -136,7 +136,7 @@ const Filters = ({ filter, setFilter }: FiltersProps) => {
                   label="Середній чек"
                   icon={<Receipt />}
                   min={0}
-                  max={15000}
+                  max={15000000}
                   step={1}
                   value={[filter.averageChequeStart, filter.averageChequeEnd]}
                   onChange={(newValue) =>
@@ -153,7 +153,7 @@ const Filters = ({ filter, setFilter }: FiltersProps) => {
                   label="Середній виторг на місяць"
                   icon={<MonetizationOn />}
                   min={1}
-                  max={1000000}
+                  max={10000000}
                   step={10000}
                   value={[filter.averageIncomeStart, filter.averageIncomeEnd]}
                   onChange={(newValue) =>
@@ -170,7 +170,7 @@ const Filters = ({ filter, setFilter }: FiltersProps) => {
                   label="Середній чистий прибуток на місяць"
                   icon={<AddCircle />}
                   min={1}
-                  max={1000000}
+                  max={10000000}
                   step={5000}
                   value={[filter.averageProfitStart, filter.averageProfitEnd]}
                   onChange={(newValue) =>

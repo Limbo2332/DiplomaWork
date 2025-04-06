@@ -9,6 +9,8 @@ public class PostToBusinessDto
 {
     public static BusinessDto Map(Post post, List<SocialMedia> authorSocialMedias, Guid currentUserId)
     {
+        var aiRecommendation = post.Recommendations.Select(r => r.Recommendation).FirstOrDefault(r => r.ByAI);
+        
         return new BusinessDto
         {
             Id = post.Id,
@@ -17,28 +19,28 @@ public class PostToBusinessDto
             Location = post.Location,
             Category = post.Category!,
             UpdatedAt = post.UpdatedAt,
-            Price = CurrencyConvertation.To(post.Currency, Currency.UAH, post.PriceInUah),
+            Price = CurrencyConvertation.To(Currency.UAH, post.Currency, post.PriceInUah),
             PriceCurrency = post.Currency,
             Images = post.Pictures.Select(p => PictureToPreviewString.MapPictureToPath(p.Picture)),
             Description = post.Description,
-            Telegram = post.SocialMedias.SingleOrDefault(s => s.SocialMedia.Type == SocialMediaType.Telegram)
+            Telegram = post.SocialMedias.FirstOrDefault(s => s.SocialMedia.Type == SocialMediaType.Telegram)
                 ?.SocialMedia.Link,
-            Instagram = post.SocialMedias.SingleOrDefault(s => s.SocialMedia.Type == SocialMediaType.Instagram)
+            Instagram = post.SocialMedias.FirstOrDefault(s => s.SocialMedia.Type == SocialMediaType.Instagram)
                 ?.SocialMedia.Link,
-            Facebook = post.SocialMedias.SingleOrDefault(s => s.SocialMedia.Type == SocialMediaType.Facebook)
+            Facebook = post.SocialMedias.FirstOrDefault(s => s.SocialMedia.Type == SocialMediaType.Facebook)
                 ?.SocialMedia.Link,
-            Twitter = post.SocialMedias.SingleOrDefault(s => s.SocialMedia.Type == SocialMediaType.Twitter)?.SocialMedia
+            Twitter = post.SocialMedias.FirstOrDefault(s => s.SocialMedia.Type == SocialMediaType.Twitter)?.SocialMedia
                 .Link,
-            Site = post.SocialMedias.SingleOrDefault(s => s.SocialMedia.Type == SocialMediaType.Site)?.SocialMedia.Link,
+            Site = post.SocialMedias.FirstOrDefault(s => s.SocialMedia.Type == SocialMediaType.Site)?.SocialMedia.Link,
             AuthorId = post.CreatedBy,
             AuthorName = post.CreatedByUser.FullName,
             AuthorRegistrationDate = post.CreatedAt,
-            AuthorPhoneNumber = authorSocialMedias.SingleOrDefault(s => s.Type == SocialMediaType.PhoneNumber)?.Link,
-            AuthorTelegram = authorSocialMedias.SingleOrDefault(s => s.Type == SocialMediaType.Telegram)?.Link,
-            AuthorInstagram = authorSocialMedias.SingleOrDefault(s => s.Type == SocialMediaType.Instagram)?.Link,
-            AuthorFacebook = authorSocialMedias.SingleOrDefault(s => s.Type == SocialMediaType.Facebook)?.Link,
-            AuthorTwitter = authorSocialMedias.SingleOrDefault(s => s.Type == SocialMediaType.Twitter)?.Link,
-            AuthorSite = authorSocialMedias.SingleOrDefault(s => s.Type == SocialMediaType.Site)?.Link,
+            AuthorPhoneNumber = authorSocialMedias.FirstOrDefault(s => s.Type == SocialMediaType.PhoneNumber)?.Link,
+            AuthorTelegram = authorSocialMedias.FirstOrDefault(s => s.Type == SocialMediaType.Telegram)?.Link,
+            AuthorInstagram = authorSocialMedias.FirstOrDefault(s => s.Type == SocialMediaType.Instagram)?.Link,
+            AuthorFacebook = authorSocialMedias.FirstOrDefault(s => s.Type == SocialMediaType.Facebook)?.Link,
+            AuthorTwitter = authorSocialMedias.FirstOrDefault(s => s.Type == SocialMediaType.Twitter)?.Link,
+            AuthorSite = authorSocialMedias.FirstOrDefault(s => s.Type == SocialMediaType.Site)?.Link,
             Area = post.RoomArea,
             RentPrice = post.RoomRent ?? 0,
             Employees = post.EmployersCount,
@@ -59,6 +61,9 @@ public class PostToBusinessDto
             HasDeliveryServices = post.HasIntegrationWithDeliveryServices,
             AuthorImage = post.CreatedByUser.ProfileAvatar is not null
                 ? PictureToPreviewString.Map(post.CreatedByUser.ProfileAvatar)
+                : null,
+            AiRecommendation = aiRecommendation is not null ? 
+                RecommendationDtoToRecommendation.ToRecommendationDto(aiRecommendation, post.Id)
                 : null
         };
     }

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;
+using ReadyBusinesses.AI.Extensions;
 using ReadyBusinesses.Api;
 using ReadyBusinesses.Api.Extensions;
 using ReadyBusinesses.Common.Enums;
@@ -29,6 +30,8 @@ builder.Services.AddLogging(logging =>
     logging.AddConsole();
     logging.AddDebug();
 });
+
+builder.Services.AddChatGpt();
 
 builder.Services.AddCors(options => options.AddPolicy("Frontend", config =>
 {

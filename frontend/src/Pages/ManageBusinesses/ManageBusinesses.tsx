@@ -1,5 +1,4 @@
-﻿import type React from 'react';
-import { useCallback, useState } from 'react';
+﻿import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Button, Card, CardContent, Divider, Grid, Tab, TabList, Tabs, Typography } from '@mui/joy';
 import { Add, Business, Cancel, CheckCircle, HourglassEmpty } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
@@ -53,6 +52,10 @@ const ManageBusinesses = () => {
     },
     [getBusinessesByStatus, tabValue],
   );
+
+  useEffect(() => {
+    getCards(0, 10);
+  }, [getCards]);
 
   const handleCreateBusiness = () => {
     navigate('/createoreditbusiness');

@@ -22,7 +22,17 @@ public class BusinessesRepository : IBusinessesRepository
             .Include(p => p.CreatedByUser)
                 .ThenInclude(createdBy => createdBy.SavedPosts)
             .Include(p => p.Pictures)
-                .ThenInclude(picture => picture.Picture);
+                .ThenInclude(picture => picture.Picture)
+            .Include(post => post.Recommendations)
+                .ThenInclude(r => r.Recommendation)
+            .OrderByDescending(post => post.Recommendations.FirstOrDefault(r => r.Recommendation.ByAI) != null 
+                    ? post.Recommendations.First(r => r.Recommendation.ByAI).Recommendation.RatingScore
+                    : post.InvestmentScore);
+    }
+
+    public Task<Post> GetBusinessWithoutDependenciesByIdAsync(Guid id)
+    {
+        return _context.Posts.FirstAsync(p => p.Id == id);
     }
 
     public Task<Post?> GetPostByIdAsync(Guid id)
@@ -104,6 +114,8 @@ public class BusinessesRepository : IBusinessesRepository
                 .ThenInclude(picture => picture.Picture)
             .Include(p => p.SocialMedias)
                 .ThenInclude(socialMedia => socialMedia.SocialMedia)
+            .Include(p => p.Recommendations)
+                .ThenInclude(r => r.Recommendation)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 

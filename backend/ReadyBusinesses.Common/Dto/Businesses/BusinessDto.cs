@@ -1,4 +1,5 @@
 ﻿using ReadyBusinesses.Common.Dto.BlobImage;
+using ReadyBusinesses.Common.Dto.Recommendation;
 using ReadyBusinesses.Common.Enums;
 
 namespace ReadyBusinesses.Common.Dto.Businesses;
@@ -90,4 +91,6 @@ public class BusinessDto
     public Season? Season { get; set; }
     
     public bool HasDeliveryServices { get; set; }
+
+    public RecommendationDto? AiRecommendation { get; set; }
 }
