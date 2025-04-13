@@ -25,4 +25,10 @@ public class AuthorDto
     public string? Twitter { get; set; }
     
     public string? Site { get; set; }
+    
+    public bool IsAdmin { get; set; }
+    
+    public bool IsExpert { get; set; }
+    
+    public bool IsSeller { get; set; }
 }

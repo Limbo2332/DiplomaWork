@@ -23,7 +23,10 @@ public static class UserToAuthorDto
             AvatarPreview = user.ProfileAvatar is not null
                 ? PictureToPreviewString.Map(user.ProfileAvatar)
                 : null,
-            RegistrationDate = user.CreatedAt
+            RegistrationDate = user.CreatedAt,
+            IsSeller = user.Posts.Count > 0,
+            IsAdmin = user.IsAdmin,
+            IsExpert = user.IsExpert,
         };
     }
 }

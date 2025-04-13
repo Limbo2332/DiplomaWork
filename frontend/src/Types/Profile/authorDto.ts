@@ -11,4 +11,7 @@
   facebook?: string;
   twitter?: string;
   site?: string;
+  isSeller: boolean;
+  isAdmin: boolean;
+  isExpert: boolean;
 }
