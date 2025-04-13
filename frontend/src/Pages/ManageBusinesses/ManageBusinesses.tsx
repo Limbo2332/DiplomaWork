@@ -113,7 +113,7 @@ const ManageBusinesses = () => {
 
           <CardContent sx={{ p: 3 }}>
             {hasBusinesses ? (
-              <InfiniteScrollCards key={tabValue} getCards={getCards} />
+              <InfiniteScrollCards key={tabValue} getCards={getCards} approved={tabValue === 0} />
             ) : (
               <Box
                 sx={{

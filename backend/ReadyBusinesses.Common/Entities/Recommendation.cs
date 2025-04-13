@@ -6,7 +6,7 @@ public class Recommendation : BaseEntity
 {
     public Guid Id { get; set; }
     
-    public bool ByAI { get; set; }
+    public Guid? GivenById { get; set; }
 
     public decimal[] CriteriaWeights { get; set; } = [];
     
@@ -33,4 +33,6 @@ public class Recommendation : BaseEntity
     public string[] Recommendations { get; set; } = [];
     
     public decimal[] CriteriaMatrix { get; set; } = [];
+    
+    public User? GivenBy { get; set; }
 }

@@ -61,6 +61,7 @@ import defaultImage from '../../assets/images/default-image.png';
 import Menu from '../../components/Menu/Menu.tsx';
 import StarButton from '../../components/Common/Bookmark/StarButton.tsx';
 import { RecommendationDto } from '../../Types/Recommendation/recommendationDto.ts';
+import ExpertEvaluationsTab from '../../components/Common/ExpertEvaluation/ExpertEvaluationsTab.tsx';
 
 // Image gallery component
 const ImageGallery = ({ images }: { images: Array<{ id: string; path: string }> }) => {
@@ -372,6 +373,7 @@ const BusinessPage = () => {
                       <Tab>Фінансові показники</Tab>
                       <Tab>Характеристики</Tab>
                       <Tab>AI Аналіз</Tab>
+                      <Tab>Експертні оцінки</Tab>
                     </TabList>
                   </Tabs>
                 </CardOverflow>
@@ -382,6 +384,7 @@ const BusinessPage = () => {
                   {activeTab === 2 && <FeaturesTab business={business} />}
                   {activeTab === 3 && business.aiRecommendation &&
                     <AIAnalysisTab aiRecommendation={business.aiRecommendation} />}
+                  {activeTab === 4 && <ExpertEvaluationsTab businessId={business.id} />}
                 </Box>
               </Card>
             </Grid>

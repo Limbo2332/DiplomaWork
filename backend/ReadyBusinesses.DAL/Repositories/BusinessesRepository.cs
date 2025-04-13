@@ -116,6 +116,17 @@ public class BusinessesRepository : IBusinessesRepository
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
+    public async Task AddPostRecommendationAsync(Guid postId, Guid recommendationId)
+    {
+        await _context.AddAsync(new PostRecommendation
+        {
+            PostId = postId,
+            RecommendationId = recommendationId
+        });
+        
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<IEnumerable<PostSocialMedia>> GetPostSocialMediasAsync(Guid postId)
     {
         return await _context.PostsSocialMedias

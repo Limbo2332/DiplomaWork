@@ -66,7 +66,7 @@ import CategoryDropdown from '../../components/Common/CategoryDropdown/CategoryD
 import RegionCitySelector from '../../components/Common/RegionCitySelector/RegionCitySelector.tsx';
 import Recommendation from '../../components/Recommendation/Recommendation.tsx';
 import useRecommendationService from '../../Services/recommendationService.ts';
-import { RecommendationDto } from '../../Types/Recommendation/recommendationDto.ts';
+import type { RecommendationDto } from '../../Types/Recommendation/recommendationDto.ts';
 
 interface BusinessState {
   id?: string;
@@ -996,9 +996,7 @@ const CreateEditBusiness = () => {
                     )}
 
                     {aiRecommendation && !isRecommendationLoading && (
-                      <Recommendation
-                        recommendation={aiRecommendation}
-                      />
+                      <Recommendation recommendation={aiRecommendation} />
                     )}
                   </Grid>
                 </Grid>
@@ -1036,4 +1034,3 @@ const CreateEditBusiness = () => {
 };
 
 export default CreateEditBusiness;
-

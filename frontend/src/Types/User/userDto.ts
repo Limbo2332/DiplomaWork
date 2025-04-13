@@ -4,4 +4,5 @@
   fullName: string;
   profileImagePath: string | null;
   isAdmin: boolean;
+  isExpert: boolean;
 }

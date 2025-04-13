@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Box, Button, Card, CardContent, Divider, Grid, IconButton, Stack, Typography } from '@mui/joy';
 import {
   AddCircle,
@@ -27,6 +27,7 @@ import { defaultFilterDtoValues } from '../../../Pages/MainFeed/MainFeed';
 import CurrencyRangeFilterControl from '../../Common/CurrencyRangeFilter/CurrencyRangeFilter';
 import RangeFilterControl from '../../Common/RangeFilter/RangeFilter';
 import CheckboxFilterControl from '../../Common/CheckboxFilter/CheckboxFilter';
+import SortOptions from '../SortOptions/SortOptions';
 
 interface FiltersProps {
   filter: FilterDto;
@@ -62,6 +63,11 @@ const Filters = ({ filter, setFilter }: FiltersProps) => {
           <FilterAlt sx={{ mr: 1, color: 'primary.500' }} />
           <Typography level="title-md">Фільтри</Typography>
         </Box>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1, justifyContent: 'flex-end', mr: 2 }}>
+          <SortOptions filter={filter} setFilter={setFilter} />
+        </Box>
+
         <IconButton variant="plain" color="neutral" onClick={() => setFiltersExpanded(!filtersExpanded)}>
           {filtersExpanded ? <ExpandLess /> : <ExpandMore />}
         </IconButton>

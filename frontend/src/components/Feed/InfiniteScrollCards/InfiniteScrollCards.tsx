@@ -9,10 +9,12 @@ const defaultPageSize = 10;
 
 interface InfiniteScrollCardsProps {
   getCards: (offset: number, pageSize: number) => Promise<MainFeedBusinessesResponseDto>;
+  approved?: boolean;
 }
 
 const InfiniteScrollCards = ({
   getCards,
+  approved,
 }: InfiniteScrollCardsProps) => {
   const [businessesToPreviewDto, setBusinessesToPreviewDto] = useState<PreviewBusinessDto[]>([]);
   const [hasMore, setHasMore] = useState(true);
@@ -43,7 +45,7 @@ const InfiniteScrollCards = ({
         loader={<Loading key={0} />}
       >
         {businessesToPreviewDto.map((businessToPreviewDto) => (
-          <Card key={businessToPreviewDto.id} businessToPreviewDto={businessToPreviewDto} />
+          <Card key={businessToPreviewDto.id} businessToPreviewDto={businessToPreviewDto} approved={approved} />
         ))}
       </InfiniteScroll>
     </div>)

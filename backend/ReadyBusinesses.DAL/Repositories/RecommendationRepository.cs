@@ -14,9 +14,17 @@ public class RecommendationRepository : IRecommendationRepository
         _dbContext = dbContext;
     }
 
-    public Task<Recommendation> GetAiRecommendationByIdAsync(Guid id)
+    public async Task<IEnumerable<Recommendation>> GetExpertRecommendationsAsync(Guid businessId)
     {
-        return _dbContext.Recommendations.FirstAsync(x => x.Id == id && x.ByAI);
+        return await _dbContext.Posts
+            .Include(p => p.Recommendations)
+                .ThenInclude(r => r.Recommendation)
+                .ThenInclude(r => r.GivenBy)
+            .Where(p => p.Id == businessId)
+            .SelectMany(p => p.Recommendations)
+            .Select(r => r.Recommendation)
+            .Where(r => r.GivenById != null)
+            .ToListAsync();
     }
 
     public async Task AddRecommendationAsync(Recommendation recommendation)

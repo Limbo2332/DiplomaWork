@@ -9,7 +9,7 @@ public class PostToBusinessDto
 {
     public static BusinessDto Map(Post post, List<SocialMedia> authorSocialMedias, Guid currentUserId)
     {
-        var aiRecommendation = post.Recommendations.Select(r => r.Recommendation).FirstOrDefault(r => r.ByAI);
+        var aiRecommendation = post.Recommendations.Select(r => r.Recommendation).FirstOrDefault(r => r.GivenById is null);
         
         return new BusinessDto
         {

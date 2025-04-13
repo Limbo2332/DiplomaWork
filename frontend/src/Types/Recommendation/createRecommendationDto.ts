@@ -1,14 +1,13 @@
-﻿export type RecommendationDto = {
-  id: string;
+﻿export type CreateRecommendationDto = {
   businessId: string;
-  ratingScore: number;
+  criteriaWeights: number[];
   locationScore: number;
-  financialScore: number;
   adaptationScore: number;
+  supportFromPreviousOwnerScore: number;
+  complexScore: number;
+  financialScore: number;
   teamScore: number;
-  supportScore: number;
   popularityScore: number;
-  shiScore: number;
   pluses: string[];
   minuses: string[];
   recommendations: string[];

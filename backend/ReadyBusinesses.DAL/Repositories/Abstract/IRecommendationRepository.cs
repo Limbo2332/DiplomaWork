@@ -4,7 +4,7 @@ namespace ReadyBusinesses.DLL.Repositories.Abstract;
 
 public interface IRecommendationRepository
 {
-    Task<Recommendation> GetAiRecommendationByIdAsync(Guid id);
+    Task<IEnumerable<Recommendation>> GetExpertRecommendationsAsync(Guid businessId);
     
     Task AddRecommendationAsync(Recommendation recommendation);
 }

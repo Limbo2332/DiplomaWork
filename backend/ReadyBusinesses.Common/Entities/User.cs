@@ -17,6 +17,8 @@ public class User : BaseEntity
     public string Salt { get; set; } = string.Empty;
     
     public bool IsAdmin { get; set; }
+    
+    public bool IsExpert { get; set; }
 
     public Guid? ProfileAvatarId { get; set; }
 

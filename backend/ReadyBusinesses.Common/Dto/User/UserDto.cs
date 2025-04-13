@@ -13,4 +13,6 @@ public class UserDto
     public BlobImageDto? ProfileImage { get; set; }
     
     public bool IsAdmin { get; set; }
+    
+    public bool IsExpert { get; set; }
 }

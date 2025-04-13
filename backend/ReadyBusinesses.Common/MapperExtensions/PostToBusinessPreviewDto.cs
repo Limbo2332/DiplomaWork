@@ -9,12 +9,12 @@ public static class PostToBusinessPreviewDto
 {
     public static PreviewBusinessDto Map(Post post, Guid currentUserId)
     {
-        var aiRecommendation = post.Recommendations.Select(r => r.Recommendation).FirstOrDefault(x => x.ByAI);
+        var aiRecommendation = post.Recommendations.Select(r => r.Recommendation).FirstOrDefault(x => x.GivenById is null);
         
         return new PreviewBusinessDto
         {
             Id = post.Id,
-            CreatedBy = currentUserId,
+            CreatedBy = post.CreatedBy,
             Category = post.Category,
             Location = post.Location,
             Name = post.Name,

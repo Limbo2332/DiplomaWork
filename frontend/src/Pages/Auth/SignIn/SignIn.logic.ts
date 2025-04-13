@@ -30,7 +30,6 @@ const useSignIn = () => {
     setIsLoading(false);
   };
 
-  // TODO: rework validationErrors from backend
   const validationErrors: string[] = useMemo(() => {
     return Array.from(new Set([errors.email?.message, errors.password?.message].filter(
       (message): message is string => !!message,

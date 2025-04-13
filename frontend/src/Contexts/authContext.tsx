@@ -14,6 +14,7 @@ export interface AuthContextResultProps {
   logout: () => Promise<void>;
   isAdmin: boolean;
   currentUser: UserDto | null;
+  isExpert: boolean;
 }
 
 export const AuthContext = createContext<AuthContextResultProps | null>(null);
@@ -26,6 +27,7 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshTokenValue, setRefreshTokenValue] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isExpert, setIsExpert] = useState(false);
   const [currentUser, setCurrentUser] = useState<UserDto | null>(null);
 
   const navigate = useNavigate();
@@ -47,7 +49,7 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
   }, [navigate, refreshTokenValue, removeRefreshToken]);
 
   useEffect(() => {
-    const { accessToken, refreshToken, isAdmin, currentUser } = getTokens();
+    const { accessToken, refreshToken, isAdmin, currentUser, isExpert } = getTokens();
 
     if (accessToken) {
       setAccessToken(accessToken);
@@ -61,6 +63,10 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
       setIsAdmin(JSON.parse(isAdmin));
     }
 
+    if (isExpert) {
+      setIsExpert(JSON.parse(isExpert));
+    }
+
     if (currentUser) {
       setCurrentUser(currentUser);
     }
@@ -68,9 +74,9 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
 
   useEffect(() => {
     if (accessToken && refreshTokenValue) {
-      setTokens(accessToken, refreshTokenValue, isAdmin, currentUser);
+      setTokens(accessToken, refreshTokenValue, isAdmin, currentUser, isExpert);
     }
-  }, [refreshTokenValue, accessToken, isAdmin, currentUser]);
+  }, [refreshTokenValue, accessToken, isAdmin, currentUser, isExpert]);
 
   const registerUser = useCallback(async (email: string, fullName: string, password: string) => {
     const data: UserRegisterDto = { email, fullName, password };
@@ -81,9 +87,11 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
     }
 
     if (result.data) {
-      setTokens(result.data.token.accessToken, result.data.token.refreshToken, result.data.user.isAdmin, result.data.user);
+      setTokens(result.data.token.accessToken, result.data.token.refreshToken, result.data.user.isAdmin, result.data.user, result.data.user.isExpert);
       setAccessToken(result.data.token.accessToken);
       setRefreshTokenValue(result.data.token.refreshToken);
+      setIsAdmin(result.data.user.isAdmin);
+      setIsExpert(result.data.user.isExpert);
       setCurrentUser(result.data.user);
 
       navigate('/');
@@ -100,10 +108,11 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
     }
 
     if (result.data) {
-      setTokens(result.data.token.accessToken, result.data.token.refreshToken, result.data.user.isAdmin, result.data.user);
+      setTokens(result.data.token.accessToken, result.data.token.refreshToken, result.data.user.isAdmin, result.data.user, result.data.user.isExpert);
       setAccessToken(result.data.token.accessToken);
       setRefreshTokenValue(result.data.token.refreshToken);
       setIsAdmin(result.data.user.isAdmin);
+      setIsExpert(result.data.user.isExpert);
       setCurrentUser(result.data.user);
 
       navigate('/');
@@ -119,8 +128,9 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
     registerUser,
     logout,
     isAdmin,
+    isExpert,
     currentUser,
-  }), [isAuthenticated, loginUser, registerUser, logout, isAdmin, currentUser]);
+  }), [isAuthenticated, loginUser, registerUser, logout, isAdmin, currentUser, isExpert]);
 
   return (
     <AuthContext.Provider value={providerValue}>

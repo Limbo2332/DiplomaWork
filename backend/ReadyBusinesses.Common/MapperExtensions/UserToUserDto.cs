@@ -16,6 +16,7 @@ public static class UserToUserDto
                 ? ProfileAvatarToBlobImageDto.Map(user.ProfileAvatar)
                 : null,
             IsAdmin = user.IsAdmin,
+            IsExpert = user.IsExpert
         };
     }
 }

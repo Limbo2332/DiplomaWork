@@ -3,6 +3,7 @@ using ReadyBusinesses.BLL.Services.Abstract;
 using ReadyBusinesses.Common.Dto.Recommendation;
 using ReadyBusinesses.Common.Entities;
 using ReadyBusinesses.Common.Exceptions;
+using ReadyBusinesses.Common.Logic.Abstract;
 using ReadyBusinesses.Common.MapperExtensions;
 using ReadyBusinesses.DLL.Repositories.Abstract;
 using ReadyBusinesses.Topsis;
@@ -14,12 +15,19 @@ public class RecommendationService : IRecommendationService
     private readonly IAiClient _aiClient;
     private readonly IBusinessesRepository _businessesRepository;
     private readonly IRecommendationRepository _recommendationRepository;
+    private readonly IUserIdGetter _userIdGetter;
+    private readonly IUserRepository _userRepository;
 
-    public RecommendationService(IAiClient aiClient, IBusinessesRepository businessesRepository, IRecommendationRepository recommendationRepository)
+    public RecommendationService(IAiClient aiClient, 
+        IBusinessesRepository businessesRepository, 
+        IRecommendationRepository recommendationRepository, 
+        IUserIdGetter userIdGetter, IUserRepository userRepository)
     {
         _aiClient = aiClient;
         _businessesRepository = businessesRepository;
         _recommendationRepository = recommendationRepository;
+        _userIdGetter = userIdGetter;
+        _userRepository = userRepository;
     }
 
     public async Task<RecommendationDto> StartAiRecommendationAsync(StartRecommendationDto startRecommendationDto)
@@ -69,7 +77,7 @@ public class RecommendationService : IRecommendationService
             recommendationDto, 
             aiResult.CriteriaMatrix, 
             Solver.CriteriaWeightsForChatGpt,
-            isAI: true);
+            givenBy: null);
         
         await _recommendationRepository.AddRecommendationAsync(recommendationToAdd);
         
@@ -82,5 +90,23 @@ public class RecommendationService : IRecommendationService
         await _businessesRepository.EditPostAsync(post);
 
         return recommendationDto;
+    }
+
+    public async Task CreateRecommendationAsync(CreateRecommendationDto createRecommendationDto)
+    {
+        var currentUserId = _userIdGetter.CurrentUserId;
+        
+        var recommendationToAdd = createRecommendationDto.ToRecommendation(currentUserId);
+        
+        await _recommendationRepository.AddRecommendationAsync(recommendationToAdd);
+        await _businessesRepository.AddPostRecommendationAsync(createRecommendationDto.BusinessId,
+            recommendationToAdd.Id);
+    }
+
+    public async Task<IEnumerable<ExpertRecommendationDto>> GetExpertRecommendationsAsync(Guid businessId)
+    {
+        var recommendations = await _recommendationRepository.GetExpertRecommendationsAsync(businessId);
+
+        return recommendations.Select(r => RecommendationDtoToRecommendation.ToExpertRecommendationDto(r, businessId, r.GivenBy!));
     }
 }

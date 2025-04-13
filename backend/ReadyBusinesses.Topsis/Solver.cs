@@ -29,7 +29,9 @@ public class Solver : ISolver
     {
         var criteriaMatrix = businesses
             .SelectMany(b => b.Recommendations)
-            .Select(r => r.Recommendation.CriteriaMatrix)
+            .Select(r => r.Recommendation)
+            .Where(r => r.GivenById == null)
+            .Select(r => r.CriteriaMatrix)
             .ToList();
 
         var criteriaWeights = CriteriaWeightsForChatGpt;

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ReadyBusinesses.DLL.Context;
 
@@ -11,9 +12,11 @@ using ReadyBusinesses.DLL.Context;
 namespace ReadyBusinesses.DLL.Migrations
 {
     [DbContext(typeof(BusinessesContext))]
-    partial class BusinessesContextModelSnapshot : ModelSnapshot
+    [Migration("20250413111355_ExpertRecommendations")]
+    partial class ExpertRecommendations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -406,9 +409,6 @@ namespace ReadyBusinesses.DLL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsAdmin")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsExpert")
                         .HasColumnType("bit");
 
                     b.Property<string>("Password")

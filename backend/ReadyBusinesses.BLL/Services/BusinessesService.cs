@@ -138,7 +138,14 @@ public class BusinessesService : IBusinessesService
                 businessesList = _solver.GetSortedPosts(businessesList);
                 break;
             case SortOptions.Expert:
-                // TODO: sorting by expert rating
+                businessesList = businessesList
+                    .OrderByDescending(b => b.Recommendations
+                        .Select(r => r.Recommendation)
+                        .Where(r => r.GivenById != null)
+                        .Select(r => r.RatingScore)
+                        .DefaultIfEmpty(0)
+                        .Average())
+                    .ToList();
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

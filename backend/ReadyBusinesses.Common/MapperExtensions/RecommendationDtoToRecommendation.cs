@@ -8,14 +8,15 @@ public static class RecommendationDtoToRecommendation
     public static Recommendation ToRecommendation(RecommendationDto recommendationDto, 
         decimal[] criteriaMatrix, 
         decimal[] criteriaWeights,
-        bool isAI)
+        User? givenBy)
     {
         var recommendationId = Guid.NewGuid();
 
         return new Recommendation
         {
             Id = recommendationId,
-            ByAI = isAI,
+            GivenById = givenBy?.Id,
+            GivenBy = givenBy,
             CriteriaMatrix = criteriaMatrix,
             Minuses = recommendationDto.Minuses,
             Pluses = recommendationDto.Pluses,
@@ -36,6 +37,7 @@ public static class RecommendationDtoToRecommendation
     {
         return new RecommendationDto
         {
+            Id = recommendation.Id,
             BusinessId = businessId,
             TeamScore = Math.Round(recommendation.TeamScore, 2),
             ShiScore = Math.Round(recommendation.ShiScore, 2),
@@ -48,6 +50,17 @@ public static class RecommendationDtoToRecommendation
             Pluses = recommendation.Pluses,
             Recommendations = recommendation.Recommendations,
             PopularityScore = Math.Round(recommendation.PopularityScore, 2)
+        };
+    }
+
+    public static ExpertRecommendationDto ToExpertRecommendationDto(Recommendation recommendation, Guid businessId, User expert)
+    {
+        return new ExpertRecommendationDto
+        {
+            Recommendation = ToRecommendationDto(recommendation, businessId),
+            ExpertName = expert.FullName,
+            Date = recommendation.CreatedAt,
+            CriteriaWeights = recommendation.CriteriaWeights
         };
     }
 }

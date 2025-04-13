@@ -24,4 +24,6 @@ public interface IBusinessesRepository
     Task RemoveFromFavoritesAsync(Guid postId, Guid userId);
     
     Task<Post?> GetBusinessAsync(Guid id);
+    
+    Task AddPostRecommendationAsync(Guid postId, Guid recommendationId);
 }

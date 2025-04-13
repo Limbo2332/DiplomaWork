@@ -14,10 +14,24 @@ public class RecommendationController : Controller
     {
         _recommendationService = recommendationService;
     }
+
+    [HttpGet("{businessId:guid}")]
+    public async Task<ActionResult<ExpertRecommendationDto>> GetExpertRecommendations([FromRoute] Guid businessId)
+    {
+        return Ok(await _recommendationService.GetExpertRecommendationsAsync(businessId));
+    }
     
     [HttpPost("start")]
     public async Task<ActionResult<RecommendationDto>> StartAiRecommendation(StartRecommendationDto startRecommendationDto)
     {
         return Ok(await _recommendationService.StartAiRecommendationAsync(startRecommendationDto));
+    }
+
+    [HttpPost("create")]
+    public async Task<IActionResult> CreateRecommendation(CreateRecommendationDto createRecommendationDto)
+    {
+        await _recommendationService.CreateRecommendationAsync(createRecommendationDto);
+        
+        return Ok();
     }
 }

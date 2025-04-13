@@ -16,6 +16,7 @@ import CreateEditBusiness from './Pages/CreateOrEditBusinessPage/CreateOrEditBus
 import AuthorProfile from './Pages/AuthorProfile/AuthorProfile.tsx';
 import EditAuthorProfile from './Pages/EditAuthorProfile/EditAuthorProfile.tsx';
 import ManageBusinesses from './Pages/ManageBusinesses/ManageBusinesses.tsx';
+import CreateExpertEvaluation from './components/Common/ExpertEvaluation/CreateExpertEvaluation.tsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
@@ -33,6 +34,7 @@ root.render(
                 <Route path="/manage-businesses" element={<ManageBusinesses />} />
                 <Route path="/authors/:id" element={<AuthorProfile />} />
                 <Route path="/editprofile" element={<EditAuthorProfile />} />
+                <Route path="/estimatebusiness/:id" element={<CreateExpertEvaluation />} />
                 <Route path="/auth/login" element={<SignIn />} />
                 <Route path="/auth/register" element={<SignUp />} />
                 <Route path="*" element={<PageNotFound text="Сторінка не знайдена" />} />

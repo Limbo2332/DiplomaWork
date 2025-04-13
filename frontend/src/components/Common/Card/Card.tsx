@@ -106,16 +106,18 @@ const InvestmentMarkBadge = ({ score }: { score: number }) => {
 
 interface CardProps {
   businessToPreviewDto: PreviewBusinessDto;
+  approved?: boolean;
 }
 
 const Card = ({
   businessToPreviewDto,
+  approved,
 }: CardProps) => {
   const navigate = useNavigate();
   const { isAdmin, currentUser } = useAuth();
 
   const onCardClick = () => {
-    if (isAdmin || currentUser?.id === businessToPreviewDto.createdBy) {
+    if ((isAdmin || currentUser?.id === businessToPreviewDto.createdBy) && !approved) {
       navigate(`/createoreditbusiness/${businessToPreviewDto.id}`);
       return;
     }
