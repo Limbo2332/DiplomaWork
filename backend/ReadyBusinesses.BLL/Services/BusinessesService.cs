@@ -121,8 +121,14 @@ public class BusinessesService : IBusinessesService
             businesses = businesses
                 .Where(b => savedPostsIds.Contains(b.Id));
         }
-        
-        // TODO: view post
+
+        if (request.Filter.HideViewed)
+        {
+            var viewedPostsIds = _repository.GetViewedPostsIds(currentUserId);
+            
+            businesses = businesses
+                .Where(b => !viewedPostsIds.Contains(b.Id));
+        }
         
         var businessesList = await businesses
             .Skip(request.Offset)
@@ -334,12 +340,16 @@ public class BusinessesService : IBusinessesService
     public async Task<BusinessDto> GetBusinessAsync(Guid id)
     {
         var currentUserId = _userIdGetter.CurrentUserId;
+        var currentUser = await _userRepository.GetByIdAsync(currentUserId);
+        
         var business = await _repository.GetBusinessAsync(id);
 
-        if (business is null)
+        if (business is null || currentUser is null)
         {
             throw new ValidationException("Business not found.");
         }
+
+        await _repository.ViewPostAsync(business, currentUser);
 
         var authorSocialMedia = (await _userRepository.GetSocialMediaAsync(business.CreatedByUser.Id)).ToList();
         

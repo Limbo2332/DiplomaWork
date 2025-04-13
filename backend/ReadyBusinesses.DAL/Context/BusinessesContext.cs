@@ -25,6 +25,8 @@ public class BusinessesContext(DbContextOptions<BusinessesContext> options) : Db
     
     public DbSet<SavedPosts> SavedPosts => Set<SavedPosts>();
     
+    public DbSet<ViewedPosts> ViewedPosts => Set<ViewedPosts>();
+    
     public DbSet<PostPicture> PostPictures => Set<PostPicture>();
     
     public DbSet<Recommendation> Recommendations => Set<Recommendation>();

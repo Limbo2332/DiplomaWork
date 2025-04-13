@@ -15,6 +15,7 @@ public class PostToBusinessDto
         {
             Id = post.Id,
             IsSaved = post.CreatedByUser.SavedPosts.Any(p => p.PostId == post.Id && p.UserId == currentUserId),
+            IsViewed = post.CreatedByUser.ViewedPosts.Any(p => p.PostId == post.Id && p.UserId == currentUserId),
             Name = post.Name,
             Location = post.Location,
             Category = post.Category!,
@@ -64,7 +65,7 @@ public class PostToBusinessDto
                 : null,
             AiRecommendation = aiRecommendation is not null ? 
                 RecommendationDtoToRecommendation.ToRecommendationDto(aiRecommendation, post.Id)
-                : null
+                : null,
         };
     }
 }

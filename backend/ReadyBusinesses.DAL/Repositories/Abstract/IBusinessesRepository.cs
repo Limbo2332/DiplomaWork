@@ -13,6 +13,8 @@ public interface IBusinessesRepository
 
     IEnumerable<Guid> GetSavedPostsIds(Guid userId);
     
+    IEnumerable<Guid> GetViewedPostsIds(Guid currentUserId);
+    
     Task SavePostAsync(Post post);
     
     Task EditPostAsync(Post post);
@@ -26,4 +28,6 @@ public interface IBusinessesRepository
     Task<Post?> GetBusinessAsync(Guid id);
     
     Task AddPostRecommendationAsync(Guid postId, Guid recommendationId);
+    
+    Task ViewPostAsync(Post post, User currentUser);
 }

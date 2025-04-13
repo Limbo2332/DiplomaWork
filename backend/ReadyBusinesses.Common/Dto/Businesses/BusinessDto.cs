@@ -10,6 +10,8 @@ public class BusinessDto
 
     public bool IsSaved { get; set; }
     
+    public bool IsViewed { get; set; }
+    
     public required string Name { get; set; }
     
     public required string Location { get; set; }

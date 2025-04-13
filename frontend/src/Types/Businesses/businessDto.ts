@@ -5,6 +5,7 @@ import { RecommendationDto } from '../Recommendation/recommendationDto.ts';
 export type BusinessDto = {
   id: string;
   isSaved: boolean;
+  isViewed: boolean;
   name: string;
   location: string;
   category: string;

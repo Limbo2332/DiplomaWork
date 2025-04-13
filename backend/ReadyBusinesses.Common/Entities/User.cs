@@ -27,4 +27,6 @@ public class User : BaseEntity
     public ICollection<Post> Posts { get; set; } = [];
 
     public ICollection<SavedPosts> SavedPosts { get; set; } = [];
+    
+    public ICollection<ViewedPosts> ViewedPosts { get; set; } = [];
 }

@@ -21,6 +21,8 @@ public class BusinessesRepository : IBusinessesRepository
             .Where(post => post.BusinessStatus == status)
             .Include(p => p.CreatedByUser)
                 .ThenInclude(createdBy => createdBy.SavedPosts)
+            .Include(p => p.CreatedByUser)
+                .ThenInclude(createdBy => createdBy.ViewedPosts)
             .Include(p => p.Pictures)
                 .ThenInclude(picture => picture.Picture)
             .Include(post => post.Recommendations)
@@ -44,6 +46,13 @@ public class BusinessesRepository : IBusinessesRepository
     {
         return _context.SavedPosts
             .Where(p => p.UserId == userId)
+            .Select(p => p.PostId);
+    }
+
+    public IEnumerable<Guid> GetViewedPostsIds(Guid currentUserId)
+    {
+        return _context.ViewedPosts
+            .Where(p => p.UserId == currentUserId)
             .Select(p => p.PostId);
     }
 
@@ -106,6 +115,8 @@ public class BusinessesRepository : IBusinessesRepository
             .Include(p => p.CreatedByUser)
                 .ThenInclude(user => user.SavedPosts)
             .Include(p => p.CreatedByUser)
+                .ThenInclude(user => user.ViewedPosts)
+            .Include(p => p.CreatedByUser)
                 .ThenInclude(user => user.ProfileAvatar)
             .Include(p => p.Pictures)
                 .ThenInclude(picture => picture.Picture)
@@ -124,6 +135,18 @@ public class BusinessesRepository : IBusinessesRepository
             RecommendationId = recommendationId
         });
         
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task ViewPostAsync(Post post, User currentUser)
+    {
+        await _context.ViewedPosts.AddAsync(new ViewedPosts
+        {
+            Post = post,
+            PostId = post.Id,
+            User = currentUser,
+            UserId = currentUser.Id
+        });
         await _context.SaveChangesAsync();
     }
 
