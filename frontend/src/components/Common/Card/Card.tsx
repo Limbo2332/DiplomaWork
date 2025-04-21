@@ -148,6 +148,7 @@ const Card = ({
         </div>
         <div className="business-card-rows">
           <div className="business-card-row">
+            <Typography variant="h5">{businessToPreviewDto.name}</Typography>
             <div className="d-flex flex-row justify-content-between align-items-center gap-2">
               <p
                 className="business-card-price">{businessToPreviewDto.price} {currencyToStringRepresentation(businessToPreviewDto.priceCurrency)}.</p>

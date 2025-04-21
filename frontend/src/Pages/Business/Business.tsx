@@ -257,7 +257,6 @@ const BusinessPage = () => {
   const navigate = useNavigate();
   const { getBusiness } = useBusinessService();
   const [activeTab, setActiveTab] = useState(0);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [business, setBusiness] = useState<BusinessDto | null>(null);
 
@@ -269,7 +268,6 @@ const BusinessPage = () => {
 
       if (business?.data) {
         setBusiness(business.data);
-        setIsFavorite(business.data.isSaved);
       }
 
       setIsLoading(false);

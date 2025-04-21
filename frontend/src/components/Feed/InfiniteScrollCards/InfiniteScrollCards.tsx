@@ -1,6 +1,5 @@
 ﻿import React, { useCallback, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
-import { Loading } from '../../Common/Loading/Loading.tsx';
 import Card from '../../Common/Card/Card.tsx';
 import { MainFeedBusinessesResponseDto } from '../../../Types/Businesses/Responses/mainFeedBusinessesResponseDto.ts';
 import { PreviewBusinessDto } from '../../../Types/Businesses/previewBusinessDto.ts';
@@ -38,11 +37,10 @@ const InfiniteScrollCards = ({
   return (
     <div className="mt-3">
       <InfiniteScroll
-        className="d-flex flex-column gap-3"
+        className="d-flex flex-column gap-3 mb-5"
         pageStart={0}
         loadMore={loadMore}
         hasMore={hasMore}
-        loader={<Loading key={0} />}
       >
         {businessesToPreviewDto.map((businessToPreviewDto) => (
           <Card key={businessToPreviewDto.id} businessToPreviewDto={businessToPreviewDto} approved={approved} />

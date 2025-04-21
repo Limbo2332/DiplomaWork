@@ -21,7 +21,9 @@ public class UserRepository : IUserRepository
 
     public Task<User?> GetByIdAsync(Guid userId)
     {
-        return _dbContext.Users.SingleOrDefaultAsync(u => u.Id == userId);
+        return _dbContext.Users
+            .Include(u => u.SavedPosts)
+            .SingleOrDefaultAsync(u => u.Id == userId);
     }
 
     public async Task AddAsync(User user)

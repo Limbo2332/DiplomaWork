@@ -7,7 +7,7 @@ namespace ReadyBusinesses.Common.MapperExtensions;
 
 public static class PostToBusinessPreviewDto
 {
-    public static PreviewBusinessDto Map(Post post, Guid currentUserId)
+    public static PreviewBusinessDto Map(Post post, User currentUser)
     {
         var aiRecommendation = post.Recommendations.Select(r => r.Recommendation).FirstOrDefault(x => x.GivenById is null);
         
@@ -26,7 +26,7 @@ public static class PostToBusinessPreviewDto
             CreationDate = post.CreatedAt,
             FlatSquare = post.RoomArea,
             HasBargain = post.HasBargaining,
-            IsSaved = post.CreatedByUser.SavedPosts.Any(p => p.PostId == post.Id && p.UserId == currentUserId),
+            IsSaved = currentUser.SavedPosts.Any(p => p.PostId == post.Id),
             AmountOfWorkers = post.EmployersCount,
             TermToPayBack = Math.Round(post.PriceInUah / post.AverageProfitPerMonth),
             InvestmentScore = aiRecommendation is not null 

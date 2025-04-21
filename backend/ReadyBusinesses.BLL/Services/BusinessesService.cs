@@ -32,6 +32,12 @@ public class BusinessesService : IBusinessesService
     public async Task<MainFeedBusinessesResponseDto> GetBusinessesAsync(MainFeedBusinessesRequestDto request)
     {
         var currentUserId = _userIdGetter.CurrentUserId;
+        var currentUser = await _userRepository.GetByIdAsync(currentUserId);
+        
+        if (currentUser is null)
+        {
+            return new MainFeedBusinessesResponseDto();
+        }
         
         var businesses = _repository.GetPosts(BusinessStatus.Approved);
 
@@ -160,7 +166,7 @@ public class BusinessesService : IBusinessesService
         return new MainFeedBusinessesResponseDto
         {
             PreviewBusinesses = businessesList
-                .Select(business => PostToBusinessPreviewDto.Map(business, currentUserId)),
+                .Select(business => PostToBusinessPreviewDto.Map(business, currentUser)),
             HasMore = businesses.Count() > request.Offset + request.PageCount
         };
     }
@@ -168,6 +174,12 @@ public class BusinessesService : IBusinessesService
     public async Task<MainFeedBusinessesResponseDto> GetUnapprovedBusinessesAsync(AdminFeedBusinessesRequestDto request)
     {
         var currentUserId = _userIdGetter.CurrentUserId;
+        var currentUser = await _userRepository.GetByIdAsync(currentUserId);
+        
+        if (currentUser is null)
+        {
+            return new MainFeedBusinessesResponseDto();
+        }
         
         var businesses = _repository.GetPosts(BusinessStatus.WaitingForApproval);
         
@@ -179,7 +191,7 @@ public class BusinessesService : IBusinessesService
         return new MainFeedBusinessesResponseDto
         {
             PreviewBusinesses = businessesList
-                .Select(business => PostToBusinessPreviewDto.Map(business, currentUserId)),
+                .Select(business => PostToBusinessPreviewDto.Map(business, currentUser)),
             HasMore = businesses.Count() > request.Offset + request.PageCount
         };
     }
@@ -387,9 +399,17 @@ public class BusinessesService : IBusinessesService
     public async Task<MainFeedBusinessesResponseDto> GetBusinessesByStatusAsync(GetBusinessesByStatusDto request)
     {
         var currentUserId = _userIdGetter.CurrentUserId;
+        var currentUser = await _userRepository.GetByIdAsync(currentUserId);
+
+        if (currentUser is null)
+        {
+            return new MainFeedBusinessesResponseDto();
+        }
+        
         var businesses = _repository.GetPosts(request.Status);
         
         var businessesList = await businesses
+            .Where(b => b.CreatedBy == currentUserId)
             .Skip(request.Offset)
             .Take(request.PageCount)
             .ToListAsync();
@@ -397,7 +417,7 @@ public class BusinessesService : IBusinessesService
         return new MainFeedBusinessesResponseDto
         {
             PreviewBusinesses = businessesList
-                .Select(business => PostToBusinessPreviewDto.Map(business, currentUserId)),
+                .Select(business => PostToBusinessPreviewDto.Map(business, currentUser)),
             HasMore = businesses.Count() > request.Offset + request.PageCount
         };
     }

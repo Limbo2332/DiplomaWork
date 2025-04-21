@@ -140,6 +140,11 @@ public class BusinessesRepository : IBusinessesRepository
 
     public async Task ViewPostAsync(Post post, User currentUser)
     {
+        if (await _context.ViewedPosts.AnyAsync(vp => vp.PostId == post.Id && vp.UserId == currentUser.Id))
+        {
+            return;
+        }
+        
         await _context.ViewedPosts.AddAsync(new ViewedPosts
         {
             Post = post,
