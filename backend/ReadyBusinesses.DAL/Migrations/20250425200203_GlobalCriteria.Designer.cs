@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ReadyBusinesses.DLL.Context;
 
@@ -11,9 +12,11 @@ using ReadyBusinesses.DLL.Context;
 namespace ReadyBusinesses.DLL.Migrations
 {
     [DbContext(typeof(BusinessesContext))]
-    partial class BusinessesContextModelSnapshot : ModelSnapshot
+    [Migration("20250425200203_GlobalCriteria")]
+    partial class GlobalCriteria
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,9 +33,6 @@ namespace ReadyBusinesses.DLL.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("GlobalCriteriaId")
                         .HasColumnType("uniqueidentifier");
@@ -516,7 +516,7 @@ namespace ReadyBusinesses.DLL.Migrations
                     b.HasOne("ReadyBusinesses.Common.Entities.GlobalCriteria", "GlobalCriteria")
                         .WithMany("Criteria")
                         .HasForeignKey("GlobalCriteriaId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("GlobalCriteria");

@@ -17,6 +17,7 @@ import AuthorProfile from './Pages/AuthorProfile/AuthorProfile.tsx';
 import EditAuthorProfile from './Pages/EditAuthorProfile/EditAuthorProfile.tsx';
 import ManageBusinesses from './Pages/ManageBusinesses/ManageBusinesses.tsx';
 import CreateExpertEvaluation from './components/Common/ExpertEvaluation/CreateExpertEvaluation.tsx';
+import GlobalCriteria from './Pages/GlobalCriteria/GlobalCriteria.tsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
@@ -37,6 +38,7 @@ root.render(
                 <Route path="/estimatebusiness/:id" element={<CreateExpertEvaluation />} />
                 <Route path="/auth/login" element={<SignIn />} />
                 <Route path="/auth/register" element={<SignUp />} />
+                <Route path="/global-criteria" element={<GlobalCriteria />} />
                 <Route path="*" element={<PageNotFound text="Сторінка не знайдена" />} />
               </Routes>
             </AuthContextProvider>

@@ -29,6 +29,8 @@ public class BusinessesContext(DbContextOptions<BusinessesContext> options) : Db
     
     public DbSet<PostPicture> PostPictures => Set<PostPicture>();
     
+    public DbSet<GlobalCriteria> GlobalCriteria => Set<GlobalCriteria>();
+    
     public DbSet<Recommendation> Recommendations => Set<Recommendation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

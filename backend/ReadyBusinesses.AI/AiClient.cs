@@ -3,6 +3,7 @@ using ChatGptNet.Extensions;
 using Newtonsoft.Json;
 using ReadyBusinesses.AI.Constants;
 using ReadyBusinesses.AI.Entities;
+using ReadyBusinesses.Common.Dto.Criteria;
 using ReadyBusinesses.Common.Entities;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -17,11 +18,11 @@ public class AiClient : IAiClient
         _chatGptClient = chatGptClient;
     }
 
-    public async Task<ChatGptResult> AskRecommendationAsync(Post post)
+    public async Task<ChatGptResult> AskRecommendationAsync(Post post, CriteriaDto[] criteria)
     {
         var postResult = JsonSerializer.Serialize(post);
 
-        var request = ChatGPTRequest.Request + postResult;
+        var request = ChatGPTRequest.GetRequest(criteria) + postResult;
         
         var response = await _chatGptClient.AskAsync(request);
 

@@ -13,14 +13,18 @@ import {
   Typography,
 } from '@mui/joy';
 import { NavLink, useLocation } from 'react-router';
-import { Business, Logout, Menu as MenuIcon, Person } from '@mui/icons-material';
-import useMenu from './Menu.logic';
+import { Business, Logout, Menu as MenuIcon, Person, Settings } from '@mui/icons-material';
+import { useAuth } from '../../Contexts/authContext.tsx';
+import useMenu from './Menu.logic.ts';
+
 import logo from '../../assets/images/logo.png';
 
 const Menu = () => {
-  const { logout } = useMenu();
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { isAdmin } = useAuth();
+
+  const { logout } = useMenu();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -28,6 +32,14 @@ const Menu = () => {
     { label: 'Мій профіль', path: '/editprofile', icon: <Person /> },
     { label: 'Керувати бізнесами', path: '/manage-businesses', icon: <Business /> },
   ];
+
+  if (isAdmin) {
+    menuItems.push({
+      label: 'Глобальні критерії',
+      path: '/global-criteria',
+      icon: <Settings />,
+    });
+  }
 
   return (
     <Sheet
@@ -55,7 +67,6 @@ const Menu = () => {
           width: '100%',
         }}
       >
-        {/* Logo and Title */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <NavLink to="/" style={{ display: 'flex', alignItems: 'center' }}>
             <img src={logo || '/placeholder.svg'} alt="logo" style={{ height: 50, width: 'auto' }} />
@@ -146,7 +157,7 @@ const Menu = () => {
           }}
         >
           <Box sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-            <img src={logo || '/placeholder.svg'} alt="logo" style={{ height: 40, width: 'auto' }} />
+            <img src="/placeholder.svg?height=40&width=40" alt="logo" style={{ height: 40, width: 'auto' }} />
             <Typography level="title-lg" fontWeight="bold">
               Готові бізнеси
             </Typography>

@@ -78,6 +78,7 @@ namespace ReadyBusinesses.Api.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IBusinessesRepository, BusinessesRepository>();
             services.AddScoped<IRecommendationRepository, RecommendationRepository>();
+            services.AddScoped<IGlobalCriteriaRepository, GlobalCriteriaRepository>();
         }
 
         public static void RegisterCustomServices(this IServiceCollection services)
@@ -89,6 +90,7 @@ namespace ReadyBusinesses.Api.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IBusinessesService, BusinessesService>();
             services.AddScoped<IRecommendationService, RecommendationService>();
+            services.AddScoped<IGlobalCriteriaService, GlobalCriteriaService>();
         }
     }
 }

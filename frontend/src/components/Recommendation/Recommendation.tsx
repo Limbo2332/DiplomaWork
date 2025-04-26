@@ -83,13 +83,13 @@ const Recommendation = ({ recommendation }: AIRecommendationProps) => {
   const rating = getInvestmentRating(recommendation.ratingScore);
 
   const scoreCategories = [
-    { name: 'Локація', value: recommendation.locationScore, max: 10, icon: <LocationOn /> },
-    { name: 'Фінансові показники', value: recommendation.financialScore, max: 30, icon: <Payments /> },
-    { name: 'Адаптація до умов в Україні', value: recommendation.adaptationScore, max: 10, icon: <Shield /> },
-    { name: 'Команда', value: recommendation.teamScore, max: 15, icon: <Groups /> },
-    { name: 'Підтримка колишнього власника', value: recommendation.supportScore, max: 5, icon: <SupportAgent /> },
-    { name: 'Популярність бізнесу', value: recommendation.popularityScore, max: 10, icon: <TrendingUp /> },
-    { name: 'Комплексна оцінка ШІ', value: recommendation.shiScore, max: 20, icon: <Psychology /> },
+    { name: 'Локація', value: recommendation.locationScore, icon: <LocationOn /> },
+    { name: 'Фінансові показники', value: recommendation.financialScore, icon: <Payments /> },
+    { name: 'Адаптація до умов в Україні', value: recommendation.adaptationScore, icon: <Shield /> },
+    { name: 'Команда', value: recommendation.teamScore, icon: <Groups /> },
+    { name: 'Підтримка колишнього власника', value: recommendation.supportScore, icon: <SupportAgent /> },
+    { name: 'Популярність бізнесу', value: recommendation.popularityScore, icon: <TrendingUp /> },
+    { name: 'Комплексна оцінка ШІ', value: recommendation.shiScore, icon: <Psychology /> },
   ];
 
   return (
@@ -134,24 +134,24 @@ const Recommendation = ({ recommendation }: AIRecommendationProps) => {
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
                     <Box sx={{ mr: 1 }}>{category.icon}</Box>
                     <Typography level="body-sm">{category.name}</Typography>
-                    <Tooltip title={`${category.value} з ${category.max} можливих балів`} placement="top">
+                    <Tooltip title={`${category.value} з 100 можливих балів`} placement="top">
                       <IconButton size="sm" variant="plain" sx={{ ml: 0.5 }}>
                         <InfoOutlined fontSize="small" />
                       </IconButton>
                     </Tooltip>
                     <Typography level="body-sm" sx={{ ml: 'auto' }}>
-                      {category.value}/{category.max}
+                      {category.value}/100
                     </Typography>
                   </Box>
                   <LinearProgress
                     determinate
-                    value={(category.value / category.max) * 100}
+                    value={category.value * 100}
                     sx={{
                       height: 8,
                       borderRadius: 4,
                       ['& .MuiLinearProgress-bar']: {
                         backgroundColor: (theme) => {
-                          const percentage = (category.value / category.max) * 100;
+                          const percentage = category.value * 100;
                           if (percentage >= 80) return theme.vars.palette.success[500];
                           if (percentage >= 60) return theme.vars.palette.primary[500];
                           if (percentage >= 40) return theme.vars.palette.warning[500];

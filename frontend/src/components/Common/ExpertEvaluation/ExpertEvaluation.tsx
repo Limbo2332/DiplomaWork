@@ -87,43 +87,36 @@ const ExpertEvaluation = ({ evaluation }: ExpertEvaluationProps) => {
     {
       name: 'Локація',
       value: evaluation.recommendation.locationScore,
-      max: evaluation.criteriaWeights[0] * 100,
       icon: <LocationOn />,
     },
     {
       name: 'Фінансові показники',
       value: evaluation.recommendation.financialScore,
-      max: evaluation.criteriaWeights[1] * 100,
       icon: <Payments />,
     },
     {
       name: 'Адаптація до умов в Україні',
       value: evaluation.recommendation.adaptationScore,
-      max: evaluation.criteriaWeights[2] * 100,
       icon: <Shield />,
     },
     {
       name: 'Команда',
       value: evaluation.recommendation.teamScore,
-      max: evaluation.criteriaWeights[3] * 100,
       icon: <Groups />,
     },
     {
       name: 'Підтримка колишнього власника',
       value: evaluation.recommendation.supportScore,
-      max: evaluation.criteriaWeights[4] * 100,
       icon: <SupportAgent />,
     },
     {
       name: 'Популярність бізнесу',
       value: evaluation.recommendation.popularityScore,
-      max: evaluation.criteriaWeights[5] * 100,
       icon: <TrendingUp />,
     },
     {
       name: 'Комплексна оцінка',
       value: evaluation.recommendation.shiScore,
-      max: evaluation.criteriaWeights[6] * 100,
       icon: <Psychology />,
     },
   ];
@@ -175,24 +168,24 @@ const ExpertEvaluation = ({ evaluation }: ExpertEvaluationProps) => {
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
                     <Box sx={{ mr: 1 }}>{category.icon}</Box>
                     <Typography level="body-sm">{category.name}</Typography>
-                    <Tooltip title={`${category.value} з ${category.max} можливих балів`} placement="top">
+                    <Tooltip title={`${category.value} з 100 можливих балів`} placement="top">
                       <IconButton size="sm" variant="plain" sx={{ ml: 0.5 }}>
                         <InfoOutlined fontSize="small" />
                       </IconButton>
                     </Tooltip>
                     <Typography level="body-sm" sx={{ ml: 'auto' }}>
-                      {category.value}/{category.max}
+                      {category.value}/100
                     </Typography>
                   </Box>
                   <LinearProgress
                     determinate
-                    value={(category.value / category.max) * 100}
+                    value={category.value * 100}
                     sx={{
                       height: 8,
                       borderRadius: 4,
                       ['& .MuiLinearProgress-bar']: {
                         backgroundColor: (theme) => {
-                          const percentage = (category.value / category.max) * 100;
+                          const percentage = category.value * 100;
                           if (percentage >= 80) return theme.vars.palette.success[500];
                           if (percentage >= 60) return theme.vars.palette.primary[500];
                           if (percentage >= 40) return theme.vars.palette.warning[500];

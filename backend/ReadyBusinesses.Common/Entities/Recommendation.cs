@@ -6,33 +6,15 @@ public class Recommendation : BaseEntity
 {
     public Guid Id { get; set; }
     
-    public Guid? GivenById { get; set; }
-
-    public decimal[] CriteriaWeights { get; set; } = [];
-    
-    public double RatingScore { get; set; }
-    
-    public double LocationScore { get; set; }
-    
-    public double FinancialScore { get; set; }
-    
-    public double AdaptationScore { get; set; }
-    
-    public double TeamScore { get; set; }
-    
-    public double SupportScore { get; set; }
-    
-    public double PopularityScore { get; set; }
-    
-    public double ShiScore { get; set; }
-
     public string[] Pluses { get; set; } = [];
 
     public string[] Minuses { get; set; } = [];
     
     public string[] Recommendations { get; set; } = [];
+
+    public ICollection<CriteriaEstimate> CriteriaEstimates { get; set; } = [];
     
-    public decimal[] CriteriaMatrix { get; set; } = [];
+    public Guid? GivenById { get; set; }
     
     public User? GivenBy { get; set; }
 }

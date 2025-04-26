@@ -4,40 +4,17 @@ namespace ReadyBusinesses.Topsis;
 
 public class Solver : ISolver
 {
-    private readonly List<bool> MaximizedCriterias;
-    public static decimal[] CriteriaWeightsForChatGpt = [0.1M, 0.1M, 0.1M, 0.0333M, 0.0333M, 0.0333M, 0.1M, 0.15M, 0.05M, 0.1M, 0.2M];
-
-    public Solver()
-    {
-        MaximizedCriterias = new List<bool>
-        {
-            true, // Локація
-            true, // Чистий прибуток
-            false, // Окупність бізнесу
-            false, // Ціна бізнесу
-            true, // Середній чек
-            true, // Середній виторг
-            true, // Адаптація до умов в Україні
-            true, // Команда
-            true, // Підтримка від колишнього власника
-            true, // Популярність бізнесу
-            true, // Комплексна оцінка від ШІ
-        };
-    }
-    
     public List<Post> GetSortedPosts(List<Post> businesses)
     {
         var criteriaMatrix = businesses
             .SelectMany(b => b.Recommendations)
             .Select(r => r.Recommendation)
             .Where(r => r.GivenById == null)
-            .Select(r => r.CriteriaMatrix)
+            .Select(r => r.CriteriaEstimates.ToList())
             .ToList();
-
-        var criteriaWeights = CriteriaWeightsForChatGpt;
         
         var normalized = NormalizeCriteriaMatrix(criteriaMatrix);
-        var weightedNormalized = CalculateWeightedNormalizedCriteriaMatrix(normalized, criteriaWeights);
+        var weightedNormalized = CalculateWeightedNormalizedCriteriaMatrix(normalized);
         var (pis, nis) = CalculatePisAndNis(weightedNormalized);
 
         var distancesToPis = CalculateDistancesToPis(weightedNormalized, pis);
@@ -57,130 +34,171 @@ public class Solver : ISolver
         return sortedPosts;
     }
     
-    public decimal[,] NormalizeCriteriaMatrix(List<decimal[]> criteriaMatrix)
+    public List<List<CriteriaEstimate>> NormalizeCriteriaMatrix(List<List<CriteriaEstimate>> criteriaMatrix)
     {
-        var currentEstimates = new decimal[criteriaMatrix.Count, criteriaMatrix[0].Length];
+        var currentEstimates = new List<List<CriteriaEstimate>>();
         
-        var maximumValues = criteriaMatrix.Select(x => x.Max()).ToList();
-        var minimumValues = criteriaMatrix.Select(x => x.Min()).ToList();
+        var maximumValues = criteriaMatrix.Select(x => x.Max(y => y.Estimate)).ToList();
+        var minimumValues = criteriaMatrix.Select(x => x.Min(y => y.Estimate)).ToList();
 
         for (var index = 0; index < criteriaMatrix.Count; index++)
         {
-            for (var j = 0; j < criteriaMatrix[index].Length; j++)
+            var criteriaEstimates = criteriaMatrix[index];
+            var currentEstimatesList = new List<CriteriaEstimate>();
+            
+            for (var j = 0; j < criteriaEstimates.Count; j++)
             {
-                var isMaximized = MaximizedCriterias[j];
-                var xjPlus = isMaximized ? maximumValues[index] : minimumValues[index];
-                var xjMinus = isMaximized ? minimumValues[index] : maximumValues[index];
+                var criteriaEstimate = criteriaEstimates.ElementAt(j);
+                
+                var isMaximized = criteriaEstimate.Criteria.IsMaximized;
+                var xjPlus = isMaximized 
+                    ? maximumValues[index] 
+                    : minimumValues[index];
+                
+                var xjMinus = isMaximized 
+                    ? minimumValues[index] 
+                    : maximumValues[index];
                 
                 var currentCriteria = criteriaMatrix[index][j];
 
                 var currentEstimate = isMaximized
-                    ? (currentCriteria - xjMinus) / (xjPlus - xjMinus)
-                    : (xjMinus - currentCriteria) / (xjMinus - xjPlus);
+                    ? (currentCriteria.Estimate - xjMinus) / (xjPlus - xjMinus)
+                    : (xjMinus - currentCriteria.Estimate) / (xjMinus - xjPlus);
                 
-                currentEstimates[index, j] = currentEstimate;
+                currentEstimatesList.Add(new CriteriaEstimate
+                {
+                    Estimate = currentEstimate,
+                    Criteria = criteriaEstimate.Criteria,
+                    Recommendation = criteriaEstimate.Recommendation,
+                    CriteriaId = criteriaEstimate.CriteriaId,
+                    RecommendationId = criteriaEstimate.RecommendationId,
+                });
             }
+            
+            currentEstimates.Add(currentEstimatesList);
         }
         
         return currentEstimates;
     }
 
-    public decimal[,] CalculateWeightedNormalizedCriteriaMatrix(decimal[,] normalizedCriteriaMatrix, decimal[] weights)
+    public List<List<CriteriaEstimate>> CalculateWeightedNormalizedCriteriaMatrix(List<List<CriteriaEstimate>> normalizedCriteriaMatrix)
     {
-        var weightedCriteriaMatrix = new decimal[normalizedCriteriaMatrix.GetLength(0), normalizedCriteriaMatrix.GetLength(1)];
+        var weightedCriteriaMatrix = new List<List<CriteriaEstimate>>();
         
-        for (var i = 0; i < normalizedCriteriaMatrix.GetLength(0); i++)
+        foreach (var criteriaMatrix in normalizedCriteriaMatrix)
         {
-            for (var j = 0; j < normalizedCriteriaMatrix.GetLength(1); j++)
+            var weightedNormalizedCriteriaMatrix = new List<CriteriaEstimate>();
+            
+            foreach (var criteriaEstimate in criteriaMatrix)
             {
-                var weight = weights[j];
-                
-                weightedCriteriaMatrix[i, j] = normalizedCriteriaMatrix[i, j] * weight;
+                weightedNormalizedCriteriaMatrix.Add(new CriteriaEstimate
+                {
+                    Estimate = criteriaEstimate.Estimate * criteriaEstimate.Criteria.Weight, 
+                    CriteriaId = criteriaEstimate.CriteriaId,
+                    RecommendationId = criteriaEstimate.RecommendationId,
+                    Recommendation = criteriaEstimate.Recommendation,
+                    Criteria = criteriaEstimate.Criteria,
+                });
             }
+            
+            weightedCriteriaMatrix.Add(weightedNormalizedCriteriaMatrix);
         }
         
         return weightedCriteriaMatrix;
     }
 
-    public (List<decimal> Pis, List<decimal> Nis) CalculatePisAndNis(decimal[,] weightedNormalizedCriteriaMatrix)
+    public (List<CriteriaEstimate> Pis, List<CriteriaEstimate> Nis) CalculatePisAndNis(List<List<CriteriaEstimate>> weightedNormalizedCriteriaMatrix)
     {
-        var pis = new List<decimal>();
-        var nis = new List<decimal>();
+        var pis = new List<CriteriaEstimate>();
+        var nis = new List<CriteriaEstimate>();
 
-        for (var j = 0; j < weightedNormalizedCriteriaMatrix.GetLength(1); j++)
+        var criteriaCount = weightedNormalizedCriteriaMatrix[0].Count;
+
+        for (var j = 0; j < criteriaCount; j++)
         {
-            var isMaximized = MaximizedCriterias[j];
-            var listOfValues = new List<decimal>();
-
-            for (var i = 0; i < weightedNormalizedCriteriaMatrix.GetLength(0); i++)
-            {
-                listOfValues.Add(weightedNormalizedCriteriaMatrix[i, j]);
-            }
+            var column = weightedNormalizedCriteriaMatrix.Select(row => row[j]).ToList();
             
-            pis.Add(isMaximized ? listOfValues.Max() : listOfValues.Min());
-            nis.Add(isMaximized ? listOfValues.Min() : listOfValues.Max());
+            bool isMaximized = column[0].Criteria.IsMaximized;
+
+            var extremePis = isMaximized
+                ? column.OrderByDescending(x => x.Estimate).First()
+                : column.OrderBy(x => x.Estimate).First();
+
+            var extremeNis = isMaximized
+                ? column.OrderBy(x => x.Estimate).First()
+                : column.OrderByDescending(x => x.Estimate).First();
+
+            pis.Add(extremePis);
+            nis.Add(extremeNis);
         }
 
         return (pis, nis);
     }
 
-    public List<decimal> CalculateDistancesToPis(decimal[,] weightedNormalizedCriteriaMatrix, List<decimal> pis)
+    public List<decimal> CalculateDistancesToPis(
+        List<List<CriteriaEstimate>> weightedNormalizedCriteriaMatrix,
+        List<CriteriaEstimate> pis)
     {
         var distances = new List<decimal>();
-        
-        for (var i = 0; i < weightedNormalizedCriteriaMatrix.GetLength(0); i++)
+
+        foreach (var t in weightedNormalizedCriteriaMatrix)
         {
             decimal distanceInSquare = 0;
 
-            for (var j = 0; j < weightedNormalizedCriteriaMatrix.GetLength(1); j++)
+            for (int j = 0; j < t.Count; j++)
             {
-                var difference = weightedNormalizedCriteriaMatrix[i, j] - pis[j];
-                
+                var estimate = (decimal)t[j].Estimate;
+                var pisEstimate = (decimal)pis[j].Estimate;
+
+                var difference = estimate - pisEstimate;
                 distanceInSquare += difference * difference;
             }
 
-            var distance = Math.Sqrt((double) distanceInSquare);
-            
-            distances.Add((decimal) distance);
+            var distance = Math.Sqrt((double)distanceInSquare);
+            distances.Add((decimal)distance);
         }
-        
+
+        return distances;
+    }
+
+    public List<decimal> CalculateDistancesToNis(
+        List<List<CriteriaEstimate>> weightedNormalizedCriteriaMatrix,
+        List<CriteriaEstimate> nis)
+    {
+        var distances = new List<decimal>();
+
+        foreach (var t in weightedNormalizedCriteriaMatrix)
+        {
+            decimal distanceInSquare = 0;
+
+            for (int j = 0; j < t.Count; j++)
+            {
+                var estimate = (decimal)t[j].Estimate;
+                var nisEstimate = (decimal)nis[j].Estimate;
+
+                var difference = estimate - nisEstimate;
+                distanceInSquare += difference * difference;
+            }
+
+            var distance = Math.Sqrt((double)distanceInSquare);
+            distances.Add((decimal)distance);
+        }
+
         return distances;
     }
     
-    public List<decimal> CalculateDistancesToNis(decimal[,] weightedNormalizedCriteriaMatrix, List<decimal> nis)
-    {
-        var distances = new List<decimal>();
-        
-        for (var i = 0; i < weightedNormalizedCriteriaMatrix.GetLength(0); i++)
-        {
-            decimal distanceInSquare = 0;
-
-            for (var j = 0; j < weightedNormalizedCriteriaMatrix.GetLength(1); j++)
-            {
-                var difference = weightedNormalizedCriteriaMatrix[i, j] - nis[j];
-                
-                distanceInSquare += difference * difference;
-            }
-
-            var distance = Math.Sqrt((double) distanceInSquare);
-            
-            distances.Add((decimal) distance);
-        }
-        
-        return distances;
-    }
-
-    public List<decimal> CalculateClosenessToPis(List<decimal> distancesToPis, List<decimal> distancesToNis)
+    public List<decimal> CalculateClosenessToPis(
+        List<decimal> distancesToPis,
+        List<decimal> distancesToNis)
     {
         var closenessList = new List<decimal>();
 
-        for (var i = 0; i < distancesToPis.Count; i++)
+        for (int i = 0; i < distancesToPis.Count; i++)
         {
             var distanceToPis = distancesToPis[i];
             var distanceToNis = distancesToNis[i];
 
             var closeness = distanceToNis / (distanceToNis + distanceToPis);
-            
             closenessList.Add(closeness);
         }
 

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ReadyBusinesses.DLL.Context;
 
@@ -11,9 +12,11 @@ using ReadyBusinesses.DLL.Context;
 namespace ReadyBusinesses.DLL.Migrations
 {
     [DbContext(typeof(BusinessesContext))]
-    partial class BusinessesContextModelSnapshot : ModelSnapshot
+    [Migration("20250425211130_CascadeDelete")]
+    partial class CascadeDelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

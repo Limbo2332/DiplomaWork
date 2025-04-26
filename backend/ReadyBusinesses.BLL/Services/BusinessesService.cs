@@ -147,17 +147,8 @@ public class BusinessesService : IBusinessesService
                 businessesList = businessesList.OrderByDescending(b => b.CreatedAt).ToList();
                 break;
             case SortOptions.Ai:
-                businessesList = _solver.GetSortedPosts(businessesList);
-                break;
             case SortOptions.Expert:
-                businessesList = businessesList
-                    .OrderByDescending(b => b.Recommendations
-                        .Select(r => r.Recommendation)
-                        .Where(r => r.GivenById != null)
-                        .Select(r => r.RatingScore)
-                        .DefaultIfEmpty(0)
-                        .Average())
-                    .ToList();
+                businessesList = _solver.GetSortedPosts(businessesList);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
