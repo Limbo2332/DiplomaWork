@@ -16,21 +16,8 @@ import {
   Tooltip,
   Typography,
 } from '@mui/joy';
-import {
-  ExpandMore,
-  Groups,
-  InfoOutlined,
-  LocationOn,
-  Payments,
-  Psychology,
-  Shield,
-  Star,
-  StarHalf,
-  StarOutline,
-  SupportAgent,
-  TrendingUp,
-} from '@mui/icons-material';
-import { RecommendationDto } from '../../Types/Recommendation/recommendationDto';
+import { ExpandMore, InfoOutlined, Psychology, Star, StarHalf, StarOutline } from '@mui/icons-material';
+import { RecommendationDto } from '../../Types/Recommendation/recommendationDto.ts';
 
 export interface AIRecommendationProps {
   recommendation: RecommendationDto;
@@ -80,17 +67,7 @@ const renderStars = (count: number) => {
 const Recommendation = ({ recommendation }: AIRecommendationProps) => {
   const [expanded, setExpanded] = useState<boolean>(true);
 
-  const rating = getInvestmentRating(recommendation.ratingScore);
-
-  const scoreCategories = [
-    { name: 'Локація', value: recommendation.locationScore, icon: <LocationOn /> },
-    { name: 'Фінансові показники', value: recommendation.financialScore, icon: <Payments /> },
-    { name: 'Адаптація до умов в Україні', value: recommendation.adaptationScore, icon: <Shield /> },
-    { name: 'Команда', value: recommendation.teamScore, icon: <Groups /> },
-    { name: 'Підтримка колишнього власника', value: recommendation.supportScore, icon: <SupportAgent /> },
-    { name: 'Популярність бізнесу', value: recommendation.popularityScore, icon: <TrendingUp /> },
-    { name: 'Комплексна оцінка ШІ', value: recommendation.shiScore, icon: <Psychology /> },
-  ];
+  const rating = getInvestmentRating(recommendation.totalScore);
 
   return (
     <Card variant="outlined" sx={{ mt: 3 }}>
@@ -106,7 +83,7 @@ const Recommendation = ({ recommendation }: AIRecommendationProps) => {
             <Psychology sx={{ fontSize: 28, color: 'primary.500' }} />
             <Typography level="title-lg">AI Рекомендації та Оцінка</Typography>
             <Chip size="lg" variant="soft" color={rating.color} sx={{ ml: 'auto', px: 2 }}>
-              {recommendation.ratingScore}/100 балів
+              {recommendation.totalScore}/100 балів
             </Chip>
           </Box>
         </AccordionSummary>
@@ -129,29 +106,28 @@ const Recommendation = ({ recommendation }: AIRecommendationProps) => {
             </Typography>
 
             <Sheet variant="soft" sx={{ p: 2, borderRadius: 'md' }}>
-              {scoreCategories.map((category, index) => (
-                <Box key={index} sx={{ mb: index < scoreCategories.length - 1 ? 2 : 0 }}>
+              {recommendation.criteriaEstimates.map((criteria, index) => (
+                <Box key={criteria.id} sx={{ mb: index < recommendation.criteriaEstimates.length - 1 ? 2 : 0 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                    <Box sx={{ mr: 1 }}>{category.icon}</Box>
-                    <Typography level="body-sm">{category.name}</Typography>
-                    <Tooltip title={`${category.value} з 100 можливих балів`} placement="top">
+                    <Typography level="body-sm">{criteria.name}</Typography>
+                    <Tooltip title={`${criteria.estimate} з 100 можливих балів`} placement="top">
                       <IconButton size="sm" variant="plain" sx={{ ml: 0.5 }}>
                         <InfoOutlined fontSize="small" />
                       </IconButton>
                     </Tooltip>
                     <Typography level="body-sm" sx={{ ml: 'auto' }}>
-                      {category.value}/100
+                      {criteria.estimate}/100
                     </Typography>
                   </Box>
                   <LinearProgress
                     determinate
-                    value={category.value * 100}
+                    value={criteria.estimate}
                     sx={{
                       height: 8,
                       borderRadius: 4,
                       ['& .MuiLinearProgress-bar']: {
                         backgroundColor: (theme) => {
-                          const percentage = category.value * 100;
+                          const percentage = criteria.estimate;
                           if (percentage >= 80) return theme.vars.palette.success[500];
                           if (percentage >= 60) return theme.vars.palette.primary[500];
                           if (percentage >= 40) return theme.vars.palette.warning[500];
@@ -203,12 +179,12 @@ const Recommendation = ({ recommendation }: AIRecommendationProps) => {
             </Typography>
             <Sheet variant="outlined" sx={{ p: 2, borderRadius: 'md' }}>
               <List size="sm">
-                {recommendation.recommendations.map((recommendation, index) => (
+                {recommendation.recommendations.map((rec, index) => (
                   <ListItem key={index}>
                     <ListItemDecorator>
                       <Psychology fontSize="small" color="primary" />
                     </ListItemDecorator>
-                    {recommendation}
+                    {rec}
                   </ListItem>
                 ))}
               </List>
@@ -221,4 +197,3 @@ const Recommendation = ({ recommendation }: AIRecommendationProps) => {
 };
 
 export default Recommendation;
-

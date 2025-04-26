@@ -60,6 +60,11 @@ public class RecommendationService : IRecommendationService
         var globalCriteria = await _globalCriteriaService.GetCriteriaAsync();
         
         var recommendationToAdd = createRecommendationDto.ToRecommendation(currentUserId, globalCriteria);
+
+        foreach (var criteriaEstimate in recommendationToAdd.CriteriaEstimates)
+        {
+            criteriaEstimate.Criteria = null;
+        }
         
         await _recommendationRepository.AddRecommendationAsync(recommendationToAdd);
         await _businessesRepository.AddPostRecommendationAsync(createRecommendationDto.BusinessId,

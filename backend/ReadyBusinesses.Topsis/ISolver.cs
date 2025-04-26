@@ -4,5 +4,5 @@ namespace ReadyBusinesses.Topsis;
 
 public interface ISolver
 {
-    List<Post> GetSortedPosts(List<Post> businesses);
+    List<Post> GetSortedPosts(List<Post> businesses, bool byAi);
 }

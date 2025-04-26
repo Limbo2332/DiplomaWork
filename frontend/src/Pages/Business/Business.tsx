@@ -447,8 +447,8 @@ const BusinessPage = () => {
                     }}
                   >
                     <Badge
-                      badgeContent={`${business.aiRecommendation!.ratingScore}/100`}
-                      color={business.aiRecommendation!.ratingScore >= 75 ? 'success' : business.aiRecommendation!.ratingScore >= 60 ? 'primary' : 'warning'}
+                      badgeContent={`${business.aiRecommendation!.totalScore}/100`}
+                      color={business.aiRecommendation!.totalScore >= 75 ? 'success' : business.aiRecommendation!.totalScore >= 60 ? 'primary' : 'warning'}
                       size="lg"
                       sx={{
                         '& .MuiBadge-badge': {
@@ -464,23 +464,23 @@ const BusinessPage = () => {
                         sx={{
                           width: 100,
                           height: 100,
-                          bgcolor: business.aiRecommendation!.ratingScore >= 75 ? 'success.100' : business.aiRecommendation!.ratingScore >= 60 ? 'primary.100' : 'warning.100',
-                          color: business.aiRecommendation!.ratingScore >= 75 ? 'success.700' : business.aiRecommendation!.ratingScore >= 60 ? 'primary.700' : 'warning.700',
+                          bgcolor: business.aiRecommendation!.totalScore >= 75 ? 'success.100' : business.aiRecommendation!.totalScore >= 60 ? 'primary.100' : 'warning.100',
+                          color: business.aiRecommendation!.totalScore >= 75 ? 'success.700' : business.aiRecommendation!.totalScore >= 60 ? 'primary.700' : 'warning.700',
                           fontSize: '2rem',
                           fontWeight: 'bold',
                         }}
                       >
-                        {business.aiRecommendation!.ratingScore}
+                        {business.aiRecommendation!.totalScore}
                       </Avatar>
                     </Badge>
                     <Typography level="title-sm" sx={{ mt: 2 }}>
-                      {business.aiRecommendation!.ratingScore >= 90
+                      {business.aiRecommendation!.totalScore >= 90
                         ? 'Відмінна інвестиція'
-                        : business.aiRecommendation!.ratingScore >= 75
+                        : business.aiRecommendation!.totalScore >= 75
                           ? 'Гарна інвестиція'
-                          : business.aiRecommendation!.ratingScore >= 60
+                          : business.aiRecommendation!.totalScore >= 60
                             ? 'Задовільна інвестиція'
-                            : business.aiRecommendation!.ratingScore >= 45
+                            : business.aiRecommendation!.totalScore >= 45
                               ? 'Посередня інвестиція'
                               : 'Ризикована інвестиція'}
                     </Typography>

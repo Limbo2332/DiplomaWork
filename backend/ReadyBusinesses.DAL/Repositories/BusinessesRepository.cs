@@ -26,7 +26,9 @@ public class BusinessesRepository : IBusinessesRepository
             .Include(p => p.Pictures)
                 .ThenInclude(picture => picture.Picture)
             .Include(post => post.Recommendations)
-                .ThenInclude(r => r.Recommendation);
+                .ThenInclude(r => r.Recommendation)
+                    .ThenInclude(r => r.CriteriaEstimates)
+                        .ThenInclude(c => c.Criteria);
     }
 
     public Task<Post> GetBusinessWithoutDependenciesByIdAsync(Guid id)
@@ -124,6 +126,8 @@ public class BusinessesRepository : IBusinessesRepository
                 .ThenInclude(socialMedia => socialMedia.SocialMedia)
             .Include(p => p.Recommendations)
                 .ThenInclude(r => r.Recommendation)
+                    .ThenInclude(r => r.CriteriaEstimates)
+                        .ThenInclude(e => e.Criteria)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 

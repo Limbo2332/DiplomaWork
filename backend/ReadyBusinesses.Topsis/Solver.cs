@@ -4,14 +4,33 @@ namespace ReadyBusinesses.Topsis;
 
 public class Solver : ISolver
 {
-    public List<Post> GetSortedPosts(List<Post> businesses)
+    public List<Post> GetSortedPosts(List<Post> businesses, bool byAi)
     {
-        var criteriaMatrix = businesses
-            .SelectMany(b => b.Recommendations)
-            .Select(r => r.Recommendation)
-            .Where(r => r.GivenById == null)
-            .Select(r => r.CriteriaEstimates.ToList())
-            .ToList();
+        List<List<CriteriaEstimate>> criteriaMatrix;
+
+        if (byAi)
+        {
+            criteriaMatrix = businesses
+                .SelectMany(b => b.Recommendations)
+                .Select(r => r.Recommendation)
+                .Where(r => r.GivenById == null)
+                .Select(r => r.CriteriaEstimates.ToList())
+                .ToList();
+        }
+        else
+        {
+            criteriaMatrix = businesses
+                .SelectMany(b => b.Recommendations)
+                .Select(r => r.Recommendation)
+                .Where(r => r.GivenById != null)
+                .Select(r => r.CriteriaEstimates.ToList())
+                .ToList();
+        }
+
+        if (criteriaMatrix.Count <= 1)
+        {
+            return businesses;
+        }
         
         var normalized = NormalizeCriteriaMatrix(criteriaMatrix);
         var weightedNormalized = CalculateWeightedNormalizedCriteriaMatrix(normalized);

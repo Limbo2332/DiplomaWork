@@ -16,17 +16,23 @@ public class RecommendationRepository : IRecommendationRepository
 
     public async Task<IEnumerable<Recommendation>> GetExpertRecommendationsAsync(Guid businessId)
     {
-        return await _dbContext.Posts
-            .Include(p => p.Recommendations)
-                .ThenInclude(r => r.Recommendation)
-                .ThenInclude(r => r.GivenBy)
+        var post = await _dbContext.Posts
             .Where(p => p.Id == businessId)
-            .SelectMany(p => p.Recommendations)
-            .Select(r => r.Recommendation)
-            .Where(r => r.GivenById != null)
-            .ToListAsync();
-    }
+            .Include(p => p.Recommendations)
+                .ThenInclude(rp => rp.Recommendation)
+                .ThenInclude(r => r.GivenBy)
+            .Include(p => p.Recommendations)
+                .ThenInclude(rp => rp.Recommendation)
+                .ThenInclude(r => r.CriteriaEstimates)
+                .ThenInclude(ce => ce.Criteria)
+            .FirstOrDefaultAsync();
 
+        return post?.Recommendations
+                   .Where(rp => rp.Recommendation.GivenById != null)
+                   .Select(rp => rp.Recommendation)
+               ?? [];
+    }
+    
     public async Task AddRecommendationAsync(Recommendation recommendation)
     {
         await _dbContext.Recommendations.AddAsync(recommendation);

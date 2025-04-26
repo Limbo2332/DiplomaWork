@@ -35,13 +35,56 @@ type CriteriaWithEditing = CriteriaDto & {
 }
 
 const defaultCriteria: CriteriaWithEditing[] = [
-  { index: 1, name: 'Локація розміщення бізнесу', isMaximization: true, weight: 0.1, isEditing: false },
-  { index: 2, name: 'Оцінка чистого прибутку', isMaximization: true, weight: 0.1, isEditing: false },
-  { index: 3, name: 'Оцінка окупності бізнесу', isMaximization: false, weight: 0.1, isEditing: false },
-  { index: 4, name: 'Оцінка ціни бізнесу', isMaximization: true, weight: 0.033333, isEditing: false },
-  { index: 5, name: 'Оцінка середнього чеку', isMaximization: true, weight: 0.03333, isEditing: false },
-  { index: 6, name: 'Оцінка середнього виторгу', isMaximization: true, weight: 0.03333, isEditing: false },
   {
+    id: '569234F5-335E-4F53-BFE8-50BBE3D699D9',
+    index: 1,
+    name: 'Локація розміщення бізнесу',
+    isMaximization: true,
+    weight: 0.1,
+    isEditing: false,
+  },
+  {
+    id: 'EFE60266-226E-4CE1-AC3A-C15940800BF8',
+    index: 2,
+    name: 'Оцінка чистого прибутку',
+    isMaximization: true,
+    weight: 0.1,
+    isEditing: false,
+  },
+  {
+    id: '049B2022-5EA2-4C9F-97D1-92395D5FD23F',
+    index: 3,
+    name: 'Оцінка окупності бізнесу',
+    isMaximization: false,
+    weight: 0.1,
+    isEditing: false,
+  },
+  {
+    id: '4CBF6758-F2BD-4AC2-93FE-C7CF54B6385A',
+    index: 4,
+    name: 'Оцінка ціни бізнесу',
+    isMaximization: true,
+    weight: 0.033333,
+    isEditing: false,
+  },
+  {
+    id: 'EAF1DEBE-F2AD-4F8D-AEDF-DD697F264AEC',
+    index: 5,
+    name: 'Оцінка середнього чеку',
+    isMaximization: true,
+    weight: 0.03333,
+    isEditing: false,
+  },
+  {
+    id: '113727BF-D9A7-4ABB-9856-C10D44583A90',
+    index: 6,
+    name: 'Оцінка середнього виторгу',
+    isMaximization: true,
+    weight: 0.03333,
+    isEditing: false,
+  },
+  {
+    id: 'CA4078F1-9B64-4907-9573-92F9CA19081F',
     index: 7,
     name: 'Оцінка адаптації до умов в Україні',
     isMaximization: true,
@@ -49,6 +92,7 @@ const defaultCriteria: CriteriaWithEditing[] = [
     isEditing: false,
   },
   {
+    id: 'D3EC8CF0-E484-4F35-82AD-21987BAF1466',
     index: 8,
     name: 'Оцінка команди та зарплатної відомості',
     isMaximization: true,
@@ -56,18 +100,34 @@ const defaultCriteria: CriteriaWithEditing[] = [
     isEditing: false,
   },
   {
+    id: '49CFB6D1-53CC-4425-9241-155FA9182510',
     index: 9,
     name: 'Оцінка підтримки від колишнього власника',
     isMaximization: true,
     weight: 0.05,
     isEditing: false,
   },
-  { index: 10, name: 'Оцінка популярності бізнесу', isMaximization: true, weight: 0.1, isEditing: false },
-  { index: 11, name: 'Комплексна оцінка', isMaximization: true, weight: 0.2, isEditing: false },
+  {
+    id: 'F9A4EF97-43FA-46B3-9D56-974D3913168C',
+    index: 10,
+    name: 'Оцінка популярності бізнесу',
+    isMaximization: true,
+    weight: 0.1,
+    isEditing: false,
+  },
+  {
+    id: 'ABA86ADC-6C99-46CB-B390-D29E4FCA844F',
+    index: 11,
+    name: 'Комплексна оцінка',
+    isMaximization: true,
+    weight: 0.2,
+    isEditing: false,
+  },
 ];
 
 const GlobalCriteriaPage = () => {
   const [criteria, setCriteria] = useState<CriteriaWithEditing[]>([]);
+  const [globalCriteriaId, setGlobalCriteriaId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [aiModalOpen, setAiModalOpen] = useState(false);
   const [aiResponse, setAiResponse] = useState<string | null>(null);
@@ -93,8 +153,7 @@ const GlobalCriteriaPage = () => {
           weight: Number.parseFloat(x.weight.toFixed(4)),
         }));
 
-        console.log(criteriaWithEditing);
-
+        setGlobalCriteriaId(globalCriteria.data.id);
         setCriteria(criteriaWithEditing);
       }
 
@@ -118,6 +177,7 @@ const GlobalCriteriaPage = () => {
     setIsLoading(true);
     const globalCriteriaDto: GlobalCriteriaDto = {
       criteria: criteria,
+      id: globalCriteriaId!,
     };
 
     const result = await replaceCriteria(globalCriteriaDto);

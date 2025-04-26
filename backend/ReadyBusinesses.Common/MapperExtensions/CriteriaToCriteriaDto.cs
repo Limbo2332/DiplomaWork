@@ -20,6 +20,7 @@ public static class CriteriaToCriteriaDto
     {
         return new GlobalCriteriaDto
         {
+            Id = criteria.Id,
             Criteria = criteria.Criteria.Select(ToCriteriaDto).ToArray(),
         };
     }
@@ -38,12 +39,10 @@ public static class CriteriaToCriteriaDto
 
     public static GlobalCriteria ToGlobalCriteria(this GlobalCriteriaDto criteriaDto)
     {
-        var globalCriteriaId = Guid.NewGuid();
-        
         return new GlobalCriteria
         {
-            Id = globalCriteriaId,
-            Criteria = criteriaDto.Criteria.Select(x => ToCriteria(x, globalCriteriaId)).ToArray(),
+            Id = criteriaDto.Id,
+            Criteria = criteriaDto.Criteria.Select(x => ToCriteria(x, criteriaDto.Id)).ToArray(),
         };
     }
 
@@ -53,8 +52,8 @@ public static class CriteriaToCriteriaDto
     {
         return new CriteriaEstimate
         {
-            Criteria = globalCriteria.Criteria.First(y => y.Id == criteriaDto.CriteriaId).ToCriteria(globalCriteria.Id),
-            CriteriaId = criteriaDto.CriteriaId,
+            Criteria = globalCriteria.Criteria.First(y => y.Id == criteriaDto.Id).ToCriteria(globalCriteria.Id),
+            CriteriaId = criteriaDto.Id,
             Recommendation = recommendation,
             RecommendationId = recommendation.Id,
             Estimate = criteriaDto.Estimate
@@ -65,7 +64,8 @@ public static class CriteriaToCriteriaDto
     {
         return new CriteriaEstimateDto
         {
-            CriteriaId = criteria.First(c => c.Name == criteriaEstimateGpt.Criterion).Id!.Value,
+            Id = criteria.First(c => c.Name == criteriaEstimateGpt.Criterion).Id!.Value,
+            Name = criteriaEstimateGpt.Criterion,
             Estimate = criteriaEstimateGpt.Estimate,
         };
     }

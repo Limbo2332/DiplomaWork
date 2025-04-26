@@ -126,8 +126,6 @@ public class GlobalCriteriaService : IGlobalCriteriaService
     {
         var globalCriteria = globalCriteriaDto.ToGlobalCriteria();
 
-        globalCriteria.Fresh = true;
-
         await _repository.ReplaceGlobalCriteriaAsync(globalCriteria);
     }
 }

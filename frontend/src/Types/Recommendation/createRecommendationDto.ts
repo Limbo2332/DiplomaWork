@@ -1,13 +1,8 @@
-﻿export type CreateRecommendationDto = {
+﻿import { CriteriaEstimateDto } from '../Criteria/criteriaEstimateDto.ts';
+
+export type CreateRecommendationDto = {
   businessId: string;
-  criteriaWeights: number[];
-  locationScore: number;
-  adaptationScore: number;
-  supportFromPreviousOwnerScore: number;
-  complexScore: number;
-  financialScore: number;
-  teamScore: number;
-  popularityScore: number;
+  criteriaEstimates: CriteriaEstimateDto[];
   pluses: string[];
   minuses: string[];
   recommendations: string[];

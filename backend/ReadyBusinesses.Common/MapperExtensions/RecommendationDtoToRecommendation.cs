@@ -17,10 +17,16 @@ public static class RecommendationDtoToRecommendation
             Recommendations = recommendation.Recommendations,
             CriteriaEstimates = recommendation.CriteriaEstimates.Select(c => new CriteriaEstimateDto
             {
-                CriteriaId = c.CriteriaId,
+                Id = c.CriteriaId,
                 Estimate = c.Estimate,
+                Name = c.Criteria.Name,
             }),
-            TotalScore = recommendation.CriteriaEstimates.Sum(c => c.Estimate * c.Criteria.Weight),
+            TotalScore = Math.Round(
+                recommendation.CriteriaEstimates.Sum(c => 
+                    (c.Criteria.IsMaximized ? c.Estimate : (100d - c.Estimate)) * c.Criteria.Weight
+                ),
+                2
+            )
         };
     }
 
@@ -33,10 +39,16 @@ public static class RecommendationDtoToRecommendation
             Date = recommendation.CreatedAt,
             CriteriaEstimates = recommendation.CriteriaEstimates.Select(c => new CriteriaEstimateDto
             {
-                CriteriaId = c.CriteriaId,
+                Id = c.CriteriaId,
                 Estimate = c.Estimate,
+                Name = c.Criteria.Name,
             }),
-            TotalScore = recommendation.CriteriaEstimates.Sum(c => c.Estimate * c.Criteria.Weight),
+            TotalScore = Math.Round(
+                recommendation.CriteriaEstimates.Sum(c => 
+                    (c.Criteria.IsMaximized ? c.Estimate : (100d - c.Estimate)) * c.Criteria.Weight
+                ),
+                2
+            )
         };
     }
 }

@@ -1,6 +1,4 @@
-﻿'use client';
-
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -19,108 +17,26 @@ import {
   Tooltip,
   Typography,
 } from '@mui/joy';
-import {
-  Add,
-  ArrowBack,
-  Delete,
-  Groups,
-  InfoOutlined,
-  LocationOn,
-  Payments,
-  Psychology,
-  Save,
-  Shield,
-  SupportAgent,
-  TrendingUp,
-  Warning,
-} from '@mui/icons-material';
+import { Add, ArrowBack, Delete, InfoOutlined, Save } from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router';
 import { useNotification } from '../../../Contexts/notificationContext.tsx';
 import Menu from '../../Menu/Menu.tsx';
 import useRecommendationService from '../../../Services/recommendationService.ts';
 import type { CreateRecommendationDto } from '../../../Types/Recommendation/createRecommendationDto.ts';
+import { GlobalCriteriaDto } from '../../../Types/Criteria/globalCriteriaDto.ts';
+import { CriteriaDto } from '../../../Types/Criteria/criteriaDto.ts';
+import { CriteriaEstimateDto } from '../../../Types/Criteria/criteriaEstimateDto.ts';
+import useGlobalCriteriaService from '../../../Services/globalCriteriaService.ts';
 
 interface ExpertEvaluationFormData {
-  locationScore: number;
-  financialScore: number;
-  adaptationScore: number;
-  teamScore: number;
-  supportScore: number;
-  popularityScore: number;
-  complexScore: number;
-  locationWeight: number;
-  financialWeight: number;
-  adaptationWeight: number;
-  teamWeight: number;
-  supportWeight: number;
-  popularityWeight: number;
-  complexWeight: number;
+  [key: string]: number;
 }
-
-// Define the priority order for criteria weights
-const priorityOrder = [
-  'locationWeight',
-  'financialWeight',
-  'adaptationWeight',
-  'teamWeight',
-  'supportWeight',
-  'popularityWeight',
-  'complexWeight',
-];
-
-// Map each weight key to its priority index (lower index = higher priority)
-const priorityIndex: Record<string, number> = {};
-priorityOrder.forEach((key, index) => {
-  priorityIndex[key] = index;
-});
-
-// Reorder scoreCategories based on priority
-const scoreCategories = [
-  { name: 'Локація', scoreKey: 'locationScore', weightKey: 'locationWeight', icon: <LocationOn /> },
-  {
-    name: 'Фінансові показники',
-    scoreKey: 'financialScore',
-    weightKey: 'financialWeight',
-    icon: <Payments />,
-  },
-  {
-    name: 'Адаптація до умов в Україні',
-    scoreKey: 'adaptationScore',
-    weightKey: 'adaptationWeight',
-    icon: <Shield />,
-  },
-  { name: 'Команда', scoreKey: 'teamScore', weightKey: 'teamWeight', icon: <Groups /> },
-  {
-    name: 'Підтримка колишнього власника',
-    scoreKey: 'supportScore',
-    weightKey: 'supportWeight',
-    icon: <SupportAgent />,
-  },
-  {
-    name: 'Популярність бізнесу',
-    scoreKey: 'popularityScore',
-    weightKey: 'popularityWeight',
-    icon: <TrendingUp />,
-  },
-  { name: 'Комплексна оцінка', scoreKey: 'complexScore', weightKey: 'complexWeight', icon: <Psychology /> },
-].sort((a, b) => priorityIndex[a.weightKey] - priorityIndex[b.weightKey]);
-
-const defaultWeights = {
-  locationWeight: 0.1,
-  financialWeight: 0.3,
-  adaptationWeight: 0.1,
-  teamWeight: 0.15,
-  supportWeight: 0.05,
-  popularityWeight: 0.1,
-  complexWeight: 0.2,
-};
 
 const CreateExpertEvaluationPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [totalWeightError, setTotalWeightError] = useState<string | null>(null);
   const [pluses, setPluses] = useState<string[]>([]);
   const [minuses, setMinuses] = useState<string[]>([]);
   const [recommendations, setRecommendations] = useState<string[]>([]);
@@ -128,105 +44,70 @@ const CreateExpertEvaluationPage = () => {
   const [newMinus, setNewMinus] = useState('');
   const [newRecommendation, setNewRecommendation] = useState('');
   const { showSuccessNotification, showErrorNotification } = useNotification();
-
   const { createRecommendation } = useRecommendationService();
+  
+  const { getCriteria } = useGlobalCriteriaService();
+
+  const [globalCriteria, setGlobalCriteria] = useState<GlobalCriteriaDto | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const generateFormFields = (criteria: CriteriaDto[]) => {
+    const fields: ExpertEvaluationFormData = {};
+
+    criteria.forEach((criterion) => {
+      fields[`${criterion.id}_score`] = 0;
+    });
+
+    return fields;
+  };
+
+  useEffect(() => {
+    const fetchGlobalCriteria = async () => {
+      try {
+        setLoading(true);
+        const result = await getCriteria();
+
+        if (result?.data) {
+          setGlobalCriteria(result.data);
+
+          const defaultValues = generateFormFields(result.data.criteria);
+          reset(defaultValues);
+        }
+      } catch (error) {
+        showErrorNotification('Помилка при завантаженні критеріїв');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGlobalCriteria();
+  }, []);
 
   const {
     control,
     handleSubmit,
     watch,
-    setValue,
-    formState: { errors },
+    reset,
   } = useForm<ExpertEvaluationFormData>({
-    defaultValues: {
-      locationScore: 0,
-      financialScore: 0,
-      adaptationScore: 0,
-      teamScore: 0,
-      supportScore: 0,
-      popularityScore: 0,
-      complexScore: 0,
-      ...defaultWeights,
-    },
+    defaultValues: {},
   });
 
-  const watchedWeights = watch(priorityOrder);
-
-  // Calculate total weight
-  const totalWeight = watchedWeights.reduce((sum, weight) => sum + (Number.parseFloat(weight as string) || 0), 0);
-  const totalWeightFormatted = useMemo(() => {
-    return totalWeight.toFixed(4);
-  }, [totalWeight]);
-
-  // Calculate remaining weight available
-  const getRemainingWeight = (currentPriorityIndex: number) => {
-    let usedWeight = 0;
-
-    // Sum all weights with higher priority (lower index)
-    for (let i = 0; i < currentPriorityIndex; i++) {
-      const key = priorityOrder[i];
-      usedWeight += Number.parseFloat(watch(key as keyof ExpertEvaluationFormData) as string) || 0;
-    }
-
-    return Math.max(0, 1 - usedWeight);
-  };
-
-  // Validate total weight
-  useEffect(() => {
-    if (Math.abs(totalWeight - 1) > 0.01) {
-      setTotalWeightError(`Сума ваг має дорівнювати 1. Поточна сума: ${totalWeightFormatted}`);
-    } else {
-      setTotalWeightError(null);
-    }
-  }, [watchedWeights, totalWeight, totalWeightFormatted]);
-
   const calculateTotalScore = (data: ExpertEvaluationFormData) => {
-    let totalScore = 0;
+    if (!globalCriteria) return 0;
 
-    scoreCategories.forEach((category) => {
-      const score = data[category.scoreKey as keyof ExpertEvaluationFormData] as number;
-      const weight = data[category.weightKey as keyof ExpertEvaluationFormData] as number;
+    let totalScore = 0;
+    let totalWeight = 0;
+
+    globalCriteria.criteria.forEach((criterion) => {
+      const score = data[`${criterion.id}_score`] as number;
+      const weight = criterion.weight;
 
       totalScore += score * weight;
+      totalWeight += weight;
     });
 
-    return totalScore;
-  };
-
-  // Adjust lower priority weights when a higher priority weight changes
-  const adjustLowerPriorityWeights = (changedPriorityIndex: number) => {
-    const lowerPriorityCriteria = priorityOrder.filter((key) => priorityIndex[key] > changedPriorityIndex);
-
-    if (lowerPriorityCriteria.length === 0) {
-      return;
-    }
-
-    // Calculate the remaining weight available for lower priority criteria
-    const remainingWeight = getRemainingWeight(changedPriorityIndex + 1);
-
-    // Calculate the current sum of lower priority weights
-    const lowerPrioritySum = lowerPriorityCriteria.reduce((sum, key) => {
-      return sum + (Number.parseFloat(watch(key as keyof ExpertEvaluationFormData) as string) || 0);
-    }, 0);
-
-    // If the lower priority sum is already zero, distribute the remaining weight equally
-    if (lowerPrioritySum <= 0.001) {
-      const equalShare = remainingWeight / lowerPriorityCriteria.length;
-      lowerPriorityCriteria.forEach((key) => {
-        setValue(key as keyof ExpertEvaluationFormData, Number.parseFloat(equalShare.toFixed(4)));
-      });
-      return;
-    }
-
-    // Calculate the adjustment factor
-    const adjustmentFactor = remainingWeight / lowerPrioritySum;
-
-    // Adjust each lower priority weight proportionally
-    lowerPriorityCriteria.forEach((key) => {
-      const currentWeight = Number.parseFloat(watch(key as keyof ExpertEvaluationFormData) as string) || 0;
-      const newWeight = currentWeight * adjustmentFactor;
-      setValue(key as keyof ExpertEvaluationFormData, Number.parseFloat(newWeight.toFixed(4)));
-    });
+    // Normalize by total weight
+    return totalWeight > 0 ? totalScore / totalWeight : 0;
   };
 
   const addPlus = () => {
@@ -263,14 +144,7 @@ const CreateExpertEvaluationPage = () => {
   };
 
   const onSubmit = async (data: ExpertEvaluationFormData) => {
-    if (Math.abs(totalWeight - 1) > 0.01) {
-      normalizeWeights();
-      // If still not normalized (which shouldn't happen), show error
-      if (Math.abs(totalWeight - 1) > 0.01) {
-        showErrorNotification('Сума ваг має дорівнювати 1');
-        return;
-      }
-    }
+    if (!globalCriteria) return;
 
     if (pluses.length === 0) {
       showErrorNotification('Додайте хоча б одну сильну сторону');
@@ -290,27 +164,18 @@ const CreateExpertEvaluationPage = () => {
     try {
       setIsSubmitting(true);
 
-      const totalScore = calculateTotalScore(data);
+      const criteriaEstimates: CriteriaEstimateDto[] = globalCriteria.criteria
+        .filter((criterion) => criterion.id !== null)
+        .map((criterion) => ({
+          id: criterion.id as string,
+          name: criterion.name,
+          estimate: data[`${criterion.id}_score`] as number,
+        }));
 
       const recommendationDto: CreateRecommendationDto = {
         businessId: id!,
-        criteriaWeights: [
-          data.locationWeight,
-          data.financialWeight,
-          data.adaptationWeight,
-          data.teamWeight,
-          data.supportWeight,
-          data.popularityWeight,
-          data.complexWeight,
-        ],
-        locationScore: data.locationScore,
-        adaptationScore: data.adaptationScore,
-        supportFromPreviousOwnerScore: data.supportScore,
-        complexScore: data.complexScore,
-        financialScore: data.financialScore,
-        teamScore: data.teamScore,
-        popularityScore: data.popularityScore,
-        pluses: pluses,
+        criteriaEstimates,
+        pluses,
         minuses,
         recommendations,
       };
@@ -325,35 +190,16 @@ const CreateExpertEvaluationPage = () => {
     }
   };
 
-  const normalizeWeights = () => {
-    // Start from the lowest priority (highest index) and adjust it to make the sum 1
-    for (let i = priorityOrder.length - 1; i >= 0; i--) {
-      const key = priorityOrder[i];
-      const currentValue = Number.parseFloat(watch(key as keyof ExpertEvaluationFormData) as string) || 0;
-
-      if (currentValue > 0 || i === 0) {
-        // Calculate the sum of all weights except this one
-        const otherWeightsSum = priorityOrder.reduce((sum, k, idx) => {
-          if (idx === i) return sum;
-          return sum + (Number.parseFloat(watch(k as keyof ExpertEvaluationFormData) as string) || 0);
-        }, 0);
-
-        // Set this weight to make the total sum 1
-        const newValue = Math.max(0, 1 - otherWeightsSum);
-        setValue(key as keyof ExpertEvaluationFormData, Number.parseFloat(newValue.toFixed(4)));
-        break;
-      }
-    }
-  };
-
-  const resetWeights = () => {
-    scoreCategories.forEach((category) => {
-      setValue(
-        category.weightKey as keyof ExpertEvaluationFormData,
-        defaultWeights[category.weightKey as keyof typeof defaultWeights],
-      );
-    });
-  };
+  if (loading) {
+    return (
+      <Box sx={{ bgcolor: 'background.surface', minHeight: '100vh' }}>
+        <Menu />
+        <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto', textAlign: 'center' }}>
+          <Typography level="h4">Завантаження критеріїв...</Typography>
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ bgcolor: 'background.surface', minHeight: '100vh' }}>
@@ -374,189 +220,60 @@ const CreateExpertEvaluationPage = () => {
           <Card variant="outlined" sx={{ mb: 3 }}>
             <Box sx={{ p: 3 }}>
               <Typography level="h4" sx={{ mb: 3 }}>
-                Ваги критеріїв
-              </Typography>
-
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography level="title-sm">Ваги критеріїв (сума має дорівнювати 1)</Typography>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Button size="sm" variant="outlined" onClick={normalizeWeights}>
-                    Нормалізувати
-                  </Button>
-                  <Button size="sm" variant="outlined" onClick={resetWeights}>
-                    Скинути до стандартних
-                  </Button>
-                </Box>
-              </Box>
-
-              {totalWeightError && (
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                    mb: 2,
-                    p: 1,
-                    bgcolor: 'danger.softBg',
-                    borderRadius: 'sm',
-                  }}
-                >
-                  <Warning color="error" />
-                  <Typography color="danger" level="body-sm">
-                    {totalWeightError}
-                  </Typography>
-                </Box>
-              )}
-
-              <Grid container spacing={2}>
-                {scoreCategories.map((category, index) => {
-                  // Find the priority index for this category
-                  const thisPriorityIndex = priorityIndex[category.weightKey];
-
-                  // Calculate the maximum allowed value for this weight
-                  const remainingWeight = getRemainingWeight(thisPriorityIndex);
-                  const maxAllowed = Math.min(remainingWeight, 1);
-
-                  return (
-                    <Grid xs={12} md={6} key={`weight-${category.weightKey}`}>
-                      <Controller
-                        name={category.weightKey as keyof ExpertEvaluationFormData}
-                        control={control}
-                        render={({ field }) => {
-                          const handleWeightChange = (newValue: number) => {
-                            // Ensure value is not negative
-                            if (newValue < 0) {
-                              newValue = 0;
-                            }
-
-                            // Ensure value doesn't exceed the maximum allowed
-                            if (newValue > maxAllowed) {
-                              newValue = maxAllowed;
-                            }
-
-                            // Set the new value
-                            field.onChange(newValue);
-
-                            // Adjust lower priority weights
-                            adjustLowerPriorityWeights(thisPriorityIndex);
-                          };
-
-                          return (
-                            <FormControl sx={{ mb: 1 }}>
-                              <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                                <Box sx={{ mr: 1 }}>{category.icon}</Box>
-                                <Typography level="body-sm">{category.name}</Typography>
-                                <Tooltip title={`Вага для критерію "${category.name}"`} placement="top">
-                                  <IconButton size="sm" variant="plain" sx={{ ml: 0.5 }}>
-                                    <InfoOutlined fontSize="small" />
-                                  </IconButton>
-                                </Tooltip>
-                              </Box>
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <Slider
-                                  value={Number.parseFloat(field.value as string) || 0}
-                                  onChange={(_, value) => {
-                                    handleWeightChange(value as number);
-                                  }}
-                                  min={0}
-                                  max={maxAllowed}
-                                  step={0.0001}
-                                  sx={{ flexGrow: 1 }}
-                                />
-                                <Input
-                                  value={
-                                    typeof field.value === 'number'
-                                      ? field.value.toFixed(4)
-                                      : (Number.parseFloat(field.value as string) || 0).toFixed(4)
-                                  }
-                                  onChange={(event) => {
-                                    const newValue = Number.parseFloat(event.target.value) || 0;
-                                    handleWeightChange(newValue);
-                                  }}
-                                  slotProps={{
-                                    input: {
-                                      min: 0,
-                                      max: maxAllowed,
-                                      step: 0.0001,
-                                      onBlur: () => {
-                                        // Round to 4 decimal places on blur
-                                        const currentValue = Number.parseFloat(field.value as string) || 0;
-                                        field.onChange(Number.parseFloat(currentValue.toFixed(4)));
-
-                                        // Adjust lower priority weights again after rounding
-                                        adjustLowerPriorityWeights(thisPriorityIndex);
-                                      },
-                                    },
-                                  }}
-                                  type="number"
-                                  sx={{ minWidth: 80, maxWidth: 80 }}
-                                />
-                              </Box>
-                            </FormControl>
-                          );
-                        }}
-                      />
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </Box>
-          </Card>
-
-          <Card variant="outlined" sx={{ mb: 3 }}>
-            <Box sx={{ p: 3 }}>
-              <Typography level="h4" sx={{ mb: 3 }}>
                 Оцінки за критеріями
               </Typography>
 
               <Grid container spacing={3}>
-                {scoreCategories.map((category, index) => (
-                  <Grid xs={12} md={6} key={category.scoreKey}>
-                    <Controller
-                      name={category.scoreKey as keyof ExpertEvaluationFormData}
-                      control={control}
-                      rules={{ required: `Оцінка для "${category.name}" є обов'язковою` }}
-                      render={({ field, fieldState }) => (
-                        <FormControl error={!!fieldState.error}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                            <Box sx={{ mr: 1 }}>{category.icon}</Box>
-                            <Typography level="body-sm">{category.name}</Typography>
-                            <Tooltip title={'Оцінка від 0 до 100'} placement="top">
-                              <IconButton size="sm" variant="plain" sx={{ ml: 0.5 }}>
-                                <InfoOutlined fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                          </Box>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                            <Slider
-                              value={Number.parseFloat(field.value as string) || 0}
-                              onChange={(_, value) => {
-                                field.onChange(value);
-                              }}
-                              min={0}
-                              max={100}
-                              step={1}
-                              sx={{ flexGrow: 1 }}
-                            />
-                            <Input
-                              value={field.value}
-                              onChange={(event) => {
-                                field.onChange(Number.parseFloat(event.target.value as string) || 0);
-                              }}
-                              slotProps={{ input: { min: 0, max: 100.0, step: 0.01 } }}
-                              type="number"
-                              sx={{ width: 80 }}
-                            />
-                          </Box>
-                          <Typography level="body-xs" sx={{ mt: 0.5 }}>
-                            {field.value} з 100 можливих балів
-                          </Typography>
-                          {fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-                        </FormControl>
-                      )}
-                    />
-                  </Grid>
-                ))}
+                {globalCriteria?.criteria.map((criterion) => {
+                  const scoreKey = `${criterion.id}_score`;
+
+                  return (
+                    <Grid xs={12} md={6} key={scoreKey}>
+                      <Controller
+                        name={scoreKey}
+                        control={control}
+                        rules={{ required: `Оцінка для "${criterion.name}" є обов'язковою` }}
+                        render={({ field, fieldState }) => (
+                          <FormControl error={!!fieldState.error}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                              <Typography level="body-sm">{criterion.name}</Typography>
+                              <Tooltip title={'Оцінка від 0 до 100'} placement="top">
+                                <IconButton size="sm" variant="plain" sx={{ ml: 0.5 }}>
+                                  <InfoOutlined fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                            </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                              <Slider
+                                value={Number.parseFloat(field.value as string) || 0}
+                                onChange={(_, value) => {
+                                  field.onChange(value);
+                                }}
+                                min={0}
+                                max={100}
+                                step={1}
+                                sx={{ flexGrow: 1 }}
+                              />
+                              <Input
+                                value={field.value}
+                                onChange={(event) => {
+                                  field.onChange(Number.parseFloat(event.target.value as string) || 0);
+                                }}
+                                slotProps={{ input: { min: 0, max: 100.0, step: 0.01 } }}
+                                type="number"
+                                sx={{ width: 80 }}
+                              />
+                            </Box>
+                            <Typography level="body-xs" sx={{ mt: 0.5 }}>
+                              {field.value} з 100 можливих балів
+                            </Typography>
+                            {fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                          </FormControl>
+                        )}
+                      />
+                    </Grid>
+                  );
+                })}
               </Grid>
               <Box
                 sx={{
@@ -776,9 +493,7 @@ const CreateExpertEvaluationPage = () => {
               size="lg"
               startDecorator={<Save />}
               loading={isSubmitting}
-              disabled={
-                !!totalWeightError || pluses.length === 0 || minuses.length === 0 || recommendations.length === 0
-              }
+              disabled={pluses.length === 0 || minuses.length === 0 || recommendations.length === 0}
             >
               Зберегти оцінку
             </Button>

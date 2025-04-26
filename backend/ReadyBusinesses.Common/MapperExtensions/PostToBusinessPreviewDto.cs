@@ -30,7 +30,12 @@ public static class PostToBusinessPreviewDto
             AmountOfWorkers = post.EmployersCount,
             TermToPayBack = Math.Round(post.PriceInUah / post.AverageProfitPerMonth),
             InvestmentScore = aiRecommendation is not null 
-                ? Math.Round(aiRecommendation.CriteriaEstimates.Sum(e => e.Estimate * e.Criteria.Weight), 2)
+                ? Math.Round(
+                    aiRecommendation.CriteriaEstimates.Sum(c => 
+                        (c.Criteria.IsMaximized ? c.Estimate : (100d - c.Estimate)) * c.Criteria.Weight
+                    ),
+                    2
+                )
                 : null
         };
     }

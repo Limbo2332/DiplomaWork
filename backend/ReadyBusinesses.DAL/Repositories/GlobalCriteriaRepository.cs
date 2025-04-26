@@ -18,14 +18,28 @@ public class GlobalCriteriaRepository : IGlobalCriteriaRepository
     {
         return _context.GlobalCriteria
             .Include(c => c.Criteria)
-            .FirstOrDefaultAsync(x => x.Fresh);
+            .FirstOrDefaultAsync();
     }
 
     public async Task ReplaceGlobalCriteriaAsync(GlobalCriteria globalCriteria)
     {
-        await _context.GlobalCriteria.ExecuteUpdateAsync(c => c.SetProperty(x => x.Fresh, false));
+        var existing = await _context.GlobalCriteria
+            .Include(gc => gc.Criteria)
+            .FirstOrDefaultAsync(gc => gc.Id == globalCriteria.Id);
+
+        if (existing == null)
+        {
+            throw new InvalidOperationException("GlobalCriteria not found");
+        }
         
-        await _context.GlobalCriteria.AddAsync(globalCriteria);
+        existing.Fresh = globalCriteria.Fresh;
+        
+        existing.Criteria.Clear();
+        foreach (var criteria in globalCriteria.Criteria)
+        {
+            existing.Criteria.Add(criteria);
+        }
+
         await _context.SaveChangesAsync();
     }
 }

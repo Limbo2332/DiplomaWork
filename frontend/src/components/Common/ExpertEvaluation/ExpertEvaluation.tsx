@@ -16,21 +16,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/joy';
-import {
-  ExpandMore,
-  Groups,
-  InfoOutlined,
-  LocationOn,
-  Payments,
-  Person,
-  Psychology,
-  Shield,
-  Star,
-  StarHalf,
-  StarOutline,
-  SupportAgent,
-  TrendingUp,
-} from '@mui/icons-material';
+import { ExpandMore, InfoOutlined, Person, Star, StarHalf, StarOutline } from '@mui/icons-material';
 import { ExpertRecommendationDto } from '../../../Types/Recommendation/expertRecommendationDto.ts';
 
 export interface ExpertEvaluationProps {
@@ -81,45 +67,7 @@ const renderStars = (count: number) => {
 const ExpertEvaluation = ({ evaluation }: ExpertEvaluationProps) => {
   const [expanded, setExpanded] = useState<boolean>(false);
 
-  const rating = getInvestmentRating(evaluation.recommendation.ratingScore);
-
-  const scoreCategories = [
-    {
-      name: 'Локація',
-      value: evaluation.recommendation.locationScore,
-      icon: <LocationOn />,
-    },
-    {
-      name: 'Фінансові показники',
-      value: evaluation.recommendation.financialScore,
-      icon: <Payments />,
-    },
-    {
-      name: 'Адаптація до умов в Україні',
-      value: evaluation.recommendation.adaptationScore,
-      icon: <Shield />,
-    },
-    {
-      name: 'Команда',
-      value: evaluation.recommendation.teamScore,
-      icon: <Groups />,
-    },
-    {
-      name: 'Підтримка колишнього власника',
-      value: evaluation.recommendation.supportScore,
-      icon: <SupportAgent />,
-    },
-    {
-      name: 'Популярність бізнесу',
-      value: evaluation.recommendation.popularityScore,
-      icon: <TrendingUp />,
-    },
-    {
-      name: 'Комплексна оцінка',
-      value: evaluation.recommendation.shiScore,
-      icon: <Psychology />,
-    },
-  ];
+  const rating = getInvestmentRating(evaluation.totalScore);
 
   return (
     <Card variant="outlined" sx={{ mb: 2 }}>
@@ -140,7 +88,7 @@ const ExpertEvaluation = ({ evaluation }: ExpertEvaluationProps) => {
               </Typography>
             </Box>
             <Chip size="lg" variant="soft" color={rating.color} sx={{ ml: 'auto', px: 2 }}>
-              {evaluation.recommendation.ratingScore}/100 балів
+              {evaluation.totalScore}/100 балів
             </Chip>
           </Box>
         </AccordionSummary>
@@ -163,29 +111,28 @@ const ExpertEvaluation = ({ evaluation }: ExpertEvaluationProps) => {
             </Typography>
 
             <Sheet variant="soft" sx={{ p: 2, borderRadius: 'md' }}>
-              {scoreCategories.map((category, index) => (
-                <Box key={index} sx={{ mb: index < scoreCategories.length - 1 ? 2 : 0 }}>
+              {evaluation.criteriaEstimates.map((criteria, index) => (
+                <Box key={criteria.id} sx={{ mb: index < evaluation.criteriaEstimates.length - 1 ? 2 : 0 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                    <Box sx={{ mr: 1 }}>{category.icon}</Box>
-                    <Typography level="body-sm">{category.name}</Typography>
-                    <Tooltip title={`${category.value} з 100 можливих балів`} placement="top">
+                    <Typography level="body-sm">{criteria.name}</Typography>
+                    <Tooltip title={`${criteria.estimate} з 100 можливих балів`} placement="top">
                       <IconButton size="sm" variant="plain" sx={{ ml: 0.5 }}>
                         <InfoOutlined fontSize="small" />
                       </IconButton>
                     </Tooltip>
                     <Typography level="body-sm" sx={{ ml: 'auto' }}>
-                      {category.value}/100
+                      {criteria.estimate}/100
                     </Typography>
                   </Box>
                   <LinearProgress
                     determinate
-                    value={category.value * 100}
+                    value={criteria.estimate}
                     sx={{
                       height: 8,
                       borderRadius: 4,
                       ['& .MuiLinearProgress-bar']: {
                         backgroundColor: (theme) => {
-                          const percentage = category.value * 100;
+                          const percentage = criteria.estimate;
                           if (percentage >= 80) return theme.vars.palette.success[500];
                           if (percentage >= 60) return theme.vars.palette.primary[500];
                           if (percentage >= 40) return theme.vars.palette.warning[500];
