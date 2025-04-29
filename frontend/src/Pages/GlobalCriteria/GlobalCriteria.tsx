@@ -7,12 +7,8 @@ import {
   Button,
   Card,
   CardContent,
-  Divider,
   FormControl,
   IconButton,
-  Modal,
-  ModalClose,
-  ModalDialog,
   Option,
   Select,
   Sheet,
@@ -129,16 +125,13 @@ const GlobalCriteriaPage = () => {
   const [criteria, setCriteria] = useState<CriteriaWithEditing[]>([]);
   const [globalCriteriaId, setGlobalCriteriaId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [aiModalOpen, setAiModalOpen] = useState(false);
-  const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [totalWeight, setTotalWeight] = useState(0);
 
-  const { getCriteria, replaceCriteria } = useGlobalCriteriaService();
+  const { getCriteria, replaceCriteria, getNewFromAi } = useGlobalCriteriaService();
 
   const { isAdmin } = useAuth();
 
-  // Modify the useEffect for fetching criteria to add index
   useEffect(() => {
     const fetchGlobalCriteria = async () => {
       setIsLoading(true);
@@ -185,15 +178,24 @@ const GlobalCriteriaPage = () => {
     setIsLoading(false);
   };
 
-  // TODO: Ask AI about criteria
-  const handleAskAI = () => {
-    setAiModalOpen(true);
-    // Simulate AI response
-    setTimeout(() => {
-      setAiResponse(
-        'Ваші критерії оцінки бізнесу збалансовані. Зверніть увагу, що \'Оцінка окупності бізнесу\' правильно встановлена на мінімізацію, оскільки менший час окупності є кращим. Загальна вага критеріїв дорівнює 1.0, що є оптимальним. Рекомендую переглянути вагу \'Оцінки ціни бізнесу\', можливо, вона має бути вищою, залежно від ваших інвестиційних пріоритетів.',
-      );
-    }, 1000);
+  const handleAskAI = async () => {
+    setIsLoading(true);
+
+    const globalCriteria = await getNewFromAi();
+
+    if (globalCriteria?.data) {
+      const criteriaWithEditing = globalCriteria.data.criteria.map((x, idx) => ({
+        ...x,
+        index: idx + 1,
+        isEditing: false,
+        weight: Number.parseFloat(x.weight.toFixed(4)),
+      }));
+
+      setGlobalCriteriaId(globalCriteria.data.id);
+      setCriteria(criteriaWithEditing);
+    }
+
+    setIsLoading(false);
   };
 
   const toggleEditMode = (index: number) => {
@@ -331,7 +333,8 @@ const GlobalCriteriaPage = () => {
               </Typography>
             </Box>
             <Stack direction="row" spacing={1}>
-              <Button variant="outlined" color="neutral" startDecorator={<SmartToy />} onClick={handleAskAI}>
+              <Button variant="outlined" color="neutral" startDecorator={<SmartToy />} onClick={handleAskAI}
+                loading={isLoading}>
                 Запитати AI
               </Button>
               <Button variant="outlined" color="danger" startDecorator={<Refresh />} onClick={handleResetToDefault}>
@@ -514,35 +517,6 @@ const GlobalCriteriaPage = () => {
           </Card>
         </Box>
       </Box>
-
-      {/* AI Response Modal */}
-      <Modal open={aiModalOpen} onClose={() => setAiModalOpen(false)}>
-        <ModalDialog
-          variant="outlined"
-          role="alertdialog"
-          aria-labelledby="ai-response-modal-title"
-          aria-describedby="ai-response-modal-description"
-          sx={{ maxWidth: 500 }}
-        >
-          <ModalClose />
-          <Typography id="ai-response-modal-title" level="h2" startDecorator={<SmartToy />}>
-            Аналіз критеріїв від AI
-          </Typography>
-          <Divider sx={{ my: 2 }} />
-          <Typography id="ai-response-modal-description" textColor="text.tertiary">
-            {aiResponse || (
-              <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
-                <Typography>Аналізую критерії...</Typography>
-              </Box>
-            )}
-          </Typography>
-          <Box sx={{ mt: 3, display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-            <Button variant="solid" color="primary" onClick={() => setAiModalOpen(false)}>
-              Зрозуміло
-            </Button>
-          </Box>
-        </ModalDialog>
-      </Modal>
     </>
   );
 };

@@ -7,4 +7,6 @@ public interface IGlobalCriteriaService
     Task<GlobalCriteriaDto> GetCriteriaAsync();
     
     Task SetNewGlobalCriteriaAsync(GlobalCriteriaDto globalCriteriaDto);
+    
+    Task<GlobalCriteriaDto> GetNewCriteriaFromAiAsync();
 }

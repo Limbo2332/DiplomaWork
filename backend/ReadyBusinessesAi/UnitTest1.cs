@@ -118,7 +118,7 @@ public class UnitTest1
         var client = serviceProvider.GetService<IAiClient>();
         
         // Act
-        var response = await client.AskRecommendationAsync(post, criteriaDto);
+        var response = await client.GetCriteriaWeightsAsync(criteriaDto);
         
         // Assert
         Assert.NotNull(response);

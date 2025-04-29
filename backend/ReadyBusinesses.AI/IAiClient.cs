@@ -7,4 +7,6 @@ namespace ReadyBusinesses.AI;
 public interface IAiClient
 {
     Task<ChatGptResult> AskRecommendationAsync(Post post, CriteriaDto[] criteria);
+
+    Task<CriteriaWeightsClass> GetCriteriaWeightsAsync(CriteriaDto[] criteria);
 }

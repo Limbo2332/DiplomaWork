@@ -28,4 +28,10 @@ public class GlobalCriteriaController : Controller
 
         return Ok();
     }
+
+    [HttpGet("newfromai")]
+    public async Task<ActionResult<GlobalCriteriaDto>> GetNewFromAi()
+    {
+        return Ok(await _globalCriteriaService.GetNewCriteriaFromAiAsync());
+    }
 }

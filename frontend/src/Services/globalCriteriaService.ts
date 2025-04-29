@@ -15,7 +15,11 @@ const useGlobalCriteriaService = () => {
     return await post('/', newGlobalCriteria);
   }, [post]);
 
-  return { getCriteria, replaceCriteria };
+  const getNewFromAi = useCallback(async (): Promise<Result<GlobalCriteriaDto>> => {
+    return await get('/newfromai');
+  }, [get]);
+
+  return { getCriteria, replaceCriteria, getNewFromAi };
 };
 
 export default useGlobalCriteriaService;

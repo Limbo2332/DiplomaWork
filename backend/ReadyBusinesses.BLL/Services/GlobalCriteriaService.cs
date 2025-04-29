@@ -1,4 +1,5 @@
-﻿using ReadyBusinesses.BLL.Services.Abstract;
+﻿using ReadyBusinesses.AI;
+using ReadyBusinesses.BLL.Services.Abstract;
 using ReadyBusinesses.Common.Dto.Criteria;
 using ReadyBusinesses.Common.Entities;
 using ReadyBusinesses.Common.MapperExtensions;
@@ -9,10 +10,12 @@ namespace ReadyBusinesses.BLL.Services;
 public class GlobalCriteriaService : IGlobalCriteriaService
 {
     private readonly IGlobalCriteriaRepository _repository;
+    private readonly IAiClient _aiClient;
 
-    public GlobalCriteriaService(IGlobalCriteriaRepository repository)
+    public GlobalCriteriaService(IGlobalCriteriaRepository repository, IAiClient aiClient)
     {
         _repository = repository;
+        _aiClient = aiClient;
     }
 
     public async Task<GlobalCriteriaDto> GetCriteriaAsync()
@@ -127,5 +130,22 @@ public class GlobalCriteriaService : IGlobalCriteriaService
         var globalCriteria = globalCriteriaDto.ToGlobalCriteria();
 
         await _repository.ReplaceGlobalCriteriaAsync(globalCriteria);
+    }
+
+    public async Task<GlobalCriteriaDto> GetNewCriteriaFromAiAsync()
+    {
+        var globalCriteria = await GetCriteriaAsync();
+        
+        var criteriaWeights = await _aiClient.GetCriteriaWeightsAsync(globalCriteria.Criteria);
+
+        var newGlobalCriteriaDto = new GlobalCriteriaDto
+        {
+            Id = globalCriteria.Id,
+            Criteria = criteriaWeights.CriteriaWeights.Select(w => w.ToCriteriaDto(globalCriteria)).ToArray(),
+        };
+
+        await SetNewGlobalCriteriaAsync(newGlobalCriteriaDto);
+        
+        return newGlobalCriteriaDto;
     }
 }

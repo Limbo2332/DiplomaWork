@@ -42,4 +42,27 @@ public class AiClient : IAiClient
 
         return JsonSerializer.Deserialize<ChatGptResult>(content)!;
     }
+
+    public async Task<CriteriaWeightsClass> GetCriteriaWeightsAsync(CriteriaDto[] criteria)
+    {
+        var request = ChatGPTRequest.GetGlobalRequest(criteria);
+        
+        var response = await _chatGptClient.AskAsync(request);
+
+        var content = response.GetContent();
+        
+        if (string.IsNullOrEmpty(content))
+        {
+            throw new ArgumentException("ChatGPT cannot complete the result.");
+        }
+        
+        var lines = content
+            .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None)
+            .Where(line => !line.Contains("```")) 
+            .ToArray();
+
+        content = string.Join(Environment.NewLine, lines);
+
+        return JsonSerializer.Deserialize<CriteriaWeightsClass>(content)!;
+    }
 }

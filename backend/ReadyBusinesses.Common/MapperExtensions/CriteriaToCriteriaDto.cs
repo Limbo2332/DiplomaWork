@@ -69,4 +69,17 @@ public static class CriteriaToCriteriaDto
             Estimate = criteriaEstimateGpt.Estimate,
         };
     }
+
+    public static CriteriaDto ToCriteriaDto(this CriteriaWeight criteriaWeight, GlobalCriteriaDto globalCriteria)
+    {
+        var criteria = globalCriteria.Criteria.First(c => c.Name == criteriaWeight.Criterion);
+
+        return new CriteriaDto
+        {
+            Id = criteria.Id,
+            Name = criteria.Name,
+            Weight = criteriaWeight.Weight,
+            IsMaximization = criteria.IsMaximization
+        };
+    }
 }
