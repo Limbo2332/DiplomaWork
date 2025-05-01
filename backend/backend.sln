@@ -10,8 +10,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadyBusinesses.Common", "R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadyBusinesses.AI", "ReadyBusinesses.AI\ReadyBusinesses.AI.csproj", "{770ABF7B-00E4-4158-B1C2-57FCBB7B8D99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadyBusinessesAi", "ReadyBusinessesAi\ReadyBusinessesAi.csproj", "{12C6ABE2-27C7-418D-A708-90196BEFE0F5}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadyBusinesses.Topsis", "ReadyBusinesses.Topsis\ReadyBusinesses.Topsis.csproj", "{EF9A2509-1913-49BC-8ED9-CE3135FB4BC7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadyBusinesses.BLL.UnitTests", "ReadyBusinesses.BLL.UnitTests\ReadyBusinesses.BLL.UnitTests.csproj", "{F324995E-046D-4CA1-ACD2-727D0226D5DF}"
@@ -46,10 +44,6 @@ Global
 		{770ABF7B-00E4-4158-B1C2-57FCBB7B8D99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{770ABF7B-00E4-4158-B1C2-57FCBB7B8D99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{770ABF7B-00E4-4158-B1C2-57FCBB7B8D99}.Release|Any CPU.Build.0 = Release|Any CPU
-		{12C6ABE2-27C7-418D-A708-90196BEFE0F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{12C6ABE2-27C7-418D-A708-90196BEFE0F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{12C6ABE2-27C7-418D-A708-90196BEFE0F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{12C6ABE2-27C7-418D-A708-90196BEFE0F5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EF9A2509-1913-49BC-8ED9-CE3135FB4BC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EF9A2509-1913-49BC-8ED9-CE3135FB4BC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF9A2509-1913-49BC-8ED9-CE3135FB4BC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
