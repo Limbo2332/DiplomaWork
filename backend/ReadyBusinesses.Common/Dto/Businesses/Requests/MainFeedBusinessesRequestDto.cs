@@ -5,8 +5,8 @@ public class MainFeedBusinessesRequestDto
     public int PageCount { get; set; }
     
     public int Offset { get; set; }
-    
-    public required FilterDto Filter { get; set; }
+
+    public FilterDto Filter { get; set; } = null!;
 }
 
 public class AdminFeedBusinessesRequestDto

@@ -1,12 +1,8 @@
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;
 using ReadyBusinesses.AI.Extensions;
-using ReadyBusinesses.Api;
 using ReadyBusinesses.Api.Extensions;
-using ReadyBusinesses.Common.Enums;
 using ReadyBusinesses.Common.Filters;
 using ReadyBusinesses.Common.Middlewares;
-using ReadyBusinesses.DLL.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,3 +67,8 @@ app.UseMiddleware<UserIdMiddleware>();
 app.UseBusinessContext();
 
 app.Run();
+
+public partial class Program
+{
+    
+}

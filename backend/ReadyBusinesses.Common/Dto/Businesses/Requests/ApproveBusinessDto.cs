@@ -3,6 +3,6 @@
 public class ApproveBusinessDto
 {
     public required Guid BusinessId { get; set; }
-    
-    public required string Category { get; set; }
+
+    public string Category { get; set; } = string.Empty;    
 }

@@ -7,9 +7,9 @@ public class CreateBusinessRequestDto
 {
     public required string Name { get; set; }
     
-    public required string Location { get; set; }
-    
-    public required string Category { get; set; }
+    public string Location { get; set; } = string.Empty;
+
+    public string Category { get; set; } = string.Empty;
     
     public decimal Price { get; set; }
     
@@ -58,8 +58,8 @@ public class CreateBusinessRequestDto
     public string? Twitter { get; set; }
     
     public string? Site { get; set; }
-    
-    public required string Description { get; set; }
+
+    public string Description { get; set; } = string.Empty;
 
     public IEnumerable<IFormFile> Images { get; set; } = [];
 }

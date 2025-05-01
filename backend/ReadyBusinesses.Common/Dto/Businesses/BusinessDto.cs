@@ -12,11 +12,11 @@ public class BusinessDto
     
     public bool IsViewed { get; set; }
     
-    public required string Name { get; set; }
+    public string Name { get; set; }
     
-    public required string Location { get; set; }
+    public string Location { get; set; }
     
-    public required string Category { get; set; }
+    public string Category { get; set; }
     
     public DateTime UpdatedAt { get; set; }
     
@@ -26,7 +26,7 @@ public class BusinessDto
 
     public IEnumerable<ImagePathDto> Images { get; set; } = [];
     
-    public required string Description { get; set; }
+    public string Description { get; set; }
     
     public string? Telegram { get; set; }
     
@@ -40,7 +40,7 @@ public class BusinessDto
     
     public Guid AuthorId { get; set; }
     
-    public required string AuthorName { get; set; }
+    public string AuthorName { get; set; }
     
     public string? AuthorImage { get; set; }
     

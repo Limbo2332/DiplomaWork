@@ -18,6 +18,8 @@
       <ProjectReference Include="..\ReadyBusinesses.AI\ReadyBusinesses.AI.csproj" />
       <ProjectReference Include="..\ReadyBusinesses.BLL\ReadyBusinesses.BLL.csproj" />
       <ProjectReference Include="..\ReadyBusinesses.Topsis\ReadyBusinesses.Topsis.csproj" />
+        
+        <InternalsVisibleTo Include="ReadyBusinesses.Api.IntegrationTests" />
     </ItemGroup>
 
 </Project>
