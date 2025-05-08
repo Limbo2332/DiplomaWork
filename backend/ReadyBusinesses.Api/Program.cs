@@ -27,7 +27,7 @@ builder.Services.AddLogging(logging =>
     logging.AddDebug();
 });
 
-builder.Services.AddChatGpt();
+builder.Services.AddChatGpt(builder.Configuration);
 
 builder.Services.AddCors(options => options.AddPolicy("Frontend", config =>
 {
