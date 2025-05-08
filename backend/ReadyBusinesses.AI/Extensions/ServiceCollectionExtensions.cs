@@ -14,7 +14,7 @@ public static class ServiceCollectionExtensions
 
         var apiKey = configuration["OpenAIKey"];
 
-        if (apiKey is not null)
+        if (!string.IsNullOrEmpty(apiKey))
         {
             services.AddChatGpt(options =>
             {

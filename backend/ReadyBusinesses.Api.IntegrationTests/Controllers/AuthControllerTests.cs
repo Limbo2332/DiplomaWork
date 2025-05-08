@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using ReadyBusinesses.AI;
 using ReadyBusinesses.BLL.Services.Abstract;
 using ReadyBusinesses.Common.Dto.Auth;
 using ReadyBusinesses.Common.Dto.User;
@@ -29,9 +30,14 @@ public class AuthControllerTests(WebApplicationFactory<Program> factory) : IClas
                 var descriptor = services.Single(
                     d => d.ServiceType == typeof(IAuthService));
 
+                var openAiClient = services.Single(
+                    d => d.ServiceType == typeof(IAiClient));
+
                 services.Remove(descriptor);
+                services.Remove(openAiClient);
 
                 services.AddSingleton(authServiceMock.Object);
+                services.AddSingleton(new Mock<IAiClient>().Object);
             });
         }).CreateClient();
 

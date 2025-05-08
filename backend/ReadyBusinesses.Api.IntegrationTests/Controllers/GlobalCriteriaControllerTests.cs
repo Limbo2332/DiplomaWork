@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using ReadyBusinesses.AI;
 using ReadyBusinesses.BLL.Services.Abstract;
 using ReadyBusinesses.Common.Dto.Criteria;
 
@@ -31,6 +32,13 @@ public class GlobalCriteriaControllerTests : IClassFixture<WebApplicationFactory
             builder.ConfigureServices(services =>
             {
                 services.AddSingleton(_mockService.Object);
+                
+                var openAiClient = services.Single(
+                    d => d.ServiceType == typeof(IAiClient));
+
+                services.Remove(openAiClient);
+
+                services.AddSingleton(new Mock<IAiClient>().Object);
             });
         });
 

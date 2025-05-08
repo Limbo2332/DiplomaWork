@@ -1,6 +1,9 @@
 ﻿using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using ReadyBusinesses.AI;
 
 namespace ReadyBusinesses.Api.IntegrationTests.Controllers;
 
@@ -18,6 +21,16 @@ public class CategoriesControllerTests : IClassFixture<WebApplicationFactory<Pro
                 {
                     {"OpenAIKey", "OpenAIKey"}
                 }!);
+            });
+
+            builder.ConfigureServices(services =>
+            {
+                var openAiClient = services.Single(
+                    d => d.ServiceType == typeof(IAiClient));
+
+                services.Remove(openAiClient);
+
+                services.AddSingleton(new Mock<IAiClient>().Object);
             });
         }).CreateClient();
 

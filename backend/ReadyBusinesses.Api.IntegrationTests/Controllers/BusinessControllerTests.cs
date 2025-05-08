@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using ReadyBusinesses.AI;
 using ReadyBusinesses.BLL.Services.Abstract;
 using ReadyBusinesses.Common.Dto.Businesses;
 using ReadyBusinesses.Common.Dto.Businesses.Requests;
@@ -42,7 +43,13 @@ public class BusinessesControllerTests : IClassFixture<WebApplicationFactory<Pro
 
                 if (descriptor != null)
                     services.Remove(descriptor);
-
+                
+                var openAiClient = services.Single(
+                    d => d.ServiceType == typeof(IAiClient));
+                
+                services.Remove(openAiClient);
+                
+                services.AddSingleton(new Mock<IAiClient>().Object);
                 services.AddSingleton(mockService.Object);
             });
         }).CreateClient();
