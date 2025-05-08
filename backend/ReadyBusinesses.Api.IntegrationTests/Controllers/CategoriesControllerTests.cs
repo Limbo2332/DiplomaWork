@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 
 namespace ReadyBusinesses.Api.IntegrationTests.Controllers;
 
@@ -9,7 +10,18 @@ public class CategoriesControllerTests : IClassFixture<WebApplicationFactory<Pro
 
     public CategoriesControllerTests(WebApplicationFactory<Program> factory)
     {
-        _client = factory.CreateClient();
+        var client = factory.WithWebHostBuilder(builder =>
+        {
+            builder.ConfigureAppConfiguration((context, configBuilder) =>
+            {
+                configBuilder.AddInMemoryCollection(new Dictionary<string, string>
+                {
+                    {"OpenAIKey", "OpenAIKey"}
+                }!);
+            });
+        }).CreateClient();
+
+        _client = client;
     }
 
     [Fact]

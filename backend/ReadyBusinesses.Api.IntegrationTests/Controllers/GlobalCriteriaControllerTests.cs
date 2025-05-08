@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using ReadyBusinesses.BLL.Services.Abstract;
@@ -19,6 +20,14 @@ public class GlobalCriteriaControllerTests : IClassFixture<WebApplicationFactory
 
         var customizedFactory = factory.WithWebHostBuilder(builder =>
         {
+            builder.ConfigureAppConfiguration((context, configBuilder) =>
+            {
+                configBuilder.AddInMemoryCollection(new Dictionary<string, string>
+                {
+                    {"OpenAIKey", "OpenAIKey"}
+                }!);
+            });
+            
             builder.ConfigureServices(services =>
             {
                 services.AddSingleton(_mockService.Object);
