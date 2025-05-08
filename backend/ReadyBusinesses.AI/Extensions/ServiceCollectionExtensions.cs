@@ -13,17 +13,20 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAiClient, AiClient>();
 
         var apiKey = configuration["OpenAIKey"];
-        
-        services.AddChatGpt(options =>
+
+        if (apiKey is not null)
         {
-            options.UseOpenAI(apiKey!);
-            
-            options.DefaultModel = "gpt-4o";
-            options.DefaultParameters = new ChatGptParameters
+            services.AddChatGpt(options =>
             {
-                MaxTokens = 800,
-                Temperature = 0.7
-            };
-        });
+                options.UseOpenAI(apiKey);
+            
+                options.DefaultModel = "gpt-4o";
+                options.DefaultParameters = new ChatGptParameters
+                {
+                    MaxTokens = 800,
+                    Temperature = 0.7
+                };
+            });
+        }
     }
 }
